@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QVector>
+#include <QMap>
 
 struct Coordinate {
     int x, y;
@@ -17,9 +18,21 @@ Coordinate &operator-=(Coordinate &a, const Coordinate &b);
 
 class GameObject;
 
+class GameObjectRepository : public QObject {
+    Q_OBJECT
+public:
+    void addObject(const QString &type, const QString &name, const QVector<Coordinate> cells);
+    QVector<Coordinate> getCells(const QString &type, const QString &name) const;
+protected:
+    static QString fullName(const QString &type, const QString &name);
+private:
+    QMap<QString, QVector<Coordinate>> cells_; 
+};
+
 class GameFieldBase : public QObject {
     Q_OBJECT
 public:
+    virtual GameObjectRepository *repository() const = 0;
     virtual bool canMoveObject(GameObject *object, const Coordinate &pos) const = 0;
 };
 
@@ -29,11 +42,13 @@ class GameObject : public QObject
 public:
     Q_PROPERTY(Coordinate position READ position WRITE setPosition)
     
+    GameObject(QObject *parent, const QString &name, GameFieldBase *field = nullptr);
+    
     QString name() const;
     virtual QString type() const = 0;
     Coordinate position() const;
-    virtual QVector<Coordinate> cellsRelative();
-    QVector<Coordinate> cells();
+    virtual QVector<Coordinate> cellsRelative() const;
+    QVector<Coordinate> cells() const;
     
     int x() const;
     int y() const;
@@ -47,15 +62,29 @@ public:
 signals:
     void move(const Coordinate &oldPosition, const Coordinate &newPosition);
     void update();
-protected:
-    QVector<Coordinate> cells_;
-    
-    GameObject(QObject *parent, const QString &name, GameFieldBase *field = nullptr);
 private:
     QString name_;
     bool active_;
     Coordinate position_;
     GameFieldBase *field_;
+};
+
+class GroundObject : public GameObject {
+    Q_OBJECT
+public:
+    virtual QString type() const override;
+};
+
+class StaticObject : public GameObject {
+    Q_OBJECT
+public:
+    virtual QString type() const override;
+};
+
+class MovingObject : public GameObject {
+    Q_OBJECT
+public:
+    virtual QString type() const override;
 };
 
 #endif // GAMEOBJECT_H

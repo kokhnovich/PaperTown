@@ -29,7 +29,25 @@ Coordinate operator-(Coordinate a, const Coordinate& b)
     return a -= b;
 }
 
-QVector<Coordinate> GameObject::cells()
+void GameObjectRepository::addObject(const QString &type, const QString &name, const QVector<Coordinate> cells)
+{
+    QString full = fullName(type, name);
+    Q_ASSERT(!cells_.contains(full));
+    cells_[full] = cells;
+}
+
+QVector<Coordinate> GameObjectRepository::getCells(const QString &type, const QString &name) const
+{
+    QString full = fullName(type, name);
+    Q_ASSERT(cells_.contains(full));
+    return cells_[full];
+}
+
+QString GameObjectRepository::fullName(const QString& type, const QString& name) {
+    return type + "::" + name;
+}
+
+QVector<Coordinate> GameObject::cells() const
 {
     auto res = cellsRelative();
     for (Coordinate &coord : res) {
@@ -38,14 +56,17 @@ QVector<Coordinate> GameObject::cells()
     return res;
 }
 
-QVector<Coordinate> GameObject::cellsRelative()
+QVector<Coordinate> GameObject::cellsRelative() const
 {
-    return cells_;
+    if (!field() || !field()->repository()) {
+        return {};
+    }
+    return field()->repository()->getCells(type(), name());
 }
 
 bool GameObject::canSetPosition(const Coordinate& pos)
 {
-    if (field() == nullptr) {
+    if (!field()) {
         return true;
     } else {
         return field()->canMoveObject(this, pos);
@@ -54,7 +75,6 @@ bool GameObject::canSetPosition(const Coordinate& pos)
 
 GameObject::GameObject(QObject *parent, const QString &name, GameFieldBase *field)
     : QObject(parent),
-      cells_(),
       name_(name),
       active_(false),
       position_(),
@@ -105,3 +125,17 @@ GameFieldBase * GameObject::field() const
     return qobject_cast<GameFieldBase *>(this->parent());
 }
 
+QString GroundObject::type() const
+{
+    return "ground";
+}
+
+QString MovingObject::type() const
+{
+    return "moving";
+}
+
+QString StaticObject::type() const
+{
+    return "static";
+}
