@@ -6,6 +6,9 @@
 
 QT       += core gui
 
+RESOURCES += img.qrc
+
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = PaperTown
@@ -24,14 +27,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp \
+    src/main.cpp \
+    src/mainwindow.cpp
 
 HEADERS += \
-        mainwindow.h \
+    src/mainwindow.h
 
 FORMS += \
-        mainwindow.ui
+    src/mainwindow.ui
+
+# DISTFILES += \
+#     cell3.png
 
 DISTFILES += \
-    cell3.png
+    img/cell1.jpg \
+    img/cell2.jpg \
+    img/cell.png \
+    img/cell3.png
