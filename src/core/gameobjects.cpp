@@ -5,26 +5,26 @@ Coordinate::Coordinate(int x, int y)
 {
 }
 
-Coordinate & operator+=(Coordinate& a, const Coordinate& b)
+Coordinate &operator+=(Coordinate &a, const Coordinate &b)
 {
     a.x += b.x;
     a.y += b.y;
     return a;
 }
 
-Coordinate & operator-=(Coordinate& a, const Coordinate& b)
+Coordinate &operator-=(Coordinate &a, const Coordinate &b)
 {
     a.x -= b.x;
     a.y -= b.y;
     return a;
 }
 
-Coordinate operator+(Coordinate a, const Coordinate& b)
+Coordinate operator+(Coordinate a, const Coordinate &b)
 {
     return a += b;
 }
 
-Coordinate operator-(Coordinate a, const Coordinate& b)
+Coordinate operator-(Coordinate a, const Coordinate &b)
 {
     return a -= b;
 }
@@ -43,7 +43,8 @@ QVector<Coordinate> GameObjectRepository::getCells(const QString &type, const QS
     return cells_[full];
 }
 
-QString GameObjectRepository::fullName(const QString& type, const QString& name) {
+QString GameObjectRepository::fullName(const QString &type, const QString &name)
+{
     return type + "::" + name;
 }
 
@@ -64,7 +65,7 @@ QVector<Coordinate> GameObject::cellsRelative() const
     return field()->repository()->getCells(type(), name());
 }
 
-bool GameObject::canSetPosition(const Coordinate& pos)
+bool GameObject::canSetPosition(const Coordinate &pos)
 {
     if (!field()) {
         return true;
@@ -80,7 +81,9 @@ GameObject::GameObject(QObject *parent, const QString &name, GameFieldBase *fiel
       position_(),
       field_(field)
 {
-    connect(this, &GameObject::move, [=]() { emit this->update(); });
+    connect(this, &GameObject::move, [ = ]() {
+        emit this->update();
+    });
 }
 
 QString GameObject::name() const
@@ -93,7 +96,7 @@ Coordinate GameObject::position() const
     return position_;
 }
 
-bool GameObject::setPosition(const Coordinate& pos)
+bool GameObject::setPosition(const Coordinate &pos)
 {
     if (!canSetPosition(pos)) {
         return false;
@@ -120,7 +123,7 @@ int GameObject::y() const
     return position().y;
 }
 
-GameFieldBase * GameObject::field() const
+GameFieldBase *GameObject::field() const
 {
     return qobject_cast<GameFieldBase *>(this->parent());
 }
