@@ -52,13 +52,15 @@ bool GameObject::canSetPosition(const Coordinate& pos)
     }
 }
 
-GameObject::GameObject(const QString& name)
-    : cells_(),
+GameObject::GameObject(QObject *parent, const QString &name, GameFieldBase *field)
+    : QObject(parent),
+      cells_(),
       name_(name),
       active_(false),
-      position_()
+      position_(),
+      field_(field)
 {
-    connect(this, &move, [=]() { emit this->update(); })
+    connect(this, &GameObject::move, [=]() { emit this->update(); });
 }
 
 QString GameObject::name() const
@@ -76,8 +78,10 @@ bool GameObject::setPosition(const Coordinate& pos)
     if (!canSetPosition(pos)) {
         return false;
     }
-    
-    
+    Coordinate oldPosition = position_;
+    active_ = true;
+    position_ = pos;
+    emit move(oldPosition, position_);
     return true;
 }
 

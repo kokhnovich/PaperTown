@@ -15,12 +15,12 @@ Coordinate operator-(Coordinate a, const Coordinate &b);
 Coordinate &operator+=(Coordinate &a, const Coordinate &b);
 Coordinate &operator-=(Coordinate &a, const Coordinate &b);
 
-class QGameObject;
+class GameObject;
 
 class GameFieldBase : public QObject {
     Q_OBJECT
 public:
-    virtual bool canMoveObject(QGameObject *object, const Coordinate &pos) const = 0;
+    virtual bool canMoveObject(GameObject *object, const Coordinate &pos) const = 0;
 };
 
 class GameObject : public QObject
@@ -50,11 +50,12 @@ signals:
 protected:
     QVector<Coordinate> cells_;
     
-    GameObject(const QString &name);
+    GameObject(QObject *parent, const QString &name, GameFieldBase *field = nullptr);
 private:
     QString name_;
     bool active_;
     Coordinate position_;
+    GameFieldBase *field_;
 };
 
 #endif // GAMEOBJECT_H
