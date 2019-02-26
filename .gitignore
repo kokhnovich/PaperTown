@@ -48,5 +48,7 @@ compile_commands.json
 # QtCreator local machine specific files for imported projects
 *creator.user*
 
-# KDevelop build
-/build
+# KDevelop files
+/src/build
+*.kdev4
+.kdev4/
