@@ -6,6 +6,9 @@
 
 QT       += core gui
 
+RESOURCES += img.qrc
+
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = PaperTown
@@ -34,7 +37,16 @@ HEADERS += \
         core/gameobjects.h
 
 FORMS += \
-        mainwindow.ui
+    mainwindow.ui
+
+# DISTFILES += \
+#     cell3.png
 
 DISTFILES += \
-    cell3.png
+    img/cell1.jpg \
+    img/cell2.jpg \
+    img/cell.png \
+    img/cell3.png
+
+SUBDIRS += \
+    PaperTown.pro

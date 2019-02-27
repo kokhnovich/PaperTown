@@ -10,10 +10,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     scene = new QGraphicsScene(this);
 
-    QBrush brush(QPixmap("/cell3.png"));
+    scene->setSceneRect(-500, -500, 500, 500);
+
+    QBrush brush(QPixmap(":/img/cell.png"));
     scene->setBackgroundBrush(brush);
 
     ui->graphicsView->setScene(scene);
+    ui->graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
+
 }
 
 MainWindow::~MainWindow()
