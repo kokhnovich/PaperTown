@@ -27,14 +27,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-    src/main.cpp \
-    src/mainwindow.cpp
+    main.cpp \
+    mainwindow.cpp
 
 HEADERS += \
-    src/mainwindow.h
+    mainwindow.h
 
 FORMS += \
-    src/mainwindow.ui
+    mainwindow.ui
 
 # DISTFILES += \
 #     cell3.png
@@ -44,3 +44,6 @@ DISTFILES += \
     img/cell2.jpg \
     img/cell.png \
     img/cell3.png
+
+SUBDIRS += \
+    PaperTown.pro
