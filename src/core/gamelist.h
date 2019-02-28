@@ -4,14 +4,20 @@
 #include <QVector>
 #include "gameobjects.h"
 
-class GameList
+class GameList : public QObject
 {
+    Q_OBJECT
 public:
     GameList();
-    void addObject(const GameObject& object);
-    void remove(int pos, int count = 1);
-    int removeEqual(GameObject* const& object);
-    GameObject* operator[](int pos);
+    void addObject(GameObject* object);
+    void remove(GameObject* object);
+
+//public slots:
+
+
+signals:
+    void update(GameObject*);
+    void itemMoved(GameObject*, Coordinate& from, Coordinate& to);
 
 private:
     QVector<GameObject*> data_;

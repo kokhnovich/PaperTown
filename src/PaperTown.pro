@@ -31,12 +31,12 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
         core/gameobjects.cpp \
-    core/gamelist.cpp
+        core/gamelist.cpp
 
 HEADERS += \
         mainwindow.h \
         core/gameobjects.h \
-    core/gamelist.h
+        core/gamelist.h
 
 FORMS += \
     mainwindow.ui
@@ -51,4 +51,4 @@ DISTFILES += \
     img/cell3.png
 
 SUBDIRS += \
-    PaperTown.pro
+    PaperTown.pros

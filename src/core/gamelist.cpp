@@ -1,9 +1,11 @@
 #include "gamelist.h"
 
-void GameList::remove(int pos, int count) {
-    data_.remove(pos, count);
+void GameList::remove(GameObject *object) {
+    data_.removeOne(object);
+    emit update(object);
 }
 
-void GameList::removeEqual(GameObject* const & object) {
-    data_.removeAll(object);
+void GameList::addObject(GameObject *object) {
+    data_.append(object);
+    emit update(object);
 }
