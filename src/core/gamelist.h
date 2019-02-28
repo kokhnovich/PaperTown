@@ -21,6 +21,7 @@ signals:
 
 private:
     QVector<GameObject*> data_;
+    GameFieldBase *field_;
 };
 
 #endif // GAMELIST_H

@@ -12,9 +12,13 @@ public:
     GameMap(int size_n, int size_m);
     GameObject* At(int i, int j) const;
     void clear();
+    void addObject(GameObject* object, int x, int y);
+    void deleteObject(int x, int y);
 signals:
 
 public slots:
+
+    void update(int x, int y);
 
 private:
     QVector<QVector<GameObject*>> map_;
