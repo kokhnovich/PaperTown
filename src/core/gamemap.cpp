@@ -9,11 +9,15 @@ GameObject* GameMap::At(int i, int j) const {
 
 void GameMap::clear() {
     map_.clear();
+    update(0, 0);
 }
-
 
 void GameMap::addObject(GameObject* object, int x, int y) {
     map_[x][y] = object;
+    update(x, y);
 }
 
-
+void GameMap::deleteObject(int x, int y) {
+    map_[x][y] = nullptr;
+    update(x, y);
+}

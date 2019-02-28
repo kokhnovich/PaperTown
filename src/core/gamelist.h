@@ -17,7 +17,6 @@ public:
 
 signals:
     void update(GameObject*);
-    void itemMoved(GameObject*, Coordinate& from, Coordinate& to);
 
 private:
     QVector<GameObject*> data_;
