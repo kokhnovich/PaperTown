@@ -79,7 +79,7 @@ bool GameObject::canSetPosition(const Coordinate &pos)
     }
 }
 
-GameObject::GameObject(const QString& name, GameObjectProperty* property, GameFieldBase* field)
+GameObject::GameObject(const QString &name, GameObjectProperty *property, GameFieldBase *field)
     : QObject(nullptr),
       name_(name),
       active_(false),
@@ -96,7 +96,7 @@ GameObject::GameObject(const QString& name, GameObjectProperty* property, GameFi
     }
 }
 
-GameObjectProperty * GameObject::property() const
+GameObjectProperty *GameObject::property() const
 {
     return property_;
 }
