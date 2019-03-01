@@ -12,8 +12,9 @@ public:
     void addObject(GameObject* object);
     void remove(GameObject* object);
 
-//public slots:
+signals:
 
+public slots:
 
 signals:
     void update(GameObject*);

@@ -10,17 +10,20 @@ class GameMap : public QObject
     Q_OBJECT
 public:
     GameMap(int size_n, int size_m);
-    GameObject* At(int i, int j) const;
+    GameObject* at(int i, int j) const;
     void clear();
-    void addObject(GameObject* object, int x, int y);
-    void deleteObject(int x, int y);
+    void add(GameObject* object);
+    void remove(int x, int y);
+    void remove(GameObject* object);
+    bool canPlace(GameObject* object) const;
+
 signals:
+    void moved(GameObject* object);
 
 public slots:
 
-    void update(int x, int y);
-
 private:
+    bool isExists(GameObject* object) const;
     QVector<QVector<GameObject*>> map_;
 };
 
