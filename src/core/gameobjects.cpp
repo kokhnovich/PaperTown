@@ -48,6 +48,11 @@ QString GameObjectRepository::fullName(const QString &type, const QString &name)
     return type + "::" + name;
 }
 
+GameObject *GameObjectProperty::gameObject() const
+{
+    return qobject_cast<GameObject *>(parent());
+}
+
 QVector<Coordinate> GameObject::cells() const
 {
     auto res = cellsRelative();
@@ -74,16 +79,26 @@ bool GameObject::canSetPosition(const Coordinate &pos)
     }
 }
 
-GameObject::GameObject(QObject *parent, const QString &name, GameFieldBase *field)
-    : QObject(parent),
+GameObject::GameObject(const QString& name, GameObjectProperty* property, GameFieldBase* field)
+    : QObject(nullptr),
       name_(name),
       active_(false),
       position_(),
-      field_(field)
+      field_(field),
+      property_(property)
 {
     connect(this, &GameObject::move, [ = ]() {
         emit this->update();
     });
+    if (property_) {
+        connect(this, SIGNAL(update()), property_, SIGNAL(update));
+        property_->setParent(this);
+    }
+}
+
+GameObjectProperty * GameObject::property() const
+{
+    return property_;
 }
 
 QString GameObject::name() const
@@ -125,7 +140,7 @@ int GameObject::y() const
 
 GameFieldBase *GameObject::field() const
 {
-    return qobject_cast<GameFieldBase *>(this->parent());
+    return field_;
 }
 
 QString GroundObject::type() const

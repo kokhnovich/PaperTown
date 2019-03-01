@@ -38,19 +38,29 @@ public:
     virtual bool canMoveObject(GameObject *object, const Coordinate &pos) const = 0;
 };
 
+class GameObjectProperty : public QObject
+{
+    Q_OBJECT
+private:
+    GameObject *gameObject() const;
+signals:
+    void update();
+};
+
 class GameObject : public QObject
 {
     Q_OBJECT
 public:
     Q_PROPERTY(Coordinate position READ position WRITE setPosition)
 
-    GameObject(QObject *parent, const QString &name, GameFieldBase *field = nullptr);
+    GameObject(const QString &name, GameObjectProperty *property = nullptr, GameFieldBase *field = nullptr);
 
     QString name() const;
     virtual QString type() const = 0;
     Coordinate position() const;
     virtual QVector<Coordinate> cellsRelative() const;
     QVector<Coordinate> cells() const;
+    GameObjectProperty *property() const;
 
     int x() const;
     int y() const;
@@ -69,6 +79,7 @@ private:
     bool active_;
     Coordinate position_;
     GameFieldBase *field_;
+    GameObjectProperty *property_;
 };
 
 class GroundObject : public GameObject
