@@ -24,3 +24,8 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+void MainWindow::on_debug_push_button_clicked()
+{
+    ui->debug_label->setText("default");
+}

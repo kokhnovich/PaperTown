@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>818</width>
-    <height>687</height>
+    <width>755</width>
+    <height>581</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -38,13 +38,45 @@
      </widget>
     </item>
     <item>
-     <widget class="QGraphicsView" name="graphicsView">
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>16777215</height>
-       </size>
+     <widget class="QGroupBox" name="groupBox">
+      <property name="title">
+       <string>GroupBox</string>
       </property>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QGraphicsView" name="graphicsView">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>632</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
+          <string>GroupBox</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QLabel" name="debug_label">
+            <property name="text">
+             <string>default</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="debug_push_button">
+            <property name="text">
+             <string>reset_label</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
    </layout>
