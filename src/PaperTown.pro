@@ -33,7 +33,6 @@ SOURCES += \
         core/gameobjects.cpp \
         core/gamelist.cpp \
     core/gamemap.cpp \
-    core/gamemapbase.cpp \
     core/gamemultimap.cpp
 
 HEADERS += \
@@ -41,7 +40,6 @@ HEADERS += \
         core/gameobjects.h \
         core/gamelist.h \
     core/gamemap.h \
-    core/gamemapbase.h \
     core/gamemultimap.h
 
 FORMS += \

@@ -34,8 +34,8 @@ void GameMap::add(GameObject* object)
 
 void GameMap::remove(const Coordinate& pos)
 {
-    if (map_[pos.x][pos.y] != nullptr) {
-        remove(map_[pos.x][pos.y]);
+    if (at(pos) != nullptr) {
+        remove(at(pos));
     }
 }
 
@@ -48,7 +48,7 @@ void GameMap::remove(GameObject *object)
     }
 }
 
-void GameMap::moved(const Coordinate &oldPosition, const Coordinate &newPosition)
+void GameMap::moved(const Coordinate &oldPosition, const Coordinate&)
 {
     auto object = at(oldPosition);
     auto res = object->cellsRelative();

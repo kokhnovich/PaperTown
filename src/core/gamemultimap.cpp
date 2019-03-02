@@ -31,7 +31,7 @@ void GameMultimap::remove(GameObject *object)
 
 void GameMultimap::moved(const Coordinate &oldPosition, const Coordinate&)
 {
-    auto object = qobject_cast<GameObject*>(se  nder());
+    auto object = qobject_cast<GameObject*>(sender());
     auto res = object->cellsRelative();
     for (const Coordinate &coord : res) {
         at(coord + oldPosition)->remove(object);
