@@ -17,13 +17,11 @@ public:
     void remove(GameObject* object);
     bool canPlace(GameObject* object) const;
 
-signals:
+public slots:
+    void removeOld(GameObject* object);
     void moved(GameObject* object);
 
-public slots:
-
 private:
-    bool isExists(GameObject* object) const;
     QVector<QVector<GameObject*>> map_;
 };
 

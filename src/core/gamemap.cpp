@@ -16,7 +16,7 @@ void GameMap::clear()
 
 bool GameMap::canPlace(GameObject *object) const
 {
-    for (Coordinate cell : object->cells()) {
+    for (const Coordinate& cell : object->cells()) {
         if (map_[cell.x][cell.y] != nullptr) {
             if (map_[cell.x][cell.y] != object) {
                 return false;
@@ -29,12 +29,8 @@ bool GameMap::canPlace(GameObject *object) const
 void GameMap::add(GameObject* object)
 {
     if (canPlace(object)) {
-        bool is_existed = isExists(object);
-        for (Coordinate cell : object->cells()) {
+        for (Coordinate& cell : object->cells()) {
             map_[cell.x][cell.y] = object;
-        }
-        if (is_existed) {
-            emit moved(object);
         }
     }
 }
@@ -46,21 +42,27 @@ void GameMap::remove(int x, int y)
     }
 }
 
+
 void GameMap::remove(GameObject *object)
 {
-    for (Coordinate cell : object->cells()) {
+    for (const Coordinate& cell : object->cells()) {
         map_[cell.x][cell.y] = nullptr;
     }
 }
 
-bool GameMap::isExists(GameObject *object) const
+void GameMap::removeOld(GameObject* object)
 {
-    for (const auto& i : map_) {
-        for(const auto& j : i) {
+    for (auto& i : map_) {
+        for (auto& j : i) {
             if (j == object) {
-                return true;
+                j = nullptr;
             }
         }
     }
-    return false;
+}
+
+void GameMap::moved(GameObject* object)
+{
+    removeOld(object);
+    add(object);
 }

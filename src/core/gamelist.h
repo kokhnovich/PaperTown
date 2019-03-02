@@ -12,16 +12,8 @@ public:
     void addObject(GameObject* object);
     void remove(GameObject* object);
 
-signals:
-
-public slots:
-
-signals:
-    void update(GameObject*);
-
 private:
     QVector<GameObject*> data_;
-    GameFieldBase *field_;
 };
 
 #endif // GAMELIST_H
