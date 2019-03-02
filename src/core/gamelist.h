@@ -9,6 +9,8 @@ class GameList : public QObject
     Q_OBJECT
 public:
     GameList();
+    GameList(GameList&&) = default;
+    bool empty() const;
     void addObject(GameObject* object);
     void remove(GameObject* object);
 
