@@ -32,13 +32,17 @@ SOURCES += \
         mainwindow.cpp \
         core/gameobjects.cpp \
         core/gamelist.cpp \
-    core/gamemap.cpp
+    core/gamemap.cpp \
+    core/gamemapbase.cpp \
+    core/gamemultimap.cpp
 
 HEADERS += \
         mainwindow.h \
         core/gameobjects.h \
         core/gamelist.h \
-    core/gamemap.h
+    core/gamemap.h \
+    core/gamemapbase.h \
+    core/gamemultimap.h
 
 FORMS += \
     mainwindow.ui

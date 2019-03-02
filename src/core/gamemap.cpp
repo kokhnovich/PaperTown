@@ -4,9 +4,9 @@ GameMap::GameMap(int size_n, int size_m) : map_(size_n, QVector<GameObject*>(siz
 {
 }
 
-GameObject* GameMap::at(int i, int j) const
+GameObject* GameMap::at(const Coordinate &pos) const
 {
-    return map_.at(i).at(j);
+    return map_.at(pos.x).at(pos.y);
 }
 
 void GameMap::clear()
@@ -17,8 +17,8 @@ void GameMap::clear()
 bool GameMap::canPlace(GameObject *object) const
 {
     for (const Coordinate& cell : object->cells()) {
-        if (map_[cell.x][cell.y] != nullptr) {
-            if (map_[cell.x][cell.y] != object) {
+        if (at(cell) != nullptr) {
+            if (at(cell) != object) {
                 return false;
             }
         }
@@ -28,41 +28,40 @@ bool GameMap::canPlace(GameObject *object) const
 
 void GameMap::add(GameObject* object)
 {
-    if (canPlace(object)) {
-        for (Coordinate& cell : object->cells()) {
-            map_[cell.x][cell.y] = object;
-        }
-    }
+    connect(object, SIGNAL(move(Coordinate,Coordinate)), this, SLOT(moved(Coordinate, Coordinate)));
+    internalAdd(object);
 }
 
-void GameMap::remove(int x, int y)
+void GameMap::remove(const Coordinate& pos)
 {
-    if (map_[x][y] != nullptr) {
-        remove(map_[x][y]);
+    if (map_[pos.x][pos.y] != nullptr) {
+        remove(map_[pos.x][pos.y]);
     }
 }
 
 
 void GameMap::remove(GameObject *object)
 {
+    disconnect(object, SIGNAL(move(Coordinate,Coordinate)), this, SLOT(moved(Coordinate, Coordinate)));
     for (const Coordinate& cell : object->cells()) {
         map_[cell.x][cell.y] = nullptr;
     }
 }
 
-void GameMap::removeOld(GameObject* object)
+void GameMap::moved(const Coordinate &oldPosition, const Coordinate &newPosition)
 {
-    for (auto& i : map_) {
-        for (auto& j : i) {
-            if (j == object) {
-                j = nullptr;
-            }
-        }
+    auto object = at(oldPosition);
+    auto res = object->cellsRelative();
+    for (const Coordinate &coord : res) {
+        map_[coord.x + oldPosition.x][coord.y + oldPosition.y] = nullptr;
     }
+    internalAdd(object);
 }
 
-void GameMap::moved(GameObject* object)
+void GameMap::internalAdd(GameObject *object)
 {
-    removeOld(object);
-    add(object);
+    if (!canPlace(object)) return;
+    for (const Coordinate& cell : object->cells()) {
+        map_[cell.x][cell.y] = object;
+    }
 }

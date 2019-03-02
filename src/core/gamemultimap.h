@@ -1,28 +1,27 @@
-#ifndef GAMEMAP_H
-#define GAMEMAP_H
+#ifndef GAMEMULTIMAP_H
+#define GAMEMULTIMAP_H
 
 #include <QObject>
 #include <QVector>
 #include "gameobjects.h"
+#include "gamelist.h"
 
-class GameMap : public QObject
+class GameMultimap : public QObject
 {
     Q_OBJECT
 public:
-    GameMap(int size_n, int size_m);
-    GameObject* at(const Coordinate& pos) const;
+    GameMultimap(int size_n, int size_m);
+    GameList& at(const Coordinate& pos);
     void clear();
     void add(GameObject* object);
-    void remove(const Coordinate& pos);
     void remove(GameObject* object);
-    bool canPlace(GameObject* object) const;
 
 public slots:
     void moved(const Coordinate &oldPosition, const Coordinate &newPosition);
 
 private:
     void internalAdd(GameObject* object);
-    QVector<QVector<GameObject*>> map_;
+    QVector<QVector<GameList>> map_;
 };
 
-#endif // GAMEMAP_H
+#endif // GAMEMULTIMAP_H
