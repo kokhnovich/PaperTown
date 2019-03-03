@@ -11,8 +11,9 @@ public:
     GameList();
     GameList(GameList&&) = default;
     bool empty() const;
-    void addObject(GameObject* object);
+    void add(GameObject* object);
     void remove(GameObject* object);
+    QVector<GameObject*> get() const;
 
 private:
     QVector<GameObject*> data_;

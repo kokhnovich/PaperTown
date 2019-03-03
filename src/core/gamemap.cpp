@@ -1,6 +1,6 @@
 #include "gamemap.h"
 
-GameMap::GameMap(int size_n, int size_m) : map_(size_n, QVector<GameObject*>(size_m, nullptr))
+GameMap::GameMap(QObject *parent, int size_n, int size_m) : map_(size_n, QVector<GameObject*>(size_m, nullptr))
 {
 }
 
@@ -9,18 +9,11 @@ GameObject* GameMap::at(const Coordinate &pos) const
     return map_.at(pos.x).at(pos.y);
 }
 
-void GameMap::clear()
-{
-    map_.clear();
-}
-
 bool GameMap::canPlace(GameObject *object) const
 {
     for (const Coordinate& cell : object->cells()) {
-        if (at(cell) != nullptr) {
-            if (at(cell) != object) {
+        if (at(cell) != nullptr && at(cell) != object) {
                 return false;
-            }
         }
     }
     return true;
@@ -31,14 +24,6 @@ void GameMap::add(GameObject* object)
     connect(object, SIGNAL(move(Coordinate,Coordinate)), this, SLOT(moved(Coordinate, Coordinate)));
     internalAdd(object);
 }
-
-void GameMap::remove(const Coordinate& pos)
-{
-    if (at(pos) != nullptr) {
-        remove(at(pos));
-    }
-}
-
 
 void GameMap::remove(GameObject *object)
 {
@@ -60,7 +45,7 @@ void GameMap::moved(const Coordinate &oldPosition, const Coordinate&)
 
 void GameMap::internalAdd(GameObject *object)
 {
-    if (!canPlace(object)) return;
+    Q_ASSERT(canPlace((object)));
     for (const Coordinate& cell : object->cells()) {
         map_[cell.x][cell.y] = object;
     }

@@ -11,8 +11,7 @@ class GameMultimap : public QObject
     Q_OBJECT
 public:
     GameMultimap(int size_n, int size_m);
-    GameList* at(const Coordinate& pos);
-    void clear();
+    GameList* at(const Coordinate& pos) const;
     void add(GameObject* object);
     void remove(GameObject* object);
 

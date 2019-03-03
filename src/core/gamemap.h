@@ -9,11 +9,9 @@ class GameMap : public QObject
 {
     Q_OBJECT
 public:
-    GameMap(int size_n, int size_m);
+    GameMap(QObject *parent = nullptr, int size_n = 1, int size_m = 1);
     GameObject* at(const Coordinate& pos) const;
-    void clear();
     void add(GameObject* object);
-    void remove(const Coordinate& pos);
     void remove(GameObject* object);
     bool canPlace(GameObject* object) const;
 
