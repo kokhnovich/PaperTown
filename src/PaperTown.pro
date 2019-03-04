@@ -28,17 +28,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++14
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp \
-        core/gameobjects.cpp \
-        core/gamelist.cpp \
+    main.cpp \
+    mainwindow.cpp \
+    core/gameobjects.cpp \
+    core/gamelist.cpp \
     core/gamemap.cpp \
     core/gamemultimap.cpp
 
 HEADERS += \
-        mainwindow.h \
-        core/gameobjects.h \
-        core/gamelist.h \
+    mainwindow.h \
+    core/gameobjects.h \
+    core/gamelist.h \
     core/gamemap.h \
     core/gamemultimap.h
 

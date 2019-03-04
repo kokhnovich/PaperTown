@@ -9,14 +9,14 @@ class GameList : public QObject
     Q_OBJECT
 public:
     GameList();
-    GameList(GameList&&) = default;
+    GameList(GameList &&) = default;
     bool empty() const;
-    void add(GameObject* object);
-    void remove(GameObject* object);
-    QVector<GameObject*> get() const;
+    void add(GameObject *object);
+    void remove(GameObject *object);
+    QVector<GameObject *> get() const;
 
 private:
-    QVector<GameObject*> data_;
+    QVector<GameObject *> data_;
 };
 
 #endif // GAMELIST_H
