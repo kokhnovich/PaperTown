@@ -58,8 +58,8 @@ public:
     QString name() const;
     virtual QString type() const = 0;
     Coordinate position() const;
-    virtual QVector<Coordinate> cellsRelative() const;
-    QVector<Coordinate> cells() const;
+    virtual const QVector<Coordinate> cellsRelative() const;
+    const QVector<Coordinate> cells() const;
     GameObjectProperty *property() const;
 
     int x() const;
