@@ -1,6 +1,6 @@
 #include "gamelist.h"
 
-GameList::GameList() {}
+GameList::GameList(QObject *parent) : QObject(parent) {}
 
 bool GameList::empty() const
 {
