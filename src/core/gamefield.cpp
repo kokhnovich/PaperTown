@@ -37,7 +37,7 @@ void GameField::remove(GameObject *object)
     }
 }
 
-bool GameField::moveObject(GameObject* object, const Coordinate& new_pos)
+bool GameField::move(GameObject* object, const Coordinate& new_pos)
 {
     return object->setPosition(new_pos);
 }

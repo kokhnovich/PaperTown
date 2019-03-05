@@ -9,8 +9,7 @@ struct Cell{
     GameObject* ground_object;
     GameObject* static_object;
     QVector<GameObject*> moving_object;
-    //GameList* moving_object;
-    Cell() : ground_object(nullptr), static_object(nullptr), moving_object() {}
+
     Cell(GameObject* ground_object_ = nullptr,
          GameObject* static_object_ = nullptr,
          QVector<GameObject*> moving_object_ = QVector<GameObject*>()) :
@@ -29,15 +28,15 @@ public:
     \
     void remove(GameObject* object);
 
-    bool moveObject(GameObject* object, const Coordinate& new_pos);
+    bool move(GameObject* object, const Coordinate& new_pos);
 
     GameList* get(const QString& type) const;
 
     Cell getCell(const Coordinate& pos) const;
 
 private:
-    GameMap* ground_map_; // for ground
-    GameMap* static_map_; // for buildings
+    GameMap* ground_map_;
+    GameMap* static_map_;
     GameMultimap* moving_map_;
 
     GameList* ground_list_;
