@@ -35,11 +35,25 @@ void GameField::remove(GameObject *object)
     } else {
         Q_ASSERT(0);
     }
+    delete object;
 }
 
 bool GameField::move(GameObject* object, const Coordinate& new_pos)
 {
     return object->setPosition(new_pos);
+}
+
+bool GameField::canPlace(GameObject *object) const
+{
+    if (object->type() == "ground") {
+        return ground_map_->canPlace(object);
+    } else if (object->type() == "static") {
+        return static_map_->canPlace(object);
+    } else if (object->type() == "moving") {
+        return moving_map_->canPlace(object);
+    } else {
+        Q_ASSERT(0);
+    }
 }
 
 GameList* GameField::get(const QString &type) const

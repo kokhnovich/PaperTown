@@ -28,6 +28,8 @@ public:
     \
     void remove(GameObject* object);
 
+    bool canPlace(GameObject* object) const;
+
     bool move(GameObject* object, const Coordinate& new_pos);
 
     GameList* get(const QString& type) const;
