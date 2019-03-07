@@ -1,8 +1,7 @@
 #include "gamefield.h"
 
-GameField::GameField(QObject *parent) : QObject(parent)
+GameField::GameField(QObject *parent) :  GameFieldBase()
 {
-
 }
 
 void GameField::add(GameObject *object)
@@ -50,7 +49,8 @@ bool GameField::canPlace(GameObject *object) const
     } else if (object->type() == "static") {
         return static_map_->canPlace(object);
     } else if (object->type() == "moving") {
-        return moving_map_->canPlace(object);
+        //return moving_map_->canPlace(object);
+        return true;
     } else {
         Q_ASSERT(0);
     }

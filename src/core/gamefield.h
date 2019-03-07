@@ -18,7 +18,7 @@ struct Cell{
         moving_object(moving_object_) {}
 };
 
-class GameField : public QObject
+class GameField : public GameFieldBase
 {
     Q_OBJECT
 public:
