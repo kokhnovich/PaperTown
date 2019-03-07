@@ -29,6 +29,12 @@ Coordinate operator-(Coordinate a, const Coordinate &b)
     return a -= b;
 }
 
+
+GameObjectRepository::GameObjectRepository(QObject *parent) : QObject(parent)
+{
+
+}
+
 void GameObjectRepository::addObject(const QString &type, const QString &name, const QVector<Coordinate> cells)
 {
     QString full = fullName(type, name);
@@ -156,4 +162,9 @@ QString MovingObject::type() const
 QString StaticObject::type() const
 {
     return "static";
+}
+
+GameFieldBase::GameFieldBase(QObject *parent) : QObject(parent)
+{
+
 }

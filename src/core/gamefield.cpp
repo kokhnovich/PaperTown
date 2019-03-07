@@ -1,6 +1,6 @@
 #include "gamefield.h"
 
-GameField::GameField(QObject *parent) :  GameFieldBase()
+GameField::GameField(QObject *parent) :  GameFieldBase(parent), repository_(new GameObjectRepository(this))
 {
 }
 
@@ -49,8 +49,7 @@ bool GameField::canPlace(GameObject *object) const
     } else if (object->type() == "static") {
         return static_map_->canPlace(object);
     } else if (object->type() == "moving") {
-        //return moving_map_->canPlace(object);
-        return true;
+        return static_map_->canPlace(object);
     } else {
         Q_ASSERT(0);
     }
@@ -74,4 +73,9 @@ Cell GameField::getCell(const Coordinate &pos) const
    return Cell(ground_map_->at(pos),
                static_map_->at(pos),
                moving_map_->at(pos)->get());
+}
+
+GameObjectRepository *GameField::repository() const
+{
+    return repository_;
 }

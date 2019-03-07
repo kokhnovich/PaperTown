@@ -30,11 +30,15 @@ public:
 
     bool canPlace(GameObject* object) const;
 
+    //bool canMoveObject(GameObject *object, const Coordinate &pos) const override;
+
     bool move(GameObject* object, const Coordinate& new_pos);
 
     GameList* get(const QString& type) const;
 
     Cell getCell(const Coordinate& pos) const;
+
+    GameObjectRepository* repository() const;
 
 private:
     GameMap* ground_map_;
@@ -44,6 +48,8 @@ private:
     GameList* ground_list_;
     GameList* static_list_;
     GameList* moving_list_;
+
+    GameObjectRepository *repository_;
 };
 
 #endif // GAMEFIELD_H
