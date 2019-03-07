@@ -1,6 +1,14 @@
 #include "gamefield.h"
 
-GameField::GameField(QObject *parent) :  GameFieldBase(parent), repository_(new GameObjectRepository(this))
+GameField::GameField(QObject *parent, int size_n, int size_m) :
+    GameFieldBase(parent),
+    repository_(new GameObjectRepository(this)),
+    ground_map_(new GameMap(this, size_n, size_m)),
+    static_map_(new GameMap(this, size_n, size_m)),
+    moving_map_(new GameMultimap(this, size_n, size_m)),
+    ground_list_(new GameList(this)),
+    static_list_(new GameList(this)),
+    moving_list_(new GameList(this))
 {
 }
 
@@ -53,6 +61,11 @@ bool GameField::canPlace(GameObject *object) const
     } else {
         Q_ASSERT(0);
     }
+}
+
+bool GameField::canMoveObject(GameObject *object, const Coordinate &pos) const
+{
+    return true;
 }
 
 GameList* GameField::get(const QString &type) const

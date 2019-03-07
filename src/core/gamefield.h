@@ -22,15 +22,15 @@ class GameField : public GameFieldBase
 {
     Q_OBJECT
 public:
-    explicit GameField(QObject *parent = nullptr);
+    GameField(QObject *parent = nullptr, int size_n = 1, int size_m = 1);
 
     void add(GameObject* object);
-    \
+
     void remove(GameObject* object);
 
     bool canPlace(GameObject* object) const;
 
-    //bool canMoveObject(GameObject *object, const Coordinate &pos) const override;
+    bool canMoveObject(GameObject *object, const Coordinate &pos) const override;
 
     bool move(GameObject* object, const Coordinate& new_pos);
 
