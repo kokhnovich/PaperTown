@@ -53,7 +53,7 @@ GameObject *GameObjectProperty::gameObject() const
     return qobject_cast<GameObject *>(parent());
 }
 
-QVector<Coordinate> GameObject::cells() const
+const QVector<Coordinate> GameObject::cells() const
 {
     auto res = cellsRelative();
     for (Coordinate &coord : res) {
@@ -62,7 +62,7 @@ QVector<Coordinate> GameObject::cells() const
     return res;
 }
 
-QVector<Coordinate> GameObject::cellsRelative() const
+const QVector<Coordinate> GameObject::cellsRelative() const
 {
     if (!field() || !field()->repository()) {
         return {};
