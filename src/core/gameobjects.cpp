@@ -29,10 +29,13 @@ Coordinate operator-(Coordinate a, const Coordinate &b)
     return a -= b;
 }
 
+bool inBounds(int height, int width, const Coordinate& coord)
+{
+    return 0 <= coord.x && coord.x < height && 0 <= coord.y && coord.y < width;
+}
 
 GameObjectRepository::GameObjectRepository(QObject *parent) : QObject(parent)
 {
-
 }
 
 void GameObjectRepository::addObject(const QString &type, const QString &name, const QVector<Coordinate> cells)
@@ -81,7 +84,7 @@ bool GameObject::canSetPosition(const Coordinate &pos)
     if (!field()) {
         return true;
     } else {
-        return field()->canMoveObject(this, pos);
+        return field()->canPlace(this, pos);
     }
 }
 
@@ -93,11 +96,14 @@ GameObject::GameObject(const QString &name, GameObjectProperty *property, GameFi
       field_(field),
       property_(property)
 {
-    connect(this, &GameObject::move, [ = ]() {
-        emit this->update();
+    connect(this, &GameObject::moved, [ = ]() {
+        emit this->updated();
+    });
+    connect(this, &GameObject::placed, [ = ]() {
+        emit this->updated();
     });
     if (property_) {
-        connect(this, SIGNAL(update()), property_, SIGNAL(update));
+        connect(this, SIGNAL(updated()), property_, SIGNAL(updated));
         property_->setParent(this);
     }
 }
@@ -114,6 +120,7 @@ QString GameObject::name() const
 
 Coordinate GameObject::position() const
 {
+    Q_ASSERT(active_);
     return position_;
 }
 
@@ -122,10 +129,15 @@ bool GameObject::setPosition(const Coordinate &pos)
     if (!canSetPosition(pos)) {
         return false;
     }
+    bool wasActive = active_;
     Coordinate oldPosition = position_;
     active_ = true;
     position_ = pos;
-    emit move(oldPosition, position_);
+    if (wasActive) {
+        emit moved(oldPosition, position_);
+    } else {
+        emit placed(position_);
+    }
     return true;
 }
 
@@ -166,5 +178,4 @@ QString StaticObject::type() const
 
 GameFieldBase::GameFieldBase(QObject *parent) : QObject(parent)
 {
-
 }

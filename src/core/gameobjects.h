@@ -16,6 +16,8 @@ Coordinate operator-(Coordinate a, const Coordinate &b);
 Coordinate &operator+=(Coordinate &a, const Coordinate &b);
 Coordinate &operator-=(Coordinate &a, const Coordinate &b);
 
+bool inBounds(int height, int width, const Coordinate &coord);
+
 class GameObject;
 
 class GameObjectRepository : public QObject
@@ -37,7 +39,7 @@ class GameFieldBase : public QObject
 public:
     GameFieldBase(QObject *parent);
     virtual GameObjectRepository *repository() const = 0;
-    virtual bool canMoveObject(GameObject *object, const Coordinate &pos) const = 0;
+    virtual bool canPlace(GameObject *object, const Coordinate &pos) const = 0;
 };
 
 class GameObjectProperty : public QObject
@@ -46,7 +48,7 @@ class GameObjectProperty : public QObject
 private:
     GameObject *gameObject() const;
 signals:
-    void update();
+    void updated();
 };
 
 class GameObject : public QObject
@@ -74,8 +76,9 @@ public:
     bool canSetPosition(const Coordinate &pos);
     bool setPosition(const Coordinate &pos);
 signals:
-    void move(const Coordinate &oldPosition, const Coordinate &newPosition);
-    void update();
+    void placed(const Coordinate &position);
+    void moved(const Coordinate &oldPosition, const Coordinate &newPosition);
+    void updated();
 private:
     QString name_;
     bool active_;

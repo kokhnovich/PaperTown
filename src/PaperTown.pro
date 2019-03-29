@@ -33,7 +33,6 @@ SOURCES += \
     core/gameobjects.cpp \
     core/gamelist.cpp \
     core/gamemap.cpp \
-    core/gamemultimap.cpp \
     core/gamefield.cpp
 
 HEADERS += \
@@ -41,20 +40,13 @@ HEADERS += \
     core/gameobjects.h \
     core/gamelist.h \
     core/gamemap.h \
-    core/gamemultimap.h \
     core/gamefield.h
 
 FORMS += \
     mainwindow.ui
 
-# DISTFILES += \
-#     cell3.png
-
 DISTFILES += \
-    img/cell1.jpg \
-    img/cell2.jpg \
-    img/cell.png \
-    img/cell3.png
+    img/cell.png
 
 SUBDIRS += \
     PaperTown.pros

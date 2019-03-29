@@ -50,25 +50,20 @@ bool GameField::move(GameObject* object, const Coordinate& new_pos)
     return object->setPosition(new_pos);
 }
 
-bool GameField::canPlace(GameObject *object) const
+bool GameField::canPlace(GameObject *object, const Coordinate &pos) const
 {
     if (object->type() == "ground") {
-        return ground_map_->canPlace(object);
+        return ground_map_->canPlace(object, pos);
     } else if (object->type() == "static") {
-        return static_map_->canPlace(object);
+        return static_map_->canPlace(object, pos);
     } else if (object->type() == "moving") {
-        return static_map_->canPlace(object);
+        return static_map_->canPlace(object, pos);
     } else {
         Q_ASSERT(0);
     }
 }
 
-bool GameField::canMoveObject(GameObject *object, const Coordinate &pos) const
-{
-    return true;
-}
-
-GameList* GameField::get(const QString &type) const
+GameList* GameField::getByType(const QString &type) const
 {
     if (type == "ground") {
         return ground_list_;
