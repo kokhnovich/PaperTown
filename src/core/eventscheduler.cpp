@@ -1,3 +1,4 @@
+#include <QDebug>
 #include "eventscheduler.h"
 
 void GameAbstractEvent::activate()

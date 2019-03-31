@@ -17,7 +17,7 @@ private:
     
     struct Compare {
         inline bool operator()(GameAbstractEvent *a, GameAbstractEvent *b) {
-            return a->time_point_ < b->time_point_;
+            return a->time_point_ > b->time_point_;
         }
     };
     

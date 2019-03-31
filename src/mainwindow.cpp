@@ -36,6 +36,7 @@ void MainWindow::newEvent()
 {
     ++event_count;
     scheduler.addEvent(new CustomEvent(this), 1000);
+    //scheduler.addEvent(new CustomEvent(this), 2000); // devastating :)
 }
 
 void MainWindow::on_debug_push_button_clicked()
