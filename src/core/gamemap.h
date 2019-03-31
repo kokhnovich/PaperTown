@@ -6,13 +6,17 @@
 #include "gameobjects.h"
 #include "gamelist.h"
 
-class GameAbstractMap : public QObject {
+class GameAbstractMap : public QObject
+{
     Q_OBJECT
 public:
-    explicit GameAbstractMap(QObject *parent = nullptr, int height = 1, int width = 1);
+    explicit GameAbstractMap(QObject *parent, int height, int width);
     void add(GameObject *object);
     void remove(GameObject *object);
     virtual bool canPlace(GameObject *object, const Coordinate &position) const;
+    virtual bool freeCell(const Coordinate &position) = 0;
+    virtual QVector<GameObject *> atPos(const Coordinate &position) = 0;
+    bool freePlace(GameObject *object, const Coordinate &position);
     int height() const;
     int width() const;
 protected slots:
@@ -30,9 +34,11 @@ class GameMap : public GameAbstractMap
 {
     Q_OBJECT
 public:
-    explicit GameMap(QObject *parent = nullptr, int height = 1, int width = 1);
+    explicit GameMap(QObject *parent, int height, int width);
     GameObject *at(const Coordinate &pos) const;
+    QVector<GameObject *> atPos(const Coordinate &position) override;
     bool canPlace(GameObject *object, const Coordinate &position) const override;
+    bool freeCell(const Coordinate &position) override;
 protected:
     void internalAdd(GameObject *object) override;
     void internalRemove(GameObject *object, const Coordinate &position) override;
@@ -44,8 +50,10 @@ class GameMultimap : public GameAbstractMap
 {
     Q_OBJECT
 public:
-    explicit GameMultimap(QObject *parent = nullptr, int height = 1, int width = 1);
+    explicit GameMultimap(QObject *parent, int height, int width);
     const GameList *at(const Coordinate &pos) const;
+    QVector<GameObject *> atPos(const Coordinate &position) override;
+    bool freeCell(const Coordinate &position) override;
 protected:
     GameList *atMut(const Coordinate &pos);
     void internalAdd(GameObject *object) override;

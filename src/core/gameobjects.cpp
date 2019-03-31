@@ -62,6 +62,16 @@ GameObject *GameObjectProperty::gameObject() const
     return qobject_cast<GameObject *>(parent());
 }
 
+void GameFieldBase::attach(GameObject* object)
+{
+    object->setField(this);
+}
+
+void GameFieldBase::detach(GameObject* object)
+{
+    object->setField(nullptr);
+}
+
 const QVector<Coordinate> GameObject::cells() const
 {
     auto res = cellsRelative();
@@ -88,12 +98,12 @@ bool GameObject::canSetPosition(const Coordinate &pos)
     }
 }
 
-GameObject::GameObject(const QString &name, GameObjectProperty *property, GameFieldBase *field)
+GameObject::GameObject(const QString &name, GameObjectProperty *property)
     : QObject(nullptr),
       name_(name),
       active_(false),
       position_(),
-      field_(field),
+      field_(nullptr),
       property_(property)
 {
     connect(this, &GameObject::moved, [ = ]() {
@@ -159,6 +169,12 @@ int GameObject::y() const
 GameFieldBase *GameObject::field() const
 {
     return field_;
+}
+
+void GameObject::setField(GameFieldBase* field)
+{
+    assert(field_ == nullptr || field == nullptr);
+    field_ = field;
 }
 
 QString GroundObject::type() const

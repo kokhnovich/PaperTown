@@ -1,11 +1,11 @@
 #include "gamefield.h"
 
-GameField::GameField(QObject *parent, int size_n, int size_m) :
+GameField::GameField(QObject *parent, int height, int width) :
     GameFieldBase(parent),
     repository_(new GameObjectRepository(this)),
-    ground_map_(new GameMap(this, size_n, size_m)),
-    static_map_(new GameMap(this, size_n, size_m)),
-    moving_map_(new GameMultimap(this, size_n, size_m)),
+    ground_map_(new GameMap(this, height, width)),
+    static_map_(new GameMap(this, height, width)),
+    moving_map_(new GameMultimap(this, height, width)),
     ground_list_(new GameList(this)),
     static_list_(new GameList(this)),
     moving_list_(new GameList(this))
@@ -14,6 +14,17 @@ GameField::GameField(QObject *parent, int size_n, int size_m) :
 
 void GameField::add(GameObject *object)
 {
+    attach(object);
+    connect(object, &GameObject::moved, [ = ](const Coordinate & oldPos, const Coordinate & pos) {
+        emit moved(qobject_cast<GameObject *>(sender()), oldPos, pos);
+    });
+    connect(object, &GameObject::placed, [ = ](const Coordinate & pos) {
+        emit placed(qobject_cast<GameObject *>(sender()), pos);
+    });
+    connect(object, &GameObject::updated, [ = ]() {
+        emit updated(qobject_cast<GameObject *>(sender()));
+    });
+
     if (object->type() == "ground") {
         ground_list_->add(object);
         ground_map_->add(object);
@@ -26,6 +37,8 @@ void GameField::add(GameObject *object)
     } else {
         Q_ASSERT(0);
     }
+
+    emit added(object);
 }
 
 void GameField::remove(GameObject *object)
@@ -42,45 +55,50 @@ void GameField::remove(GameObject *object)
     } else {
         Q_ASSERT(0);
     }
-    delete object;
-}
 
-bool GameField::move(GameObject* object, const Coordinate& new_pos)
-{
-    return object->setPosition(new_pos);
+    emit removed(object);
+    delete object;
 }
 
 bool GameField::canPlace(GameObject *object, const Coordinate &pos) const
 {
+    /* TODO : invent something better to check compatibility between object */
     if (object->type() == "ground") {
         return ground_map_->canPlace(object, pos);
-    } else if (object->type() == "static") {
-        return static_map_->canPlace(object, pos);
-    } else if (object->type() == "moving") {
-        return static_map_->canPlace(object, pos);
-    } else {
-        Q_ASSERT(0);
     }
+    if (object->type() == "static") {
+        return static_map_->canPlace(object, pos) ||
+            moving_map_->freePlace(object, pos);
+    } 
+    if (object->type() == "moving") {
+        return moving_map_->canPlace(object, pos) ||
+            static_map_->freePlace(object, pos);
+    }
+    Q_ASSERT(0);
+    return false;
 }
 
-GameList* GameField::getByType(const QString &type) const
+GameList *GameField::getByType(const QString &type) const
 {
     if (type == "ground") {
         return ground_list_;
-    } else if (type == "moving") {
-        return moving_list_;
-    } else if (type == "static") {
-        return static_list_;
-    } else {
-        Q_ASSERT(0);
     }
+    if (type == "moving") {
+        return moving_list_;
+    }
+    if (type == "static") {
+        return static_list_;
+    }
+    Q_ASSERT(0);
+    return nullptr;
 }
 
-Cell GameField::getCell(const Coordinate &pos) const
+QVector<GameObject *> GameField::getCell(const Coordinate &pos) const
 {
-   return Cell(ground_map_->at(pos),
-               static_map_->at(pos),
-               moving_map_->at(pos)->get());
+    auto result = ground_map_->atPos(pos);
+    result.append(static_map_->atPos(pos));
+    result.append(moving_map_->atPos(pos));
+    return result;
 }
 
 GameObjectRepository *GameField::repository() const

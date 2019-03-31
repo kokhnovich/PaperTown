@@ -5,32 +5,23 @@
 #include "gamemap.h"
 #include "gamelist.h"
 
-struct Cell {
-    GameObject *ground_obj;
-    GameObject *static_obj;
-    QVector<GameObject *> moving_obj;
-
-    Cell(GameObject *ground_obj = nullptr,
-         GameObject *static_obj = nullptr,
-         QVector<GameObject *> moving_obj = QVector<GameObject *>()) :
-        ground_obj(ground_obj),
-        static_obj(static_obj),
-        moving_obj(moving_obj) {}
-};
-
 class GameField : public GameFieldBase
 {
     Q_OBJECT
 public:
-    GameField(QObject *parent = nullptr, int size_n = 1, int size_m = 1);
+    GameField(QObject *parent, int height, int width);
     void add(GameObject *object);
     void remove(GameObject *object);
     bool canPlace(GameObject *object, const Coordinate &pos) const override;
-    bool move(GameObject *object, const Coordinate &new_pos);
     GameList *getByType(const QString &type) const;
-    Cell getCell(const Coordinate &pos) const;
+    QVector<GameObject *> getCell(const Coordinate &pos) const;
     GameObjectRepository *repository() const override;
-
+signals:
+    void added(GameObject *object);
+    void removed(GameObject *object);
+    void placed(GameObject *object, const Coordinate &pos);
+    void moved(GameObject *object, const Coordinate &oldPos, const Coordinate &newPos);
+    void updated(GameObject *object);
 private:
     GameObjectRepository *repository_;
 

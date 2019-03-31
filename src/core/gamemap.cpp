@@ -1,6 +1,6 @@
 #include "gamemap.h"
 
-void GameAbstractMap::add(GameObject* object)
+void GameAbstractMap::add(GameObject *object)
 {
     connect(object, SIGNAL(moved(Coordinate, Coordinate)), this, SLOT(moveObject(Coordinate, Coordinate)));
     connect(object, SIGNAL(placed(Coordinate)), this, SLOT(placeObject(Coordinate)));
@@ -9,7 +9,7 @@ void GameAbstractMap::add(GameObject* object)
     }
 }
 
-bool GameAbstractMap::canPlace(GameObject* object, const Coordinate& position) const
+bool GameAbstractMap::canPlace(GameObject *object, const Coordinate &position) const
 {
     for (const Coordinate &delta : object->cellsRelative()) {
         if (!inBounds(height_, width_, position + delta)) {
@@ -19,7 +19,17 @@ bool GameAbstractMap::canPlace(GameObject* object, const Coordinate& position) c
     return true;
 }
 
-GameAbstractMap::GameAbstractMap(QObject* parent, int height, int width)
+bool GameAbstractMap::freePlace(GameObject *object, const Coordinate &position)
+{
+    for (const Coordinate &delta : object->cellsRelative()) {
+        if (!freeCell(position + delta)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+GameAbstractMap::GameAbstractMap(QObject *parent, int height, int width)
     : QObject(parent), height_(height), width_(width)
 {
 }
@@ -34,19 +44,19 @@ int GameAbstractMap::width() const
     return width_;
 }
 
-void GameAbstractMap::moveObject(const Coordinate& oldPosition, const Coordinate&)
+void GameAbstractMap::moveObject(const Coordinate &oldPosition, const Coordinate &)
 {
     GameObject *object = qobject_cast<GameObject *>(sender());
     internalRemove(object, oldPosition);
     internalAdd(object);
 }
 
-void GameAbstractMap::placeObject(const Coordinate&)
+void GameAbstractMap::placeObject(const Coordinate &)
 {
     internalAdd(qobject_cast<GameObject *>(sender()));
 }
 
-void GameAbstractMap::remove(GameObject* object)
+void GameAbstractMap::remove(GameObject *object)
 {
     disconnect(object, SIGNAL(moved(Coordinate, Coordinate)), this, SLOT(moveObject(Coordinate, Coordinate)));
     disconnect(object, SIGNAL(placed(Coordinate)), this, SLOT(placeObject(Coordinate)));
@@ -93,6 +103,25 @@ void GameMap::internalRemove(GameObject *object, const Coordinate &position)
     }
 }
 
+bool GameMap::freeCell(const Coordinate &position)
+{
+    return map_[position.x][position.y] == nullptr;
+}
+
+QVector<GameObject *> GameMap::atPos(const Coordinate &position)
+{
+    if (map_[position.x][position.y] == nullptr) {
+        return {};
+    } else {
+        return {map_[position.x][position.y]};
+    }
+}
+
+QVector<GameObject *> GameMultimap::atPos(const Coordinate &position)
+{
+    return map_[position.x][position.y]->get();
+}
+
 const GameList *GameMultimap::at(const Coordinate &pos) const
 {
     return map_[pos.x][pos.y];
@@ -111,14 +140,19 @@ void GameMultimap::internalAdd(GameObject *object)
     }
 }
 
-void GameMultimap::internalRemove(GameObject* object, const Coordinate& position)
+void GameMultimap::internalRemove(GameObject *object, const Coordinate &position)
 {
     for (const Coordinate &delta : object->cellsRelative()) {
         atMut(position + delta)->remove(object);
     }
 }
 
-GameMultimap::GameMultimap(QObject* parent, int height, int width)
+bool GameMultimap::freeCell(const Coordinate &position)
+{
+    return map_[position.x][position.y]->empty();
+}
+
+GameMultimap::GameMultimap(QObject *parent, int height, int width)
     : GameAbstractMap(parent, height, width)
 {
 }
