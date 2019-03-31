@@ -24,7 +24,7 @@ class GameObjectRepository : public QObject
 {
     Q_OBJECT
 public:
-    explicit GameObjectRepository(QObject *parent);
+    explicit GameObjectRepository(QObject *parent = nullptr);
     void addObject(const QString &type, const QString &name, const QVector<Coordinate> cells);
     QVector<Coordinate> getCells(const QString &type, const QString &name) const;
 protected:
