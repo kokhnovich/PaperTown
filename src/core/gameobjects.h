@@ -24,7 +24,7 @@ class GameObjectRepository : public QObject
 {
     Q_OBJECT
 public:
-    GameObjectRepository(QObject *parent);
+    explicit GameObjectRepository(QObject *parent);
     void addObject(const QString &type, const QString &name, const QVector<Coordinate> cells);
     QVector<Coordinate> getCells(const QString &type, const QString &name) const;
 protected:
@@ -37,7 +37,7 @@ class GameFieldBase : public QObject
 {
     Q_OBJECT
 public:
-    GameFieldBase(QObject *parent);
+    explicit GameFieldBase(QObject *parent);
     virtual GameObjectRepository *repository() const = 0;
     virtual bool canPlace(GameObject *object, const Coordinate &pos) const = 0;
 };

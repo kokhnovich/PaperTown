@@ -9,7 +9,7 @@
 class GameAbstractMap : public QObject {
     Q_OBJECT
 public:
-    GameAbstractMap(QObject *parent = nullptr, int height = 1, int width = 1);
+    explicit GameAbstractMap(QObject *parent = nullptr, int height = 1, int width = 1);
     void add(GameObject *object);
     void remove(GameObject *object);
     virtual bool canPlace(GameObject *object, const Coordinate &position) const;
@@ -30,7 +30,7 @@ class GameMap : public GameAbstractMap
 {
     Q_OBJECT
 public:
-    GameMap(QObject *parent = nullptr, int height = 1, int width = 1);
+    explicit GameMap(QObject *parent = nullptr, int height = 1, int width = 1);
     GameObject *at(const Coordinate &pos) const;
     bool canPlace(GameObject *object, const Coordinate &position) const override;
 protected:
@@ -44,7 +44,7 @@ class GameMultimap : public GameAbstractMap
 {
     Q_OBJECT
 public:
-    GameMultimap(QObject *parent = nullptr, int height = 1, int width = 1);
+    explicit GameMultimap(QObject *parent = nullptr, int height = 1, int width = 1);
     const GameList *at(const Coordinate &pos) const;
 protected:
     GameList *atMut(const Coordinate &pos);
