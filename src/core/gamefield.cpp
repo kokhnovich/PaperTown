@@ -15,15 +15,16 @@ GameField::GameField(QObject *parent, int height, int width) :
 void GameField::add(GameObject *object)
 {
     attach(object);
-    connect(object, &GameObject::moved, [ = ](const Coordinate & oldPos, const Coordinate & pos) {
+    connect(object, &GameObject::moved, [ = ](const Coordinate &oldPos, const Coordinate &pos) {
         emit moved(qobject_cast<GameObject *>(sender()), oldPos, pos);
     });
-    connect(object, &GameObject::placed, [ = ](const Coordinate & pos) {
+    connect(object, &GameObject::placed, [ = ](const Coordinate  pos) {
         emit placed(qobject_cast<GameObject *>(sender()), pos);
     });
     connect(object, &GameObject::updated, [ = ]() {
         emit updated(qobject_cast<GameObject *>(sender()));
     });
+    object->setParent(this);
 
     if (object->type() == "ground") {
         ground_list_->add(object);

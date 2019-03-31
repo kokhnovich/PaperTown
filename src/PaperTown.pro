@@ -33,14 +33,16 @@ SOURCES += \
     core/gameobjects.cpp \
     core/gamelist.cpp \
     core/gamemap.cpp \
-    core/gamefield.cpp
+    core/gamefield.cpp \
+    core/eventscheduler.cpp
 
 HEADERS += \
     mainwindow.h \
     core/gameobjects.h \
     core/gamelist.h \
     core/gamemap.h \
-    core/gamefield.h
+    core/gamefield.h \
+    core/eventscheduler.h
 
 FORMS += \
     mainwindow.ui
