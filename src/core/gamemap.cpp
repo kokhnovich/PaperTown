@@ -1,3 +1,4 @@
+#include <QDebug>
 #include "gamemap.h"
 
 void GameAbstractMap::add(GameObject *object)
@@ -66,7 +67,7 @@ void GameAbstractMap::remove(GameObject *object)
 }
 
 GameMap::GameMap(QObject *parent, int height, int width) :
-    GameAbstractMap(parent, height, width)
+    GameAbstractMap(parent, height, width), map_(height, QVector<GameObject *>(width))
 {
 }
 
@@ -153,6 +154,11 @@ bool GameMultimap::freeCell(const Coordinate &position)
 }
 
 GameMultimap::GameMultimap(QObject *parent, int height, int width)
-    : GameAbstractMap(parent, height, width)
+    : GameAbstractMap(parent, height, width), map_(height, QVector<GameList *>(width))
 {
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            map_[i][j] = new GameList(this);
+        }
+    }
 }

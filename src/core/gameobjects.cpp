@@ -177,14 +177,29 @@ void GameObject::setField(GameFieldBase* field)
     field_ = field;
 }
 
+GroundObject::GroundObject(const QString &name, GameObjectProperty *property)
+    : GameObject(name, property)
+{
+}
+
 QString GroundObject::type() const
 {
     return "ground";
 }
 
+MovingObject::MovingObject(const QString &name, GameObjectProperty *property)
+    : GameObject(name, property)
+{
+}
+
 QString MovingObject::type() const
 {
     return "moving";
+}
+
+StaticObject::StaticObject(const QString &name, GameObjectProperty *property)
+    : GameObject(name, property)
+{
 }
 
 QString StaticObject::type() const

@@ -1,8 +1,8 @@
 #include "gamefield.h"
 
-GameField::GameField(QObject *parent, int height, int width) :
+GameField::GameField(QObject *parent, GameObjectRepository *repository, int height, int width) :
     GameFieldBase(parent),
-    repository_(new GameObjectRepository(this)),
+    repository_(repository),
     ground_map_(new GameMap(this, height, width)),
     static_map_(new GameMap(this, height, width)),
     moving_map_(new GameMultimap(this, height, width)),
@@ -12,7 +12,7 @@ GameField::GameField(QObject *parent, int height, int width) :
 {
 }
 
-void GameField::add(GameObject *object)
+GameObject *GameField::add(GameObject *object)
 {
     attach(object);
     connect(object, &GameObject::moved, [ = ](const Coordinate &oldPos, const Coordinate &pos) {
@@ -25,6 +25,8 @@ void GameField::add(GameObject *object)
         emit updated(qobject_cast<GameObject *>(sender()));
     });
     object->setParent(this);
+
+    Q_ASSERT(!object->active() || canPlace(object, object->position()));
 
     if (object->type() == "ground") {
         ground_list_->add(object);
@@ -40,6 +42,7 @@ void GameField::add(GameObject *object)
     }
 
     emit added(object);
+    return object;
 }
 
 void GameField::remove(GameObject *object)
@@ -68,11 +71,11 @@ bool GameField::canPlace(GameObject *object, const Coordinate &pos) const
         return ground_map_->canPlace(object, pos);
     }
     if (object->type() == "static") {
-        return static_map_->canPlace(object, pos) ||
+        return static_map_->canPlace(object, pos) &&
             moving_map_->freePlace(object, pos);
     } 
     if (object->type() == "moving") {
-        return moving_map_->canPlace(object, pos) ||
+        return moving_map_->canPlace(object, pos) &&
             static_map_->freePlace(object, pos);
     }
     Q_ASSERT(0);
