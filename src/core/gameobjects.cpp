@@ -29,6 +29,15 @@ Coordinate operator-(Coordinate a, const Coordinate &b)
     return a -= b;
 }
 
+bool inBounds(int height, int width, const Coordinate& coord)
+{
+    return 0 <= coord.x && coord.x < height && 0 <= coord.y && coord.y < width;
+}
+
+GameObjectRepository::GameObjectRepository(QObject *parent) : QObject(parent)
+{
+}
+
 void GameObjectRepository::addObject(const QString &type, const QString &name, const QVector<Coordinate> cells)
 {
     QString full = fullName(type, name);
@@ -53,6 +62,16 @@ GameObject *GameObjectProperty::gameObject() const
     return qobject_cast<GameObject *>(parent());
 }
 
+void GameFieldBase::attach(GameObject* object)
+{
+    object->setField(this);
+}
+
+void GameFieldBase::detach(GameObject* object)
+{
+    object->setField(nullptr);
+}
+
 const QVector<Coordinate> GameObject::cells() const
 {
     auto res = cellsRelative();
@@ -75,23 +94,26 @@ bool GameObject::canSetPosition(const Coordinate &pos)
     if (!field()) {
         return true;
     } else {
-        return field()->canMoveObject(this, pos);
+        return field()->canPlace(this, pos);
     }
 }
 
-GameObject::GameObject(const QString &name, GameObjectProperty *property, GameFieldBase *field)
+GameObject::GameObject(const QString &name, GameObjectProperty *property)
     : QObject(nullptr),
       name_(name),
       active_(false),
       position_(),
-      field_(field),
+      field_(nullptr),
       property_(property)
 {
-    connect(this, &GameObject::move, [ = ]() {
-        emit this->update();
+    connect(this, &GameObject::moved, [ = ]() {
+        emit this->updated();
+    });
+    connect(this, &GameObject::placed, [ = ]() {
+        emit this->updated();
     });
     if (property_) {
-        connect(this, SIGNAL(update()), property_, SIGNAL(update));
+        connect(this, SIGNAL(updated()), property_, SIGNAL(updated));
         property_->setParent(this);
     }
 }
@@ -108,6 +130,7 @@ QString GameObject::name() const
 
 Coordinate GameObject::position() const
 {
+    Q_ASSERT(active_);
     return position_;
 }
 
@@ -116,10 +139,15 @@ bool GameObject::setPosition(const Coordinate &pos)
     if (!canSetPosition(pos)) {
         return false;
     }
+    bool wasActive = active_;
     Coordinate oldPosition = position_;
     active_ = true;
     position_ = pos;
-    emit move(oldPosition, position_);
+    if (wasActive) {
+        emit moved(oldPosition, position_);
+    } else {
+        emit placed(position_);
+    }
     return true;
 }
 
@@ -143,9 +171,25 @@ GameFieldBase *GameObject::field() const
     return field_;
 }
 
+void GameObject::setField(GameFieldBase* field)
+{
+    assert(field_ == nullptr || field == nullptr);
+    field_ = field;
+}
+
+GroundObject::GroundObject(const QString &name, GameObjectProperty *property)
+    : GameObject(name, property)
+{
+}
+
 QString GroundObject::type() const
 {
     return "ground";
+}
+
+MovingObject::MovingObject(const QString &name, GameObjectProperty *property)
+    : GameObject(name, property)
+{
 }
 
 QString MovingObject::type() const
@@ -153,7 +197,16 @@ QString MovingObject::type() const
     return "moving";
 }
 
+StaticObject::StaticObject(const QString &name, GameObjectProperty *property)
+    : GameObject(name, property)
+{
+}
+
 QString StaticObject::type() const
 {
     return "static";
+}
+
+GameFieldBase::GameFieldBase(QObject *parent) : QObject(parent)
+{
 }

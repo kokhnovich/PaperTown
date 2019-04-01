@@ -8,8 +8,7 @@ class GameList : public QObject
 {
     Q_OBJECT
 public:
-    GameList();
-    GameList(GameList &&) = default;
+    GameList(QObject* parent = nullptr);
     bool empty() const;
     void add(GameObject *object);
     void remove(GameObject *object);

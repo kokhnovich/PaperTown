@@ -67,6 +67,20 @@
            </widget>
           </item>
           <item>
+           <widget class="QPushButton" name="activateBtn">
+            <property name="text">
+             <string>Activate</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="deactivateBtn">
+            <property name="text">
+             <string>Deactivate</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="debug_push_button">
             <property name="text">
              <string>reset_label</string>
