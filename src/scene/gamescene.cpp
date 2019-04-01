@@ -1,0 +1,63 @@
+#include <QDebug>
+#include "gamescene.h"
+
+GameScene::GameScene(QObject* parent)
+    : QGraphicsScene(parent)
+{
+    QRectF scene_rect(
+        0,
+        -SLOPE_HEIGHT * CELL_SIZE * FIELD_WIDTH,
+        SLOPE_WIDTH * CELL_SIZE * (FIELD_WIDTH + FIELD_HEIGHT),
+        SLOPE_HEIGHT * CELL_SIZE * (FIELD_WIDTH + FIELD_HEIGHT));
+
+    setSceneRect(scene_rect);
+    
+    QBrush light_brush(QPixmap(":/img/cell.png"));
+    QBrush dark_brush(QPixmap(":/img/cell-dark.png"));
+    setBackgroundBrush(dark_brush);
+    
+    QPolygonF poly({
+        QPointF(0, 0),
+        QPointF(SLOPE_WIDTH * CELL_SIZE * FIELD_WIDTH, -SLOPE_HEIGHT * CELL_SIZE * FIELD_WIDTH),
+        QPointF(SLOPE_WIDTH * CELL_SIZE * (FIELD_HEIGHT + FIELD_WIDTH), SLOPE_HEIGHT * CELL_SIZE * (FIELD_HEIGHT - FIELD_WIDTH)),
+        QPointF(SLOPE_WIDTH * CELL_SIZE * FIELD_HEIGHT, SLOPE_HEIGHT * CELL_SIZE * FIELD_HEIGHT)});
+    
+    QPen border_pen(QColor(255, 0, 0, 128));
+    border_pen.setWidth(6.0);
+    
+    addPolygon(poly, border_pen, light_brush);
+    
+    for (int i = 0; i < FIELD_HEIGHT; ++i) {
+        for (int j = 0; j < FIELD_WIDTH; ++j) {
+            QBrush brush(QColor(255.0 / FIELD_HEIGHT * i, 255.0 / FIELD_WIDTH * j, 0, 192));
+            addPolygon(coordinateToPoly({i, j}), QPen(Qt::PenStyle::NoPen), brush);
+        }
+    }
+}
+
+QPointF GameScene::coordinateToTopLeft(const Coordinate& c)
+{
+    return QPointF(SLOPE_WIDTH * CELL_SIZE * (c.x+c.y), SLOPE_HEIGHT * CELL_SIZE * (c.x-c.y-1));
+}
+
+
+QPolygonF GameScene::coordinateToPoly(const Coordinate& c)
+{
+    auto base_point = coordinateToTopLeft(c);
+    return QPolygonF({
+        base_point + QPointF(CELL_SIZE * SLOPE_WIDTH, 0),
+        base_point + QPointF(0, CELL_SIZE * SLOPE_HEIGHT),
+        base_point + QPointF(CELL_SIZE * SLOPE_WIDTH, 2 * CELL_SIZE * SLOPE_HEIGHT),
+        base_point + QPointF(2 * CELL_SIZE * SLOPE_WIDTH, CELL_SIZE * SLOPE_HEIGHT)
+    });
+}
+
+
+QRectF GameScene::coordinateToRect(const Coordinate& c)
+{
+    //return QRectF(
+    // TODO
+    //);
+}
+
+

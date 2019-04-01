@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>755</width>
-    <height>581</height>
+    <width>782</width>
+    <height>743</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -48,7 +48,7 @@
          <property name="maximumSize">
           <size>
            <width>16777215</width>
-           <height>632</height>
+           <height>16777215</height>
           </size>
          </property>
         </widget>
@@ -97,6 +97,8 @@
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="img.qrc"/>
+ </resources>
  <connections/>
 </ui>

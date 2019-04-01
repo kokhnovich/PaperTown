@@ -34,7 +34,8 @@ SOURCES += \
     core/gamelist.cpp \
     core/gamemap.cpp \
     core/gamefield.cpp \
-    core/eventscheduler.cpp
+    core/eventscheduler.cpp \
+    scene/gamescene.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -42,13 +43,15 @@ HEADERS += \
     core/gamelist.h \
     core/gamemap.h \
     core/gamefield.h \
-    core/eventscheduler.h
+    core/eventscheduler.h \
+    scene/gamescene.h
 
 FORMS += \
     mainwindow.ui
 
 DISTFILES += \
-    img/cell.png
+    img/cell.png \
+    img/cell-dark.png
 
 SUBDIRS += \
     PaperTown.pros

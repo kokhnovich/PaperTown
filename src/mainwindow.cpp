@@ -10,16 +10,11 @@ MainWindow::MainWindow(QWidget *parent) :
     timer()
 {
     ui->setupUi(this);
-    scene = new QGraphicsScene(this);
-
-    scene->setSceneRect(-500, -500, 500, 500);
-
-    QBrush brush(QPixmap(":/img/cell.png"));
-    scene->setBackgroundBrush(brush);
+    scene = new GameScene(this);
 
     ui->graphicsView->setScene(scene);
     ui->graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
-
+    
     scheduler.addEvent(new CustomEvent(this), 1000);
     timer.setInterval(40);
     timer.start();
