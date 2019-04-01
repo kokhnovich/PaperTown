@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QGraphicsPixmapItem>
 #include "gamescene.h"
 
 GameScene::GameScene(QObject* parent)
@@ -29,8 +30,18 @@ GameScene::GameScene(QObject* parent)
     
     for (int i = 0; i < FIELD_HEIGHT; ++i) {
         for (int j = 0; j < FIELD_WIDTH; ++j) {
-            QBrush brush(QColor(255.0 / FIELD_HEIGHT * i, 255.0 / FIELD_WIDTH * j, 0, 192));
+            QBrush brush(QColor(255.0 / FIELD_HEIGHT * i, 255.0 / FIELD_WIDTH * j, 0, 32));
             addPolygon(coordinateToPoly({i, j}), QPen(Qt::PenStyle::NoPen), brush);
+        }
+    }
+    
+    QPixmap tree1(":/img/tree1.png");
+    QPixmap tree2(":/img/tree2.png");
+    for (int i = 0; i < FIELD_HEIGHT; i += 2) {
+        for (int j = 0; j < FIELD_WIDTH; j += 2) {
+            QPixmap &tree = (qrand() & 1) ? tree1 : tree2;
+            auto item = addPixmap(tree);
+            item->setOffset(coordinateToTopLeft({i, j}) + QPointF(0, -tree.height() + CELL_SIZE * 3 * SLOPE_HEIGHT));
         }
     }
 }
@@ -55,9 +66,6 @@ QPolygonF GameScene::coordinateToPoly(const Coordinate& c)
 
 QRectF GameScene::coordinateToRect(const Coordinate& c)
 {
-    //return QRectF(
-    // TODO
-    //);
+    auto base_point = coordinateToTopLeft(c);
+    return QRectF(base_point, base_point + QPointF(2 * CELL_SIZE * SLOPE_WIDTH, 2 * CELL_SIZE * SLOPE_HEIGHT));
 }
-
-

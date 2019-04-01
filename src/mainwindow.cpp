@@ -1,7 +1,7 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
 #include <QGraphicsView>
 #include <QHBoxLayout>
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->graphicsView->setScene(scene);
     ui->graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
+    ui->graphicsView->scale(0.5, 0.5);
     
     scheduler.addEvent(new CustomEvent(this), 1000);
     timer.setInterval(40);

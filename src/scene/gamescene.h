@@ -6,8 +6,8 @@
 #include "../core/gamefield.h"
 
 const int CELL_SIZE = 25;
-const int FIELD_HEIGHT = 50;
-const int FIELD_WIDTH = 70;
+const int FIELD_HEIGHT = 42;
+const int FIELD_WIDTH = 42;
 const int SLOPE_HEIGHT = 1;
 const int SLOPE_WIDTH = 2;
 
