@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
+    <file>../img/cinema.png</file>
     <file>../img/tree1.png</file>
     <file>../img/tree2.png</file>
     <file>../img/cell-dark.png</file>

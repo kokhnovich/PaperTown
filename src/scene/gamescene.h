@@ -2,6 +2,9 @@
 #define GAMESCENE_H
 
 #include <QGraphicsScene>
+#include <QMap>
+#include <QPixmap>
+#include <QPointF>
 #include "../core/gameobjects.h"
 #include "../core/gamefield.h"
 
@@ -21,7 +24,8 @@ protected:
     QRectF coordinateToRect(const Coordinate &c);
     QPointF coordinateToTopLeft(const Coordinate &c);
 private:
-    
+    void setupField();
+    void initObjects();
 };
 
 #endif // GAMESCENE_H
