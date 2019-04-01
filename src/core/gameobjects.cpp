@@ -173,7 +173,7 @@ GameFieldBase *GameObject::field() const
 
 void GameObject::setField(GameFieldBase* field)
 {
-    assert(field_ == nullptr || field == nullptr);
+    Q_ASSERT(field_ == nullptr || field == nullptr);
     field_ = field;
 }
 
