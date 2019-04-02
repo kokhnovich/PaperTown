@@ -20,6 +20,7 @@ void GameTextureRepository::addTexture(const QString &name, const QPixmap &pixma
 {
     Q_ASSERT(!textures_.contains(name));
     QSharedPointer<GameTexture> ptr(new GameTexture {pixmap, offset});
+    Q_ASSERT(!ptr->pixmap.isNull());
     textures_[name] = ptr;
 }
 
