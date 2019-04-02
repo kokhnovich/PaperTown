@@ -10,8 +10,8 @@
 #include "gametextures.h"
 
 const int CELL_SIZE = 25;
-const int FIELD_HEIGHT = 42;
-const int FIELD_WIDTH = 42;
+const int FIELD_HEIGHT = 40;
+const int FIELD_WIDTH = 20;
 const int SLOPE_HEIGHT = 1;
 const int SLOPE_WIDTH = 2;
 

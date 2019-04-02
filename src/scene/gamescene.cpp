@@ -71,16 +71,24 @@ void GameScene::setupField()
         }
     }
 
-    for (int i = 0; i < FIELD_HEIGHT; i += 2) {
-        for (int j = 0; j < FIELD_WIDTH; j += 2) {
+    for (int i = 0; i < FIELD_HEIGHT; ++i) {
+        for (int j = 0; j < FIELD_WIDTH; ++j) {
             if (i % 20 == 10 && j % 20 == 10) {
-                textures_->drawTexture(this, "cinema", coordinateToTopLeft({i, j}));
+                textures_->drawTexture(this, "cinema.l1", coordinateToTopLeft({i, j}));
+                textures_->drawTexture(this, "cinema.l2", coordinateToTopLeft({i+1, j}));
+                continue;
+            }
+            if (i % 20 == 12 && j % 20 == 10) {
+                textures_->drawTexture(this, "cinema.l3", coordinateToTopLeft({i, j}));
+                textures_->drawTexture(this, "cinema.l4", coordinateToTopLeft({i+1, j}));
                 continue;
             }
             if (10 <= i % 20 && i % 20 < 14 && 10 <= j % 20 && j % 20 < 14) {
                 continue;
             }
-            textures_->drawTexture(this, (qrand() & 1) ? "tree1" : "tree2", coordinateToTopLeft({i, j}));
+            if (i % 2 == 1 && j % 2 == 1) {
+                textures_->drawTexture(this, (qrand() & 1) ? "tree1" : "tree2", coordinateToTopLeft({i, j}));
+            }
         }
     }
 }
