@@ -1,10 +1,12 @@
 #include <QDebug>
 #include <QGraphicsPixmapItem>
+#include <QGraphicsEffect>
 #include "gamescene.h"
 
 GameScene::GameScene(QObject *parent)
-    : QGraphicsScene(parent)
+    : QGraphicsScene(parent), textures_(new GameTextureRepository)
 {
+    textures_->loadFromFile(":/img/textures.json");
     initObjects();
     setupField();
 }
@@ -13,7 +15,6 @@ QPointF GameScene::coordinateToTopLeft(const Coordinate &c)
 {
     return QPointF(SLOPE_WIDTH * CELL_SIZE * (c.x + c.y), SLOPE_HEIGHT * CELL_SIZE * (c.x - c.y - 1));
 }
-
 
 QPolygonF GameScene::coordinateToPoly(const Coordinate &c)
 {
@@ -52,9 +53,9 @@ void GameScene::setupField()
 
     QPolygonF poly({
         QPointF(0, 0),
-        QPointF(SLOPE_WIDTH *CELL_SIZE * FIELD_WIDTH, -SLOPE_HEIGHT *CELL_SIZE * FIELD_WIDTH),
-        QPointF(SLOPE_WIDTH *CELL_SIZE * (FIELD_HEIGHT + FIELD_WIDTH), SLOPE_HEIGHT *CELL_SIZE * (FIELD_HEIGHT - FIELD_WIDTH)),
-        QPointF(SLOPE_WIDTH *CELL_SIZE * FIELD_HEIGHT, SLOPE_HEIGHT *CELL_SIZE * FIELD_HEIGHT)});
+        QPointF(SLOPE_WIDTH * CELL_SIZE * FIELD_WIDTH, -SLOPE_HEIGHT * CELL_SIZE * FIELD_WIDTH),
+        QPointF(SLOPE_WIDTH * CELL_SIZE * (FIELD_HEIGHT + FIELD_WIDTH), SLOPE_HEIGHT * CELL_SIZE * (FIELD_HEIGHT - FIELD_WIDTH)),
+        QPointF(SLOPE_WIDTH * CELL_SIZE * FIELD_HEIGHT, SLOPE_HEIGHT * CELL_SIZE * FIELD_HEIGHT)});
 
     QPen border_pen(QColor(255, 0, 0, 128));
     border_pen.setWidth(6.0);
@@ -70,23 +71,16 @@ void GameScene::setupField()
         }
     }
 
-    QPixmap tree1(":/img/tree1.png");
-    QPixmap tree2(":/img/tree2.png");
-    QPixmap house(":/img/cinema.png");
     for (int i = 0; i < FIELD_HEIGHT; i += 2) {
         for (int j = 0; j < FIELD_WIDTH; j += 2) {
             if (i % 20 == 10 && j % 20 == 10) {
-                auto item = addPixmap(house);
-                item->setOffset(coordinateToTopLeft({i, j}) - QPointF(0, CELL_SIZE * 11 * SLOPE_HEIGHT));
+                textures_->drawTexture(this, "cinema", coordinateToTopLeft({i, j}));
                 continue;
             }
             if (10 <= i % 20 && i % 20 < 14 && 10 <= j % 20 && j % 20 < 14) {
                 continue;
             }
-            
-            QPixmap &tree = (qrand() & 1) ? tree1 : tree2;
-            auto item = addPixmap(tree);
-            item->setOffset(coordinateToTopLeft({i, j}) + QPointF(0, -tree.height() + CELL_SIZE * 3 * SLOPE_HEIGHT));
+            textures_->drawTexture(this, (qrand() & 1) ? "tree1" : "tree2", coordinateToTopLeft({i, j}));
         }
     }
 }

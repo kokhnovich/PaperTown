@@ -35,7 +35,8 @@ SOURCES += \
     core/gamemap.cpp \
     core/gamefield.cpp \
     core/eventscheduler.cpp \
-    scene/gamescene.cpp
+    scene/gamescene.cpp \
+    scene/gametextures.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -44,7 +45,8 @@ HEADERS += \
     core/gamemap.h \
     core/gamefield.h \
     core/eventscheduler.h \
-    scene/gamescene.h
+    scene/gamescene.h \
+    scene/gametextures.h
 
 FORMS += \
     mainwindow.ui

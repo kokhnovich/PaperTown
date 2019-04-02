@@ -7,6 +7,7 @@
 #include <QPointF>
 #include "../core/gameobjects.h"
 #include "../core/gamefield.h"
+#include "gametextures.h"
 
 const int CELL_SIZE = 25;
 const int FIELD_HEIGHT = 42;
@@ -26,6 +27,8 @@ protected:
 private:
     void setupField();
     void initObjects();
+    
+    GameTextureRepository *textures_;
 };
 
 #endif // GAMESCENE_H
