@@ -9,23 +9,25 @@
 #include <QJsonDocument>
 #include <QGraphicsScene>
 #include <QSharedPointer>
+#include "../core/gameobjects.h"
 
 struct GameTexture {
     QPixmap pixmap;
     QPointF offset;
+    Coordinate z_offset;
 };
 
 class GameTextureRepository : public QObject
 {
     Q_OBJECT
 public:
-    void addTexture(const QString &name, const QPixmap &pixmap, const QPointF &offset);
-    void addTexture(const QString &name, const QPointF &offset);
-    QGraphicsPixmapItem *drawTexture(QGraphicsScene *scene, const QString &name, const QPointF &pos);
+    void addTexture(const QString &name, const QPixmap &pixmap, const QPointF &offset, const Coordinate &z_offset);
+    void addTexture(const QString &name, const QPointF &offset, const Coordinate &z_offset);
+    const GameTexture *getTexture(const QString &name) const;
     void loadFromJson(const QJsonDocument &document);
     void loadFromFile(const QString &file_name);
 private:
-    QMap<QString, QSharedPointer<GameTexture>> textures_;
+    QHash<QString, QSharedPointer<GameTexture>> textures_;
 };
 
 #endif // GAMETEXTURES_H

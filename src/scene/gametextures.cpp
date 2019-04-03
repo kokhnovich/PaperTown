@@ -6,27 +6,23 @@
 #include <QDebug>
 #include "gametextures.h"
 
-QGraphicsPixmapItem *GameTextureRepository::drawTexture(QGraphicsScene *scene, const QString &name, const QPointF &pos)
+const GameTexture *GameTextureRepository::getTexture(const QString &name) const
 {
-    Q_ASSERT(textures_.contains(name));
-    QSharedPointer<GameTexture> texture = textures_.value(name);
-    Q_CHECK_PTR(texture);
-    QGraphicsPixmapItem *item = scene->addPixmap(texture->pixmap);
-    item->setOffset(pos + texture->offset);
-    return item;
+    return textures_.value(name).data();
 }
 
-void GameTextureRepository::addTexture(const QString &name, const QPixmap &pixmap, const QPointF &offset)
+void GameTextureRepository::addTexture(const QString &name, const QPixmap &pixmap,
+        const QPointF &offset, const Coordinate &z_offset)
 {
     Q_ASSERT(!textures_.contains(name));
-    QSharedPointer<GameTexture> ptr(new GameTexture {pixmap, offset});
+    QSharedPointer<GameTexture> ptr(new GameTexture {pixmap, offset, z_offset});
     Q_ASSERT(!ptr->pixmap.isNull());
     textures_[name] = ptr;
 }
 
-void GameTextureRepository::addTexture(const QString &name, const QPointF &offset)
+void GameTextureRepository::addTexture(const QString &name, const QPointF &offset, const Coordinate &z_offset)
 {
-    addTexture(name, QPixmap(QString(":/img/%1.png").arg(name.data())), offset);
+    addTexture(name, QPixmap(QString(":/img/%1.png").arg(name.data())), offset, z_offset);
 }
 
 void GameTextureRepository::loadFromJson(const QJsonDocument &document)
@@ -35,10 +31,11 @@ void GameTextureRepository::loadFromJson(const QJsonDocument &document)
     auto root_object = document.object();
     for (auto it = root_object.begin(); it != root_object.end(); ++it) {
         QJsonObject obj = it->toObject();
-        Q_ASSERT(obj.contains("dx"));
-        Q_ASSERT(obj.contains("dy"));
-        QPointF offset(obj["dx"].toDouble(), obj["dy"].toDouble());
-        addTexture(it.key(), offset);
+        QJsonArray offset = obj.value("offset").toArray();
+        QJsonArray z_offset = obj.value("z-offset").toArray();
+        addTexture(it.key(),
+                   {offset.at(0).toDouble(), offset.at(1).toDouble()},
+                   {z_offset.at(0).toInt(), z_offset.at(1).toInt()});
     }
 }
 

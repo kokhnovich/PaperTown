@@ -1,16 +1,16 @@
 {
-    "tree1": {
-        "dx": 0,
-        "dy": -244
-    },
-    
-    "tree2": {
-        "dx": 0,
-        "dy": -245
-    },
-    
-    "cinema": {
-        "dx": 0,
-        "dy": -225
-    }
+	"tree1": {
+		"offset": [0, -244],
+		"z-offset": [0, 0]
+	},
+	
+	"tree2": {
+		"offset": [0, -245],
+		"z-offset": [0, 0]
+	},
+	
+	"cinema": {
+		"offset": [0, -225],
+		"z-offset": [0, 0]
+	}
 }

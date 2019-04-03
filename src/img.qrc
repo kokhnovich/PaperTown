@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
+    <file>../data/objects.json</file>
     <file>../img/textures.json</file>
     <file>../img/cinema.png</file>
     <file>../img/tree1.png</file>

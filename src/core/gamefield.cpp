@@ -1,6 +1,6 @@
 #include "gamefield.h"
 
-GameField::GameField(QObject *parent, GameObjectRepository *repository, int height, int width) :
+GameField::GameField(QObject *parent, GameObjectRepositoryBase *repository, int height, int width) :
     GameFieldBase(parent),
     repository_(repository),
     ground_map_(new GameMap(this, height, width)),
@@ -105,7 +105,7 @@ QVector<GameObject *> GameField::getCell(const Coordinate &pos) const
     return result;
 }
 
-GameObjectRepository *GameField::repository() const
+GameObjectRepositoryBase *GameField::repository() const
 {
     return repository_;
 }
