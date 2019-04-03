@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>PaperTown</string>
   </property>
+  <property name="windowIcon">
+   <iconset theme="user-home-symbolic"/>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">

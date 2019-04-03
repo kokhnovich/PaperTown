@@ -44,6 +44,7 @@ class GameObjectRenderer : public QObject
     Q_OBJECT
 public:
     GameObjectRenderer(RenderScene *scene, GameObjectRepository *repository);
+public slots:
     void addObject(GameObject *object);
     void removeObject(GameObject *object);
 protected:
