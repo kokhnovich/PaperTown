@@ -89,15 +89,15 @@ void GameScene::setupField()
 
     for (int i = 0; i < FIELD_HEIGHT; ++i) {
         for (int j = 0; j < FIELD_WIDTH; ++j) {
-            QBrush brush(QColor(255.0 / FIELD_HEIGHT * i, 255.0 / FIELD_WIDTH * j, 0, 128));
-            QPen pen(QColor(0, 0, 0, 192));
+            QBrush brush(QColor(255.0 / FIELD_HEIGHT * i, 255.0 / FIELD_WIDTH * j, 0, 0));
+            QPen pen(QColor(0, 0, 0, 64));
             pen.setWidth(1.0);
-            addPolygon(coordinateToPoly({i, j}), pen, brush);
+            //addPolygon(coordinateToPoly({i, j}), pen, brush);
         }
     }
 
-    for (int i = 0; i < FIELD_HEIGHT; i += 2) {
-        for (int j = 0; j < FIELD_WIDTH; j += 2) {
+    for (int i = 0; i < FIELD_HEIGHT; i ++) {
+        for (int j = 0; j < FIELD_WIDTH; j ++) {
             if (i % 20 == 10 && j % 20 == 10) {
                 drawTexture("cinema", {i, j});
                 continue;
@@ -105,7 +105,9 @@ void GameScene::setupField()
             if (10 <= i % 20 && i % 20 < 14 && 10 <= j % 20 && j % 20 < 14) {
                 continue;
             }
-            drawTexture((qrand() & 1) ? "tree1" : "tree2", {i, j});
+            if (i % 4 == 0 && j % 4 == 0) {
+                drawTexture((qrand() & 1) ? "tree1" : "tree2", {i, j});
+            }
         }
     }
 }
