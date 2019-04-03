@@ -33,6 +33,11 @@ QRectF GameScene::coordinateToRect(const Coordinate &c)
     return QRectF(base_point, base_point + QPointF(2 * CELL_SIZE * SLOPE_WIDTH, 2 * CELL_SIZE * SLOPE_HEIGHT));
 }
 
+qreal GameScene::zOrder(const Coordinate& c) const
+{
+    return FIELD_WIDTH - c.y;
+}
+
 void GameScene::initObjects()
 {
 }
@@ -74,13 +79,13 @@ void GameScene::setupField()
     for (int i = 0; i < FIELD_HEIGHT; i += 2) {
         for (int j = 0; j < FIELD_WIDTH; j += 2) {
             if (i % 20 == 10 && j % 20 == 10) {
-                textures_->drawTexture(this, "cinema", coordinateToTopLeft({i, j}));
+                textures_->drawTexture(this, "cinema", coordinateToTopLeft({i, j}))->setZValue(zOrder({i, j}));
                 continue;
             }
             if (10 <= i % 20 && i % 20 < 14 && 10 <= j % 20 && j % 20 < 14) {
                 continue;
             }
-            textures_->drawTexture(this, (qrand() & 1) ? "tree1" : "tree2", coordinateToTopLeft({i, j}));
+            textures_->drawTexture(this, (qrand() & 1) ? "tree1" : "tree2", coordinateToTopLeft({i, j}))->setZValue(zOrder({i, j}));
         }
     }
 }

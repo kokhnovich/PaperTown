@@ -24,6 +24,7 @@ protected:
     QPolygonF coordinateToPoly(const Coordinate &c);
     QRectF coordinateToRect(const Coordinate &c);
     QPointF coordinateToTopLeft(const Coordinate &c);
+    qreal zOrder(const Coordinate &c) const;
 private:
     void setupField();
     void initObjects();
