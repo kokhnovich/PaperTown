@@ -14,7 +14,7 @@ void GameObjectRenderer::addObject(GameObject *object)
 void GameObjectRenderer::putObject(GameObject *object)
 {
     auto info = repository_->getRenderInfo(object);
-    for (QString texture_name : info->textures) {
+    for (const QString &texture_name : info->textures) {
         objects_.insert(object, {
             texture_name,
             scene_->drawTexture(texture_name, object->position(), info->priority),
@@ -31,8 +31,11 @@ void GameObjectRenderer::destroyObject()
 void GameObjectRenderer::moveObject(const Coordinate &, const Coordinate &newPosition)
 {
     GameObject *object = qobject_cast<GameObject *>(sender());
-    for (const auto &info : objects_.values(object)) {
+    auto it = objects_.find(object);
+    while (it != objects_.end() && it.key() == object) {
+        const auto &info = it.value();
         scene_->moveTexture(info.item, info.name, newPosition);
+        ++it;
     }
 }
 
@@ -57,9 +60,12 @@ GameObjectRenderer::GameObjectRenderer(RenderScene *scene, GameObjectRepository 
 void GameObjectRenderer::unputObject(GameObject *object)
 {
     Q_ASSERT(objects_.contains(object));
-    for (const auto &info : objects_.values(object)) {
+    auto it = objects_.find(object);
+    while (it != objects_.end() && it.key() == object) {
+        const auto &info = it.value();
         scene_->removeItem(info.item);
         delete info.item;
+        ++it;
     }
     objects_.remove(object);
 }

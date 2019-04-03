@@ -89,9 +89,9 @@ void GameScene::setupField()
 
     for (int i = 0; i < FIELD_HEIGHT; ++i) {
         for (int j = 0; j < FIELD_WIDTH; ++j) {
-            QBrush brush(QColor(255.0 / FIELD_HEIGHT * i, 255.0 / FIELD_WIDTH * j, 0, 0));
-            QPen pen(QColor(0, 0, 0, 64));
-            pen.setWidth(1.0);
+            //QBrush brush(QColor(255.0 / FIELD_HEIGHT * i, 255.0 / FIELD_WIDTH * j, 0, 0));
+            //QPen pen(QColor(0, 0, 0, 64));
+            //pen.setWidth(1.0);
             //addPolygon(coordinateToPoly({i, j}), pen, brush);
         }
     }
