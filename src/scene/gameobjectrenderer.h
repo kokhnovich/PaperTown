@@ -6,7 +6,6 @@
 #include <QGraphicsItem>
 #include <QHash>
 #include <QSharedPointer>
-#include <QGraphicsBlurEffect>
 #include "../core/gameobjects.h"
 #include "gametextures.h"
 

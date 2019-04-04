@@ -2,7 +2,6 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QtDebug>
-#include <QGraphicsBlurEffect>
 #include "gameobjectrenderer.h"
 
 void GameObjectRenderer::changeObjectSelectionState(GameObject* object, bool selected)
