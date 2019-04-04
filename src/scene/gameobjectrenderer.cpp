@@ -2,22 +2,54 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QtDebug>
+#include <QGraphicsBlurEffect>
 #include "gameobjectrenderer.h"
+
+void GameObjectRenderer::changeObjectSelectionState(GameObject* object, bool selected)
+{
+    iterateTextures(object, [=](const TextureInfo &info) {
+        info.item->setOpacity(selected ? 0.75 : 1.0);
+    });
+}
+
+void GameObjectRenderer::selectionMoved(const Coordinate&, const Coordinate& newPosition)
+{
+    // TODO
+}
+
+void GameObjectRenderer::selectObject()
+{
+    GameObject *object = qobject_cast<GameObject *>(sender());
+    changeObjectSelectionState(object, true);
+    // TODO
+}
+
+void GameObjectRenderer::unselectObject()
+{
+    GameObject *object = qobject_cast<GameObject *>(sender());
+    changeObjectSelectionState(object, false);
+    // TODO
+}
 
 void GameObjectRenderer::addObject(GameObject *object)
 {
     connect(object, &GameObject::placed, this, &GameObjectRenderer::placeObject);
     connect(object, &GameObject::moved, this, &GameObjectRenderer::moveObject);
     connect(object, &GameObject::updated, this, &GameObjectRenderer::updateObject);
+    connect(object, &GameObject::selected, this, &GameObjectRenderer::selectObject);
+    connect(object, &GameObject::unselected, this, &GameObjectRenderer::unselectObject);
+    connect(object, &GameObject::selectMoved, this, &GameObjectRenderer::selectionMoved);
 }
 
 void GameObjectRenderer::putObject(GameObject *object)
 {
     auto info = repository_->getRenderInfo(object);
     for (const QString &texture_name : info->textures) {
+        QGraphicsItem *item = scene_->drawTexture(texture_name, object->position(), info->priority);
+        item->setData(DATA_KEY_GAMEOBJECT, QVariant::fromValue(object));
         objects_.insert(object, {
             texture_name,
-            scene_->drawTexture(texture_name, object->position(), info->priority),
+            item,
             info->priority
         });
     }
@@ -26,12 +58,9 @@ void GameObjectRenderer::putObject(GameObject *object)
 void GameObjectRenderer::moveObject(const Coordinate &, const Coordinate &newPosition)
 {
     GameObject *object = qobject_cast<GameObject *>(sender());
-    auto it = objects_.find(object);
-    while (it != objects_.end() && it.key() == object) {
-        const auto &info = it.value();
+    iterateTextures(object, [=](const TextureInfo &info) {
         scene_->moveTexture(info.item, info.name, newPosition);
-        ++it;
-    }
+    });
 }
 
 void GameObjectRenderer::placeObject(const Coordinate &)
@@ -55,13 +84,10 @@ GameObjectRenderer::GameObjectRenderer(RenderScene *scene, GameObjectRepository 
 void GameObjectRenderer::unputObject(GameObject *object)
 {
     Q_ASSERT(objects_.contains(object));
-    auto it = objects_.find(object);
-    while (it != objects_.end() && it.key() == object) {
-        const auto &info = it.value();
+    iterateTextures(object, [&](const TextureInfo &info) {
         scene_->removeItem(info.item);
         delete info.item;
-        ++it;
-    }
+    });
     objects_.remove(object);
 }
 
@@ -70,6 +96,9 @@ void GameObjectRenderer::removeObject(GameObject *object)
     disconnect(object, &GameObject::placed, this, &GameObjectRenderer::placeObject);
     disconnect(object, &GameObject::moved, this, &GameObjectRenderer::moveObject);
     disconnect(object, &GameObject::updated, this, &GameObjectRenderer::updateObject);
+    disconnect(object, &GameObject::selected, this, &GameObjectRenderer::selectObject);
+    disconnect(object, &GameObject::unselected, this, &GameObjectRenderer::unselectObject);
+    disconnect(object, &GameObject::selectMoved, this, &GameObjectRenderer::selectionMoved);
 
     if (objects_.contains(object)) {
         unputObject(object);

@@ -8,8 +8,19 @@ GameField::GameField(QObject *parent, GameObjectRepositoryBase *repository, int 
     moving_map_(new GameMultimap(this, height, width)),
     ground_list_(new GameList(this)),
     static_list_(new GameList(this)),
-    moving_list_(new GameList(this))
+    moving_list_(new GameList(this)),
+    selection_(nullptr)
 {
+}
+
+int GameField::height() const
+{
+    return static_map_->height();
+}
+
+int GameField::width() const
+{
+    return static_map_->width();
 }
 
 GameObject *GameField::add(GameObject *object)

@@ -17,6 +17,8 @@ public:
     QVector<GameObject *> getCell(const Coordinate &pos) const;
     GameObjectRepositoryBase *repository() const override;
     GameObject *selection() const;
+    int height() const;
+    int width() const;
 signals:
     void added(GameObject *object);
     void removed(GameObject *object);

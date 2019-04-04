@@ -30,8 +30,15 @@ private slots:
 
     void timerTimeout();
 private:
+    void initObjects();
+    
     Ui::MainWindow *ui;
+    
+    GameObjectRepository *repository_;
+    GameField *field_;
+    GameTextureRepository *textures_;
     GameScene *scene;
+    
     GameEventScheduler scheduler;
     QTimer timer;
     int event_count = 0;

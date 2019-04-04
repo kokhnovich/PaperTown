@@ -6,8 +6,11 @@
 #include <QGraphicsItem>
 #include <QHash>
 #include <QSharedPointer>
+#include <QGraphicsBlurEffect>
 #include "../core/gameobjects.h"
 #include "gametextures.h"
+
+const int DATA_KEY_GAMEOBJECT = 42;
 
 class RenderScene : public QGraphicsScene
 {
@@ -50,20 +53,34 @@ public slots:
 protected:
     void putObject(GameObject *object);
     void unputObject(GameObject *object);
+    void changeObjectSelectionState(GameObject *object, bool selected);
 protected slots:
     void placeObject(const Coordinate &);
     void moveObject(const Coordinate &, const Coordinate &newPosition);
     void updateObject();
+    void selectObject();
+    void selectionMoved(const Coordinate &, const Coordinate &newPosition);
+    void unselectObject();
 private:
-    struct TextureInto {
+    struct TextureInfo {
         QString name;
         QGraphicsItem *item;
         qreal priority;
     };
 
+    template<typename T>
+    void iterateTextures(GameObject *object, const T &func)
+    {
+        auto it = objects_.find(object);
+        while (it != objects_.end() && it.key() == object) {
+            func(it.value());
+            ++it;
+        }
+    }
+
     RenderScene *scene_;
     GameObjectRepository *repository_;
-    QMultiHash<GameObject *, TextureInto> objects_;
+    QMultiHash<GameObject *, TextureInfo> objects_;
 };
 
 #endif // GAMEOBJECTRENDERER_H
