@@ -12,16 +12,22 @@ public:
     GameField(QObject *parent, GameObjectRepositoryBase *repository, int height, int width);
     GameObject *add(GameObject *object);
     void remove(GameObject *object);
-    bool canPlace(GameObject *object, const Coordinate &pos) const override;
+    bool canPlace(const GameObject *object, const Coordinate &pos) const override;
     GameList *getByType(const QString &type) const;
     QVector<GameObject *> getCell(const Coordinate &pos) const;
     GameObjectRepositoryBase *repository() const override;
+    GameObject *selection() const;
 signals:
     void added(GameObject *object);
     void removed(GameObject *object);
     void placed(GameObject *object, const Coordinate &pos);
     void moved(GameObject *object, const Coordinate &oldPos, const Coordinate &newPos);
     void updated(GameObject *object);
+    void selected(GameObject *object);
+    void unselected(GameObject *object);
+protected slots:
+    void objectSelecting();
+    void objectUnselected();
 private:
     GameObjectRepositoryBase *repository_;
 
@@ -32,6 +38,8 @@ private:
     GameList *ground_list_;
     GameList *static_list_;
     GameList *moving_list_;
+    
+    GameObject *selection_;
 };
 
 #endif // GAMEFIELD_H

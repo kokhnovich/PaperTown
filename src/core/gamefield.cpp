@@ -18,12 +18,17 @@ GameObject *GameField::add(GameObject *object)
     connect(object, &GameObject::moved, this, [ = ](const Coordinate &oldPos, const Coordinate &pos) {
         emit moved(qobject_cast<GameObject *>(sender()), oldPos, pos);
     });
-    connect(object, &GameObject::placed, this, [ = ](const Coordinate  pos) {
+    connect(object, &GameObject::placed, this, [ = ](const Coordinate &pos) {
         emit placed(qobject_cast<GameObject *>(sender()), pos);
     });
     connect(object, &GameObject::updated, this, [ = ]() {
         emit updated(qobject_cast<GameObject *>(sender()));
+    });    
+    connect(object, &GameObject::selecting, this, &GameField::objectSelecting);
+    connect(object, &GameObject::selected, this, [ = ]() {
+        emit selected(qobject_cast<GameObject *>(sender()));
     });
+    connect(object, &GameObject::unselected, this, &GameField::objectUnselected);
     object->setParent(this);
 
     Q_ASSERT(!object->active() || canPlace(object, object->position()));
@@ -59,12 +64,15 @@ void GameField::remove(GameObject *object)
     } else {
         Q_ASSERT(0);
     }
+    if (object->isSelected()) {
+        object->unselect();
+    }
 
     emit removed(object);
     delete object;
 }
 
-bool GameField::canPlace(GameObject *object, const Coordinate &pos) const
+bool GameField::canPlace(const GameObject *object, const Coordinate &pos) const
 {
     /* TODO : invent something better to check compatibility between object */
     if (object->type() == "ground") {
@@ -72,14 +80,35 @@ bool GameField::canPlace(GameObject *object, const Coordinate &pos) const
     }
     if (object->type() == "static") {
         return static_map_->canPlace(object, pos) &&
-            moving_map_->freePlace(object, pos);
-    } 
+               moving_map_->freePlace(object, pos);
+    }
     if (object->type() == "moving") {
         return moving_map_->canPlace(object, pos) &&
-            static_map_->freePlace(object, pos);
+               static_map_->freePlace(object, pos);
     }
     Q_ASSERT(0);
     return false;
+}
+
+GameObject *GameField::selection() const
+{
+    return selection_;
+}
+
+void GameField::objectSelecting()
+{
+    GameObject *object = qobject_cast<GameObject *>(sender());
+    if (selection_ != nullptr) {
+        selection_->unselect();
+    }
+    selection_ = object;
+}
+
+void GameField::objectUnselected()
+{
+    GameObject *object = qobject_cast<GameObject *>(sender());
+    selection_ = nullptr;
+    emit unselected(object);
 }
 
 GameList *GameField::getByType(const QString &type) const

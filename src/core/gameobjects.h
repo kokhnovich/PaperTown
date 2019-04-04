@@ -39,7 +39,7 @@ class GameFieldBase : public QObject
 public:
     explicit GameFieldBase(QObject *parent);
     virtual GameObjectRepositoryBase *repository() const = 0;
-    virtual bool canPlace(GameObject *object, const Coordinate &pos) const = 0;
+    virtual bool canPlace(const GameObject *object, const Coordinate &pos) const = 0;
 protected:
     void attach(GameObject *object);
     void detach(GameObject *object);
@@ -73,23 +73,39 @@ public:
     int y() const;
 
     bool active() const;
+    bool isSelected() const;
+    
+    virtual bool canSelect() const;
+    void select();
+    void unselect();
 
+    Coordinate selectPosition() const;
+    void setSelectPosition(const Coordinate &c);
+    bool canApplySelectPosition() const;
+    bool applySelectPosition();
+    
     GameFieldBase *field() const;
 
-    bool canSetPosition(const Coordinate &pos);
+    bool canSetPosition(const Coordinate &pos) const;
     bool setPosition(const Coordinate &pos);
     
     friend class GameFieldBase;
 signals:
     void placed(const Coordinate &position);
     void moved(const Coordinate &oldPosition, const Coordinate &newPosition);
+    void selectMoved(const Coordinate &oldPosition, const Coordinate &newPosition);
     void updated();
+    void selecting();
+    void selected();
+    void unselected();
 private:
     void setField(GameFieldBase *field);
     
     QString name_;
     bool active_;
+    bool is_selected_;
     Coordinate position_;
+    Coordinate select_position_;
     GameFieldBase *field_;
     GameObjectProperty *property_;
 };

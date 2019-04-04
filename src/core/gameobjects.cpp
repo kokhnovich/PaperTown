@@ -90,7 +90,7 @@ const QVector<Coordinate> GameObject::cellsRelative() const
     return field()->repository()->getCells(type(), name());
 }
 
-bool GameObject::canSetPosition(const Coordinate &pos)
+bool GameObject::canSetPosition(const Coordinate &pos) const
 {
     if (!field()) {
         return true;
@@ -103,7 +103,9 @@ GameObject::GameObject(const QString &name, GameObjectProperty *property)
     : QObject(nullptr),
       name_(name),
       active_(false),
+      is_selected_(false),
       position_(),
+      select_position_(),
       field_(nullptr),
       property_(property)
 {
@@ -111,6 +113,58 @@ GameObject::GameObject(const QString &name, GameObjectProperty *property)
         connect(this, SIGNAL(updated()), property_, SIGNAL(updated));
         property_->setParent(this);
     }
+}
+
+bool GameObject::applySelectPosition()
+{
+    Q_ASSERT(is_selected_);
+    return setPosition(select_position_);
+}
+
+bool GameObject::canApplySelectPosition() const
+{
+    Q_ASSERT(is_selected_);
+    return canSetPosition(select_position_);
+}
+
+bool GameObject::canSelect() const
+{
+    return true;
+}
+
+void GameObject::select()
+{
+    Q_ASSERT(!is_selected_);
+    emit selecting();
+    is_selected_ = true;
+    select_position_ = position_;
+    emit selected();
+}
+
+bool GameObject::isSelected() const
+{
+    return is_selected_;
+}
+
+Coordinate GameObject::selectPosition() const
+{
+    Q_ASSERT(is_selected_);
+    return select_position_;
+}
+
+void GameObject::setSelectPosition(const Coordinate& c)
+{
+    Q_ASSERT(is_selected_);
+    Coordinate old_position = select_position_;
+    select_position_ = c;
+    emit selectMoved(old_position, select_position_);
+}
+
+void GameObject::unselect()
+{
+    Q_ASSERT(is_selected_);
+    is_selected_ = false;
+    emit unselected();
 }
 
 GameObjectProperty *GameObject::property() const
@@ -133,6 +187,9 @@ bool GameObject::setPosition(const Coordinate &pos)
 {
     if (!canSetPosition(pos)) {
         return false;
+    }
+    if (is_selected_) {
+        unselect();
     }
     bool wasActive = active_;
     Coordinate oldPosition = position_;
