@@ -8,17 +8,29 @@
 #include <QSharedPointer>
 #include "../core/gameobjects.h"
 #include "gametextures.h"
+#include "gamescenegeometry.h"
 
 const int DATA_KEY_GAMEOBJECT = 42;
 
-class RenderScene : public QGraphicsScene
+class GameTextureRenderer : public QObject
 {
     Q_OBJECT
 public:
-    virtual QGraphicsItem *drawTexture(const QString &name, const Coordinate &c, qreal priority = 0.0) = 0;
-    virtual QGraphicsItem *moveTexture(QGraphicsItem *item, const QString &name,
-                                       const Coordinate &c, qreal priority = 0.0) = 0;
-    RenderScene(QObject *parent = nullptr) : QGraphicsScene(parent) {}
+    GameTextureRenderer(QObject *parent, GameSceneGeometry *geometry,
+                         GameTextureRepository *repository, QGraphicsScene *scene);
+
+    QGraphicsItem *drawTexture(const QString &name, const Coordinate &c, qreal priority = 0.0);
+    QGraphicsItem *moveTexture(QGraphicsItem *item, const QString &name,
+                               const Coordinate &c, qreal priority = 0.0);
+    void setupScene();
+    
+    QGraphicsScene *scene();
+protected:
+    qreal zOrder(const Coordinate &c, qreal priority = 0.0) const;
+private:
+    GameSceneGeometry *geometry_;
+    GameTextureRepository *textures_;
+    QGraphicsScene *scene_;
 };
 
 class GameObjectRepository : public GameObjectRepositoryBase
@@ -41,11 +53,11 @@ private:
     QHash<QString, qreal> type_priorities_;
 };
 
-class GameObjectRenderer : public QObject
+class GameFieldView : public QObject
 {
     Q_OBJECT
 public:
-    GameObjectRenderer(RenderScene *scene, GameObjectRepository *repository);
+    GameFieldView(QObject *parent, GameTextureRenderer *renderer, GameObjectRepository *repository);
 public slots:
     void addObject(GameObject *object);
     void removeObject(GameObject *object);
@@ -77,7 +89,8 @@ private:
         }
     }
 
-    RenderScene *scene_;
+    GameTextureRenderer *renderer_;
+    QGraphicsScene *scene_;
     GameObjectRepository *repository_;
     QMultiHash<GameObject *, TextureInfo> objects_;
 };

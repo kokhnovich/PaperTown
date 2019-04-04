@@ -37,7 +37,7 @@ SOURCES += \
     core/eventscheduler.cpp \
     scene/gamescene.cpp \
     scene/gametextures.cpp \
-    scene/gamefieldrenderer.cpp \
+    scene/gamefieldviews.cpp \
     scene/gamescenegeometry.cpp
 
 HEADERS += \
@@ -49,7 +49,7 @@ HEADERS += \
     core/eventscheduler.h \
     scene/gamescene.h \
     scene/gametextures.h \
-    scene/gamefieldrenderer.h \
+    scene/gamefieldviews.h \
     scene/gamescenegeometry.h
 
 FORMS += \
