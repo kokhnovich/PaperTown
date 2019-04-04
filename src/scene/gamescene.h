@@ -8,8 +8,8 @@
 #include "../core/gameobjects.h"
 #include "../core/gamefield.h"
 #include "gametextures.h"
-#include "gameobjectrenderer.h"
-#include "gamegeometry.h"
+#include "gamefieldrenderer.h"
+#include "gamescenegeometry.h"
 
 class GameScene : public RenderScene
 {

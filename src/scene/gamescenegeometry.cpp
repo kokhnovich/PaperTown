@@ -1,4 +1,4 @@
-#include "gamegeometry.h"
+#include "gamescenegeometry.h"
 
 const int CELL_SIZE = 25;
 const int SLOPE_HEIGHT = 1;

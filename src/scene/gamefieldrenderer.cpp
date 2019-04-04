@@ -2,7 +2,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QtDebug>
-#include "gameobjectrenderer.h"
+#include "gamefieldrenderer.h"
 
 void GameObjectRenderer::changeObjectSelectionState(GameObject* object, bool selected)
 {
