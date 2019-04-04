@@ -1,5 +1,15 @@
 <RCC>
-    <qresource prefix="/" >
-        <file>../img/cell.png</file>
-    </qresource>
+  <qresource prefix="/">
+    <file>../img/cinema.l1.png</file>
+    <file>../img/cinema.l4.png</file>
+    <file>../img/cinema.l3.png</file>
+    <file>../img/cinema.l2.png</file>
+    <file>../data/objects.json</file>
+    <file>../img/textures.json</file>
+    <file>../img/cinema.png</file>
+    <file>../img/tree1.png</file>
+    <file>../img/tree2.png</file>
+    <file>../img/cell-dark.png</file>
+    <file>../img/cell.png</file>
+  </qresource>
 </RCC>

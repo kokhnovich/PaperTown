@@ -1,3 +1,4 @@
+#include <QtDebug>
 #include "gameobjects.h"
 
 Coordinate::Coordinate(int x, int y)
@@ -34,25 +35,25 @@ bool inBounds(int height, int width, const Coordinate& coord)
     return 0 <= coord.x && coord.x < height && 0 <= coord.y && coord.y < width;
 }
 
-GameObjectRepository::GameObjectRepository(QObject *parent) : QObject(parent)
+GameObjectRepositoryBase::GameObjectRepositoryBase(QObject *parent) : QObject(parent)
 {
 }
 
-void GameObjectRepository::addObject(const QString &type, const QString &name, const QVector<Coordinate> cells)
+void GameObjectRepositoryBase::addObject(const QString &type, const QString &name, const QVector<Coordinate> cells)
 {
     QString full = fullName(type, name);
     Q_ASSERT(!cells_.contains(full));
     cells_[full] = cells;
 }
 
-QVector<Coordinate> GameObjectRepository::getCells(const QString &type, const QString &name) const
+QVector<Coordinate> GameObjectRepositoryBase::getCells(const QString &type, const QString &name) const
 {
     QString full = fullName(type, name);
     Q_ASSERT(cells_.contains(full));
     return cells_[full];
 }
 
-QString GameObjectRepository::fullName(const QString &type, const QString &name)
+QString GameObjectRepositoryBase::fullName(const QString &type, const QString &name)
 {
     return type + "::" + name;
 }
@@ -106,12 +107,6 @@ GameObject::GameObject(const QString &name, GameObjectProperty *property)
       field_(nullptr),
       property_(property)
 {
-    connect(this, &GameObject::moved, [ = ]() {
-        emit this->updated();
-    });
-    connect(this, &GameObject::placed, [ = ]() {
-        emit this->updated();
-    });
     if (property_) {
         connect(this, SIGNAL(updated()), property_, SIGNAL(updated));
         property_->setParent(this);

@@ -1,7 +1,7 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
 #include <QGraphicsView>
 #include <QHBoxLayout>
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -10,16 +10,12 @@ MainWindow::MainWindow(QWidget *parent) :
     timer()
 {
     ui->setupUi(this);
-    scene = new QGraphicsScene(this);
-
-    scene->setSceneRect(-500, -500, 500, 500);
-
-    QBrush brush(QPixmap(":/img/cell.png"));
-    scene->setBackgroundBrush(brush);
+    scene = new GameScene(this);
 
     ui->graphicsView->setScene(scene);
     ui->graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
-
+    ui->graphicsView->scale(0.5, 0.5);
+    
     scheduler.addEvent(new CustomEvent(this), 1000);
     timer.setInterval(40);
     timer.start();
@@ -34,9 +30,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::newEvent()
 {
+    auto objects = scene->field()->getByType("static")->get();
+    scene->field()->remove(objects[qrand() % objects.size()]);
+    
     ++event_count;
     scheduler.addEvent(new CustomEvent(this), 1000);
-    //scheduler.addEvent(new CustomEvent(this), 2000); // devastating :)
+    //scheduler.addEvent(new CustomEvent(this), 1000); // devastating :)
 }
 
 void MainWindow::on_debug_push_button_clicked()

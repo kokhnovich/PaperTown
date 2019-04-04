@@ -5,6 +5,7 @@
 #include <QGraphicsScene>
 #include <QTimer>
 #include "core/eventscheduler.h"
+#include "scene/gamescene.h"
 
 namespace Ui {
 class MainWindow;
@@ -30,7 +31,7 @@ private slots:
     void timerTimeout();
 private:
     Ui::MainWindow *ui;
-    QGraphicsScene *scene;
+    GameScene *scene;
     GameEventScheduler scheduler;
     QTimer timer;
     int event_count = 0;
