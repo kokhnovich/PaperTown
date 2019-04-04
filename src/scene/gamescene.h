@@ -11,8 +11,8 @@
 #include "gameobjectrenderer.h"
 
 const int CELL_SIZE = 25;
-const int FIELD_HEIGHT = 42;
-const int FIELD_WIDTH = 42;
+const int FIELD_HEIGHT = 192;
+const int FIELD_WIDTH = 256;
 const int SLOPE_HEIGHT = 1;
 const int SLOPE_WIDTH = 2;
 
@@ -29,10 +29,16 @@ protected:
     QRectF coordinateToRect(const Coordinate &c);
     QPointF coordinateToTopLeft(const Coordinate &c);
     qreal zOrder(const Coordinate &c, qreal priority = 0.0) const;
+    GameField *field() const;
+    GameObjectRenderer *renderer() const;
+    GameObjectRepository *repository() const;
 private:
     void setupField();
     void initObjects();
 
+    GameObjectRepository *repository_;
+    GameField *field_;
+    GameObjectRenderer *renderer_;
     GameTextureRepository *textures_;
 };
 

@@ -3,8 +3,13 @@
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonObject>
-#include <QDebug>
+#include <QtDebug>
 #include "gametextures.h"
+
+GameTextureRepository::GameTextureRepository(QObject* parent)
+    : QObject(parent)
+{
+}
 
 const GameTexture *GameTextureRepository::getTexture(const QString &name) const
 {
@@ -45,6 +50,7 @@ void GameTextureRepository::loadFromFile(const QString &file_name)
     file.open(QIODevice::ReadOnly);
     QJsonParseError error;
     QJsonDocument document = QJsonDocument::fromJson(file.readAll(), &error);
+    qDebug() << "GameTextureRepository: json parsed, error =" << error.errorString();
     Q_ASSERT(error.error == QJsonParseError::NoError);
     return loadFromJson(document);
 }

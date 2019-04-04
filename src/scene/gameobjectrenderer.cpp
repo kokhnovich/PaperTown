@@ -1,6 +1,7 @@
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QtDebug>
 #include "gameobjectrenderer.h"
 
 void GameObjectRenderer::addObject(GameObject *object)
@@ -8,7 +9,6 @@ void GameObjectRenderer::addObject(GameObject *object)
     connect(object, &GameObject::placed, this, &GameObjectRenderer::placeObject);
     connect(object, &GameObject::moved, this, &GameObjectRenderer::moveObject);
     connect(object, &GameObject::updated, this, &GameObjectRenderer::updateObject);
-    connect(object, &GameObject::destroyed, this, &GameObjectRenderer::destroyObject);
 }
 
 void GameObjectRenderer::putObject(GameObject *object)
@@ -21,11 +21,6 @@ void GameObjectRenderer::putObject(GameObject *object)
             info->priority
         });
     }
-}
-
-void GameObjectRenderer::destroyObject()
-{
-    removeObject(qobject_cast<GameObject *>(sender()));
 }
 
 void GameObjectRenderer::moveObject(const Coordinate &, const Coordinate &newPosition)
@@ -75,7 +70,6 @@ void GameObjectRenderer::removeObject(GameObject *object)
     disconnect(object, &GameObject::placed, this, &GameObjectRenderer::placeObject);
     disconnect(object, &GameObject::moved, this, &GameObjectRenderer::moveObject);
     disconnect(object, &GameObject::updated, this, &GameObjectRenderer::updateObject);
-    disconnect(object, &GameObject::destroyed, this, &GameObjectRenderer::destroyObject);
 
     if (objects_.contains(object)) {
         unputObject(object);
@@ -95,6 +89,7 @@ void GameObjectRepository::loadFromFile(const QString &file_name)
     file.open(QIODevice::ReadOnly);
     QJsonParseError error;
     QJsonDocument document = QJsonDocument::fromJson(file.readAll(), &error);
+    qDebug() << "GameObjectRepository: json parsed, error =" << error.errorString();
     Q_ASSERT(error.error == QJsonParseError::NoError);
     return loadFromJson(document);    
 }
@@ -113,8 +108,15 @@ void GameObjectRepository::loadFromJson(const QJsonDocument &document)
         for (int i = 0; i < texture_arr.size(); ++i) {
             info.textures[i] = texture_arr[i].toString();
         }
+        auto cell_arr = local_object.value("cells").toArray();
+        QVector<Coordinate> cells(cell_arr.size());
+        for (int i = 0; i < cell_arr.size(); ++i) {
+            cells[i].x = cell_arr.at(i).toArray().at(0).toInt();
+            cells[i].y = cell_arr.at(i).toArray().at(1).toInt();
+        }
         info.priority = local_object.value("priority").toDouble(type_priorities_[type]);
         addRenderInfo(type, it.key(), info);
+        addObject(type, it.key(), cells);
     }
 }
 

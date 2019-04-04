@@ -21,6 +21,7 @@ class GameTextureRepository : public QObject
 {
     Q_OBJECT
 public:
+    GameTextureRepository(QObject *parent = nullptr);
     void addTexture(const QString &name, const QPixmap &pixmap, const QPointF &offset, const Coordinate &z_offset);
     void addTexture(const QString &name, const QPointF &offset, const Coordinate &z_offset);
     const GameTexture *getTexture(const QString &name) const;

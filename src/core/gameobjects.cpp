@@ -1,3 +1,4 @@
+#include <QtDebug>
 #include "gameobjects.h"
 
 Coordinate::Coordinate(int x, int y)

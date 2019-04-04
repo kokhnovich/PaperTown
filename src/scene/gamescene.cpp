@@ -2,13 +2,36 @@
 #include <QGraphicsPixmapItem>
 #include <QGraphicsEffect>
 #include "gamescene.h"
+#include "../core/gameobjects.h"
 
 GameScene::GameScene(QObject *parent)
-    : RenderScene(parent), textures_(new GameTextureRepository)
+    : RenderScene(parent), 
+    repository_(new GameObjectRepository(this)),
+    field_(new GameField(this, repository_, FIELD_HEIGHT, FIELD_WIDTH)),
+    renderer_(new GameObjectRenderer(this, repository_)),
+    textures_(new GameTextureRepository(this))
 {
     textures_->loadFromFile(":/img/textures.json");
-    initObjects();
+    repository_->loadFromFile(":/data/objects.json");
+    connect(field_, &GameField::added, renderer_, &GameObjectRenderer::addObject);
+    connect(field_, &GameField::removed, renderer_, &GameObjectRenderer::removeObject);
     setupField();
+    initObjects();
+}
+
+GameField *GameScene::field() const
+{
+    return field_;
+}
+
+GameObjectRenderer *GameScene::renderer() const
+{
+    return renderer_;
+}
+
+GameObjectRepository * GameScene::repository() const
+{
+    return repository_;
 }
 
 QPointF GameScene::coordinateToTopLeft(const Coordinate &c)
@@ -49,7 +72,7 @@ QGraphicsItem *GameScene::drawTexture(const QString &name, const Coordinate &c, 
 }
 
 QGraphicsItem *GameScene::moveTexture(QGraphicsItem *item, const QString &name,
-        const Coordinate &c, qreal priority)
+                                      const Coordinate &c, qreal priority)
 {
     const GameTexture *texture = textures_->getTexture(name);
     Q_CHECK_PTR(texture);
@@ -60,6 +83,18 @@ QGraphicsItem *GameScene::moveTexture(QGraphicsItem *item, const QString &name,
 
 void GameScene::initObjects()
 {
+    const char *objects[3] = {"tree1", "tree2", "cinema"};
+    for (int i = 0; i < FIELD_HEIGHT; i += 2) {
+        for (int j = 0; j < FIELD_WIDTH; j += 2) {
+            if (qrand() % 2 == 0) {
+                continue;
+            }
+            auto obj = field_->add(new StaticObject(objects[qrand() % 3]));
+            if (!obj->setPosition({i, j})) {
+                field_->remove(obj);
+            }
+        }
+    }
 }
 
 void GameScene::setupField()
@@ -89,25 +124,10 @@ void GameScene::setupField()
 
     for (int i = 0; i < FIELD_HEIGHT; ++i) {
         for (int j = 0; j < FIELD_WIDTH; ++j) {
-            //QBrush brush(QColor(255.0 / FIELD_HEIGHT * i, 255.0 / FIELD_WIDTH * j, 0, 0));
-            //QPen pen(QColor(0, 0, 0, 64));
-            //pen.setWidth(1.0);
-            //addPolygon(coordinateToPoly({i, j}), pen, brush);
-        }
-    }
-
-    for (int i = 0; i < FIELD_HEIGHT; i ++) {
-        for (int j = 0; j < FIELD_WIDTH; j ++) {
-            if (i % 20 == 10 && j % 20 == 10) {
-                drawTexture("cinema", {i, j});
-                continue;
-            }
-            if (10 <= i % 20 && i % 20 < 14 && 10 <= j % 20 && j % 20 < 14) {
-                continue;
-            }
-            if (i % 4 == 0 && j % 4 == 0) {
-                drawTexture((qrand() & 1) ? "tree1" : "tree2", {i, j});
-            }
+            QBrush brush(QColor(255.0 / FIELD_HEIGHT * i, 255.0 / FIELD_WIDTH * j, 0, 0));
+            QPen pen(QColor(0, 0, 0, 64));
+            pen.setWidth(1.0);
+            addPolygon(coordinateToPoly({i, j}), pen, brush);
         }
     }
 }

@@ -54,7 +54,6 @@ protected slots:
     void placeObject(const Coordinate &);
     void moveObject(const Coordinate &, const Coordinate &newPosition);
     void updateObject();
-    void destroyObject();
 private:
     struct TextureInto {
         QString name;
