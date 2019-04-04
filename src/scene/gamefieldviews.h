@@ -22,10 +22,14 @@ public:
     QGraphicsItem *drawTexture(const QString &name, const Coordinate &c, qreal priority = 0.0);
     QGraphicsItem *moveTexture(QGraphicsItem *item, const QString &name,
                                const Coordinate &c, qreal priority = 0.0);
+    QGraphicsItemGroup *drawSelection(GameObject *object);
+    
     void setupScene();
     
     QGraphicsScene *scene();
 protected:
+    QGraphicsItem *drawSelectionRect(GameObject *object);
+    
     qreal zOrder(const Coordinate &c, qreal priority = 0.0) const;
 private:
     GameSceneGeometry *geometry_;
@@ -93,6 +97,7 @@ private:
     QGraphicsScene *scene_;
     GameObjectRepository *repository_;
     QMultiHash<GameObject *, TextureInfo> objects_;
+    QGraphicsItemGroup *selection_group_;
 };
 
 #endif // GAMEOBJECTRENDERER_H

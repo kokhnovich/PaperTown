@@ -39,3 +39,19 @@ void GameScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         field_->selection()->unselect();
     }
 }
+
+void GameScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    if (field_->selection() == nullptr) {
+        return;
+    }
+    field_->selection()->setSelectPosition(geometry_->scenePosToCoord(event->scenePos()));
+}
+
+void GameScene::mousePressEvent(QGraphicsSceneMouseEvent *)
+{
+    if (field_->selection() == nullptr) {
+        return;
+    }
+    field_->selection()->applySelectPosition();
+}

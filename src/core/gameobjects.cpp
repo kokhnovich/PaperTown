@@ -185,11 +185,11 @@ Coordinate GameObject::position() const
 
 bool GameObject::setPosition(const Coordinate &pos)
 {
-    if (!canSetPosition(pos)) {
-        return false;
-    }
     if (is_selected_) {
         unselect();
+    }
+    if (!canSetPosition(pos)) {
+        return false;
     }
     bool wasActive = active_;
     Coordinate oldPosition = position_;

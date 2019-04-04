@@ -19,6 +19,8 @@ public:
               GameField *field, GameTextureRepository *textures);
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 private:
     GameObjectRepository *repository_;
     GameField *field_;
@@ -30,3 +32,4 @@ private:
 };
 
 #endif // GAMESCENE_H
+

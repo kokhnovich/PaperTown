@@ -1,6 +1,10 @@
 #include "gamescenegeometry.h"
+#include <QMatrix>
+#include <QtDebug>
+#include <cmath>
 
 const int CELL_SIZE = 25;
+const double SELECTION_MUL = 1.8;
 const int SLOPE_HEIGHT = 1;
 const int SLOPE_WIDTH = 2;
 const int TOP_MARGIN = 125;
@@ -8,12 +12,23 @@ const int TOP_MARGIN = 125;
 QPolygonF GameSceneGeometry::coordinateToPoly(const Coordinate &c) const
 {
     auto base_point = coordinateToTopLeft(c);
+    return cellPolygon().translated(base_point);
+}
+
+QPolygonF GameSceneGeometry::cellPolygon() const
+{
     return QPolygonF({
-        base_point + QPointF(CELL_SIZE * SLOPE_WIDTH, 0),
-        base_point + QPointF(0, CELL_SIZE * SLOPE_HEIGHT),
-        base_point + QPointF(CELL_SIZE * SLOPE_WIDTH, 2 * CELL_SIZE * SLOPE_HEIGHT),
-        base_point + QPointF(2 * CELL_SIZE * SLOPE_WIDTH, CELL_SIZE * SLOPE_HEIGHT)
+        QPointF(CELL_SIZE * SLOPE_WIDTH, 0),
+        QPointF(0, CELL_SIZE * SLOPE_HEIGHT),
+        QPointF(CELL_SIZE * SLOPE_WIDTH, 2 * CELL_SIZE * SLOPE_HEIGHT),
+        QPointF(2 * CELL_SIZE * SLOPE_WIDTH, CELL_SIZE * SLOPE_HEIGHT)
     });
+}
+
+QPolygonF GameSceneGeometry::selectionPolygon() const
+{
+    auto res = cellPolygon();
+    return selection_mat.map(cellPolygon());
 }
 
 QRectF GameSceneGeometry::coordinateToRect(const Coordinate &c) const
@@ -24,8 +39,14 @@ QRectF GameSceneGeometry::coordinateToRect(const Coordinate &c) const
 
 QPointF GameSceneGeometry::coordinateToTopLeft(const Coordinate &c) const
 {
-    return QPointF(SLOPE_WIDTH * CELL_SIZE * (c.x + c.y), SLOPE_HEIGHT * CELL_SIZE * (c.x - c.y - 1));
+    return QPointF(0, -SLOPE_HEIGHT * CELL_SIZE) + offset(c);
 }
+
+QPointF GameSceneGeometry::offset(const Coordinate &c) const
+{
+    return QPointF(SLOPE_WIDTH * CELL_SIZE * (c.x + c.y), SLOPE_HEIGHT * CELL_SIZE * (c.x - c.y));
+}
+
 
 QPolygonF GameSceneGeometry::fieldActivePolygon() const
 {
@@ -46,6 +67,17 @@ QRectF GameSceneGeometry::fieldRect() const
            );
 }
 
+Coordinate GameSceneGeometry::scenePosToCoord(const QPointF& point)
+{
+    double x = point.x() / (CELL_SIZE * SLOPE_WIDTH);
+    double y = point.y() / (CELL_SIZE * SLOPE_HEIGHT) + 1;
+    return {static_cast<int>(floor((x + y) / 2)), static_cast<int>(floor((x - y) / 2))};
+}
+
 GameSceneGeometry::GameSceneGeometry(QObject *parent, GameField *field)
     : QObject(parent), field_(field)
-{}
+{
+    selection_mat.translate(CELL_SIZE * SLOPE_WIDTH, CELL_SIZE * SLOPE_HEIGHT);
+    selection_mat.scale(SELECTION_MUL, SELECTION_MUL);
+    selection_mat.translate(-CELL_SIZE * SLOPE_WIDTH, -CELL_SIZE * SLOPE_HEIGHT);
+}
