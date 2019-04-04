@@ -12,5 +12,25 @@
 	"cinema": {
 		"offset": [0, -225],
 		"z-offset": [0, 0]
+	},
+	
+	"cinema.l1": {
+		"offset": [0, -225],
+		"z-offset": [0, 0]
+	},
+	
+	"cinema.l2": {
+		"offset": [0, -225],
+		"z-offset": [1, 0]
+	},
+	
+	"cinema.l3": {
+		"offset": [0, -225],
+		"z-offset": [2, 0]
+	},
+	
+	"cinema.l4": {
+		"offset": [0, -225],
+		"z-offset": [3, 0]
 	}
 }

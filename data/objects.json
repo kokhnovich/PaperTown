@@ -12,7 +12,7 @@
 	},
 	
 	"cinema": {
-		"textures": ["cinema"],
+		"textures": ["cinema.l1", "cinema.l2", "cinema.l3", "cinema.l4"],
 		"type": "static",
 		"cells": [
 			[0, 0], [0, 1], [0, 2], [0, 3],

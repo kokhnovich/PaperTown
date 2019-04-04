@@ -86,7 +86,7 @@ void GameScene::initObjects()
     const char *objects[3] = {"tree1", "tree2", "cinema"};
     for (int i = 0; i < FIELD_HEIGHT; i += 2) {
         for (int j = 0; j < FIELD_WIDTH; j += 2) {
-            if (qrand() % 2 == 0) {
+            if (qrand() % 3 != 0) {
                 continue;
             }
             auto obj = field_->add(new StaticObject(objects[qrand() % 3]));
@@ -125,7 +125,7 @@ void GameScene::setupField()
     for (int i = 0; i < FIELD_HEIGHT; ++i) {
         for (int j = 0; j < FIELD_WIDTH; ++j) {
             QBrush brush(QColor(255.0 / FIELD_HEIGHT * i, 255.0 / FIELD_WIDTH * j, 0, 0));
-            QPen pen(QColor(0, 0, 0, 64));
+            QPen pen(QColor(0, 0, 0, 32));
             pen.setWidth(1.0);
             addPolygon(coordinateToPoly({i, j}), pen, brush);
         }
