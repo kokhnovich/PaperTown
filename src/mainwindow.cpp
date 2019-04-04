@@ -30,6 +30,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::newEvent()
 {
+    auto objects = scene->field()->getByType("static")->get();
+    scene->field()->remove(objects[qrand() % objects.size()]);
+    
     ++event_count;
     scheduler.addEvent(new CustomEvent(this), 1000);
     //scheduler.addEvent(new CustomEvent(this), 1000); // devastating :)

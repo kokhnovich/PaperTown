@@ -1,12 +1,12 @@
 {
 	"tree1": {
 		"offset": [0, -244],
-		"z-offset": [0, 0]
+		"z-offset": [1, 0]
 	},
 	
 	"tree2": {
 		"offset": [0, -245],
-		"z-offset": [0, 0]
+		"z-offset": [1, 0]
 	},
 	
 	"cinema": {

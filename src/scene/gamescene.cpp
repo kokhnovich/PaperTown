@@ -101,9 +101,9 @@ void GameScene::setupField()
 {
     QRectF scene_rect(
         0,
-        -SLOPE_HEIGHT * CELL_SIZE * FIELD_WIDTH,
+        -SLOPE_HEIGHT * CELL_SIZE * FIELD_WIDTH - TOP_MARGIN,
         SLOPE_WIDTH * CELL_SIZE * (FIELD_WIDTH + FIELD_HEIGHT),
-        SLOPE_HEIGHT * CELL_SIZE * (FIELD_WIDTH + FIELD_HEIGHT));
+        SLOPE_HEIGHT * CELL_SIZE * (FIELD_WIDTH + FIELD_HEIGHT) + TOP_MARGIN);
 
     setSceneRect(scene_rect);
 
