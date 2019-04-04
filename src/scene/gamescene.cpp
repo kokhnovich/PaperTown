@@ -11,6 +11,7 @@ GameScene::GameScene(QObject *parent, GameObjectRepository *repository,
       repository_(repository),
       field_(field),
       textures_(textures),
+      geometry_(new GameSceneGeometry(this, field_)),
       renderer_(new GameObjectRenderer(this, repository_))
 {
     connect(field_, &GameField::added, renderer_, &GameObjectRenderer::addObject);
@@ -54,28 +55,6 @@ GameObjectRepository *GameScene::repository() const
     return repository_;
 }
 
-QPointF GameScene::coordinateToTopLeft(const Coordinate &c)
-{
-    return QPointF(SLOPE_WIDTH * CELL_SIZE * (c.x + c.y), SLOPE_HEIGHT * CELL_SIZE * (c.x - c.y - 1));
-}
-
-QPolygonF GameScene::coordinateToPoly(const Coordinate &c)
-{
-    auto base_point = coordinateToTopLeft(c);
-    return QPolygonF({
-        base_point + QPointF(CELL_SIZE * SLOPE_WIDTH, 0),
-        base_point + QPointF(0, CELL_SIZE * SLOPE_HEIGHT),
-        base_point + QPointF(CELL_SIZE * SLOPE_WIDTH, 2 * CELL_SIZE * SLOPE_HEIGHT),
-        base_point + QPointF(2 * CELL_SIZE * SLOPE_WIDTH, CELL_SIZE * SLOPE_HEIGHT)
-    });
-}
-
-QRectF GameScene::coordinateToRect(const Coordinate &c)
-{
-    auto base_point = coordinateToTopLeft(c);
-    return QRectF(base_point, base_point + QPointF(2 * CELL_SIZE * SLOPE_WIDTH, 2 * CELL_SIZE * SLOPE_HEIGHT));
-}
-
 qreal GameScene::zOrder(const Coordinate &c, qreal priority) const
 {
     return (c.x + 1) * fieldWidth() - c.y + priority;
@@ -86,7 +65,7 @@ QGraphicsItem *GameScene::drawTexture(const QString &name, const Coordinate &c, 
     const GameTexture *texture = textures_->getTexture(name);
     Q_CHECK_PTR(texture);
     QGraphicsPixmapItem *item = addPixmap(texture->pixmap);
-    item->setOffset(texture->offset + coordinateToTopLeft(c));
+    item->setOffset(texture->offset + geometry_->coordinateToTopLeft(c));
     item->setZValue(zOrder(c + texture->z_offset, priority));
     return item;
 }
@@ -96,42 +75,30 @@ QGraphicsItem *GameScene::moveTexture(QGraphicsItem *item, const QString &name,
 {
     const GameTexture *texture = textures_->getTexture(name);
     Q_CHECK_PTR(texture);
-    item->setPos(texture->offset + coordinateToTopLeft(c));
+    item->setPos(texture->offset + geometry_->coordinateToTopLeft(c));
     item->setZValue(zOrder(c + texture->z_offset, priority));
     return item;
 }
 
 void GameScene::setupField()
 {
-    QRectF scene_rect(
-        0,
-        -SLOPE_HEIGHT * CELL_SIZE * fieldWidth() - TOP_MARGIN,
-        SLOPE_WIDTH * CELL_SIZE * (fieldWidth() + fieldHeight()),
-        SLOPE_HEIGHT * CELL_SIZE * (fieldWidth() + fieldHeight()) + TOP_MARGIN);
-
-    setSceneRect(scene_rect);
+    setSceneRect(geometry_->fieldRect());
 
     QBrush light_brush(QPixmap(":/img/cell.png"));
     QBrush dark_brush(QPixmap(":/img/cell-dark.png"));
     setBackgroundBrush(dark_brush);
-
-    QPolygonF poly({
-        QPointF(0, 0),
-        QPointF(SLOPE_WIDTH *CELL_SIZE * fieldWidth(), -SLOPE_HEIGHT *CELL_SIZE * fieldWidth()),
-        QPointF(SLOPE_WIDTH *CELL_SIZE * (fieldHeight() + fieldWidth()), SLOPE_HEIGHT *CELL_SIZE * (fieldHeight() - fieldWidth())),
-        QPointF(SLOPE_WIDTH *CELL_SIZE * fieldHeight(), SLOPE_HEIGHT *CELL_SIZE * fieldHeight())});
-
+    
     QPen border_pen(QColor(255, 0, 0, 128));
     border_pen.setWidth(6.0);
 
-    addPolygon(poly, border_pen, light_brush)->setZValue(-1e9);
+    addPolygon(geometry_->fieldActivePolygon(), border_pen, light_brush)->setZValue(-1e9);
 
     for (int i = 0; i < fieldHeight(); ++i) {
         for (int j = 0; j < fieldWidth(); ++j) {
             QBrush brush(QColor(255.0 / fieldHeight() * i, 255.0 / fieldWidth() * j, 0, 0));
             QPen pen(QColor(0, 0, 0, 32));
             pen.setWidth(1.0);
-            addPolygon(coordinateToPoly({i, j}), pen, brush)->setZValue(-1e9);
+            addPolygon(geometry_->coordinateToPoly({i, j}), pen, brush)->setZValue(-1e9);
         }
     }
 }

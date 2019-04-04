@@ -9,11 +9,7 @@
 #include "../core/gamefield.h"
 #include "gametextures.h"
 #include "gameobjectrenderer.h"
-
-const int CELL_SIZE = 25;
-const int SLOPE_HEIGHT = 1;
-const int SLOPE_WIDTH = 2;
-const int TOP_MARGIN = 125;
+#include "gamegeometry.h"
 
 class GameScene : public RenderScene
 {
@@ -24,18 +20,16 @@ public:
     QGraphicsItem *drawTexture(const QString &name, const Coordinate &c, qreal priority = 0.0) override;
     QGraphicsItem *moveTexture(QGraphicsItem *item, const QString &name,
                                const Coordinate &c, qreal priority = 0.0) override;
+    
     GameField *field() const;
-    GameObjectRenderer *renderer() const;
     GameObjectRepository *repository() const;
+    GameObjectRenderer *renderer() const;
     
     inline int fieldHeight() const { return field()->height(); }
     inline int fieldWidth() const { return field()->width(); }
 protected:
-    QPolygonF coordinateToPoly(const Coordinate &c);
-    QRectF coordinateToRect(const Coordinate &c);
-    QPointF coordinateToTopLeft(const Coordinate &c);
     qreal zOrder(const Coordinate &c, qreal priority = 0.0) const;
-
+    
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
 private:
     void setupField();
@@ -44,6 +38,7 @@ private:
     GameField *field_;
     GameTextureRepository *textures_;
 
+    GameSceneGeometry *geometry_;
     GameObjectRenderer *renderer_;
 };
 

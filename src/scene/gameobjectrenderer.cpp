@@ -7,7 +7,7 @@
 void GameObjectRenderer::changeObjectSelectionState(GameObject* object, bool selected)
 {
     iterateTextures(object, [=](const TextureInfo &info) {
-        info.item->setOpacity(selected ? 0.75 : 1.0);
+        info.item->setOpacity(selected ? 0.6 : 1.0);
     });
 }
 
