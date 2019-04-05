@@ -258,7 +258,7 @@ void GameObjectRepository::loadFromJson(const QJsonDocument &document)
 
 const GameObjectRepository::RenderInfo *GameObjectRepository::getRenderInfo(const QString &type, const QString &name) const
 {
-    return render_info_[fullName(type, name)].get();
+    return render_info_[fullName(type, name)].data();
 }
 
 const GameObjectRepository::RenderInfo *GameObjectRepository::getRenderInfo(GameObject *object) const
