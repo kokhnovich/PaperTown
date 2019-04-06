@@ -141,6 +141,10 @@ void GameFieldView::addObject(GameObject *object)
     connect(object, &GameObject::selected, this, &GameFieldView::selectObject);
     connect(object, &GameObject::unselected, this, &GameFieldView::unselectObject);
     connect(object, &GameObject::selectMoved, this, &GameFieldView::selectionMoved);
+
+    if (object->active()) {
+        putObject(object);
+    }
 }
 
 void GameFieldView::putObject(GameObject *object)
