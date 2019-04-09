@@ -1,4 +1,4 @@
-#include <QDebug>
+#include <QtDebug>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsEffect>
 #include <QGraphicsSceneMouseEvent>
@@ -17,6 +17,14 @@ GameScene::GameScene(QObject *parent, GameObjectRepository *repository,
 {
     connect(field_, &GameField::added, view_, &GameFieldView::addObject);
     connect(field_, &GameField::removed, view_, &GameFieldView::removeObject);
+}
+
+void GameScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    if (field_->selection() == nullptr) {
+        return;
+    }
+    field_->selection()->setSelectPosition(geometry_->scenePosToCoord(event->scenePos()));
 }
 
 void GameScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
@@ -40,18 +48,15 @@ void GameScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     }
 }
 
-void GameScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+void GameScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
     if (field_->selection() == nullptr) {
         return;
     }
-    field_->selection()->setSelectPosition(geometry_->scenePosToCoord(event->scenePos()));
+    field_->selection()->applySelectPosition();    
 }
 
-void GameScene::mousePressEvent(QGraphicsSceneMouseEvent *)
-{
-    if (field_->selection() == nullptr) {
-        return;
-    }
-    field_->selection()->applySelectPosition();
-}
+GameView::GameView(QWidget* parent)
+    : QGraphicsView(parent)
+{}
+

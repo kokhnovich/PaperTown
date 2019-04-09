@@ -20,6 +20,11 @@ MainWindow::MainWindow(QWidget *parent) :
     
     ui->setupUi(this);
 
+    QGraphicsView *new_view = new GameView(ui->groupBox);
+    ui->horizontalLayout->replaceWidget(ui->graphicsView, new_view);
+    delete ui->graphicsView;
+    ui->graphicsView = new_view;
+    
     ui->graphicsView->setScene(scene);
     ui->graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
     ui->graphicsView->scale(0.5, 0.5);
