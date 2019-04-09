@@ -11,6 +11,15 @@ struct Coordinate {
     Coordinate(int x = 0, int y = 0);
 };
 
+struct Rect {
+    int top, bottom, left, right;
+    
+    Rect(int top, int bottom, int left, int right);
+    Rect(Coordinate a, Coordinate b);
+};
+
+Rect boundingRect(const QVector<Coordinate> &points);
+
 Coordinate operator+(Coordinate a, const Coordinate &b);
 Coordinate operator-(Coordinate a, const Coordinate &b);
 Coordinate &operator+=(Coordinate &a, const Coordinate &b);

@@ -25,6 +25,11 @@ QPolygonF GameSceneGeometry::cellPolygon() const
     });
 }
 
+int GameSceneGeometry::cellSize() const
+{
+    return CELL_SIZE;
+}
+
 QPolygonF GameSceneGeometry::selectionPolygon() const
 {
     auto res = cellPolygon();

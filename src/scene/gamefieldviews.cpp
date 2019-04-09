@@ -2,7 +2,12 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QtDebug>
+#include <QPushButton>
+#include <QGraphicsProxyWidget>
+#include <QGraphicsBlurEffect>
+#include <QLayout>
 #include "gamefieldviews.h"
+#include "gamescenegeometry.h"
 
 void GameTextureRenderer::setupScene()
 {
@@ -82,8 +87,47 @@ QGraphicsItemGroup *GameTextureRenderer::drawSelection(GameObject *object)
 
     QGraphicsItemGroup *group = scene_->createItemGroup(group_items);
     group->setPos(geometry_->coordinateToTopLeft(object->selectPosition()));
-    group->setZValue(1e6);
+    group->setZValue(4e6);
     return group;
+}
+
+QGraphicsWidget *GameTextureRenderer::drawControlButtons(const GameObject *object)
+{
+    QFont font;
+    font.setPixelSize(2 * geometry_->cellSize());
+    QPalette button_palette;
+    button_palette.setColor(QPalette::Button, QColor(240, 240, 240));
+    QPalette delete_palette = button_palette;
+    delete_palette.setColor(QPalette::ButtonText, QColor(192, 0, 0));
+    
+    auto parent_widget = new QWidget();
+    parent_widget->move({0, 0});
+    parent_widget->setWindowFlags(Qt::FramelessWindowHint);
+    parent_widget->setAttribute(Qt::WA_NoSystemBackground);
+    parent_widget->setAttribute(Qt::WA_TranslucentBackground);
+    auto layout = new QVBoxLayout(parent_widget);
+    
+    auto move_btn = new QPushButton("Move", parent_widget);
+    move_btn->setFont(font);
+    move_btn->setPalette(button_palette);
+    layout->addWidget(move_btn);
+    
+    auto delete_btn = new QPushButton("Delete", parent_widget);
+    delete_btn->setFont(font);
+    delete_btn->setPalette(delete_palette);
+    layout->addWidget(delete_btn);
+    
+    auto widget_proxy = scene_->addWidget(parent_widget);
+    
+    Rect bound_rect = boundingRect(object->cells());
+    QPointF top_left = geometry_->coordinateToRect({bound_rect.top, bound_rect.left}).topLeft();
+    QPointF bottom_right = geometry_->coordinateToRect({bound_rect.bottom, bound_rect.right}).bottomRight();
+    QPointF widget_middle(parent_widget->size().width() / 2, parent_widget->size().height());
+    
+    widget_proxy->setZValue(3e6);
+    widget_proxy->setPos((top_left + bottom_right) / 2 - widget_middle);
+    
+    return widget_proxy;
 }
 
 QGraphicsScene *GameTextureRenderer::scene()
@@ -104,8 +148,15 @@ qreal GameTextureRenderer::zOrder(const Coordinate &c, qreal priority) const
 void GameFieldView::changeObjectSelectionState(GameObject *object, bool selected)
 {
     iterateTextures(object, [ = ](const TextureInfo & info) {
-        info.item->setOpacity(selected ? 0.5 : 1.0);
+        info.item->setOpacity(selected ? 0.75 : 1.0);
+        info.item->setZValue(info.item->zValue() + (selected ? 1e6 : -1e6));
     });
+    if (selected) {
+        control_buttons_ = renderer_->drawControlButtons(object);
+    } else {
+        delete control_buttons_;
+        control_buttons_ = nullptr;
+    }
 }
 
 void GameFieldView::selectionMoved(const Coordinate &, const Coordinate &)
@@ -115,6 +166,7 @@ void GameFieldView::selectionMoved(const Coordinate &, const Coordinate &)
     scene_->removeItem(selection_group_);
     delete selection_group_;
     selection_group_ = renderer_->drawSelection(object);
+    selection_group_->setVisible(false);
 }
 
 void GameFieldView::selectObject()
@@ -122,6 +174,7 @@ void GameFieldView::selectObject()
     GameObject *object = qobject_cast<GameObject *>(sender());
     changeObjectSelectionState(object, true);
     selection_group_ = renderer_->drawSelection(object);
+    selection_group_->setVisible(false);
 }
 
 void GameFieldView::unselectObject()
@@ -187,7 +240,10 @@ GameFieldView::GameFieldView(QObject *parent, GameTextureRenderer *renderer, Gam
     : QObject(parent),
       renderer_(renderer),
       scene_(renderer_->scene()),
-      repository_(repository), objects_()
+      repository_(repository),
+      objects_(),
+      selection_group_(nullptr),
+      control_buttons_(nullptr)
 {
     renderer_->setupScene();
 }

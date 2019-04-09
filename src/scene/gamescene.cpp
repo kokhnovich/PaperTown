@@ -21,14 +21,16 @@ GameScene::GameScene(QObject *parent, GameObjectRepository *repository,
 
 void GameScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (field_->selection() == nullptr) {
+    QGraphicsScene::mouseMoveEvent(event);
+    /*if (field_->selection() == nullptr) {
         return;
     }
-    field_->selection()->setSelectPosition(geometry_->scenePosToCoord(event->scenePos()));
+    field_->selection()->setSelectPosition(geometry_->scenePosToCoord(event->scenePos()));*/
 }
 
 void GameScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
+    QGraphicsScene::mouseDoubleClickEvent(event);
     auto items_at_cell = this->items(event->scenePos());
     for (auto it = items_at_cell.begin(); it != items_at_cell.end(); ++it) {
         QVariant data = (*it)->data(DATA_KEY_GAMEOBJECT);
@@ -50,10 +52,11 @@ void GameScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 void GameScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
-    if (field_->selection() == nullptr) {
+    QGraphicsScene::mouseReleaseEvent(event);
+    /*if (field_->selection() == nullptr) {
         return;
     }
-    field_->selection()->applySelectPosition();    
+    field_->selection()->applySelectPosition();*/
 }
 
 GameView::GameView(QWidget* parent)

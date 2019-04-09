@@ -23,6 +23,7 @@ public:
     QGraphicsItem *moveTexture(QGraphicsItem *item, const QString &name,
                                const Coordinate &c, qreal priority = 0.0);
     QGraphicsItemGroup *drawSelection(GameObject *object);
+    QGraphicsWidget *drawControlButtons(const GameObject *object);
     
     void setupScene();
     
@@ -98,6 +99,7 @@ private:
     GameObjectRepository *repository_;
     QMultiHash<GameObject *, TextureInfo> objects_;
     QGraphicsItemGroup *selection_group_;
+    QGraphicsWidget *control_buttons_;
 };
 
 #endif // GAMEOBJECTRENDERER_H
