@@ -27,7 +27,7 @@ void GameTextureRepository::addTexture(const QString &name, const QPixmap &pixma
 
 void GameTextureRepository::addTexture(const QString &name, const QPointF &offset, const Coordinate &z_offset)
 {
-    addTexture(name, QPixmap(QStringLiteral(":/img/%1.png").arg(name.data())), offset, z_offset);
+    addTexture(name, QPixmap(QStringLiteral(":/img/%1.png").arg(name)), offset, z_offset);
 }
 
 void GameTextureRepository::loadFromJson(const QJsonDocument &document)

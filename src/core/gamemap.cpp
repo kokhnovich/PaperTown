@@ -10,7 +10,7 @@ void GameAbstractMap::add(GameObject *object)
     }
 }
 
-bool GameAbstractMap::canPlace(GameObject *object, const Coordinate &position) const
+bool GameAbstractMap::canPlace(const GameObject *object, const Coordinate &position) const
 {
     for (const Coordinate &delta : object->cellsRelative()) {
         if (!inBounds(height_, width_, position + delta)) {
@@ -20,7 +20,7 @@ bool GameAbstractMap::canPlace(GameObject *object, const Coordinate &position) c
     return true;
 }
 
-bool GameAbstractMap::freePlace(GameObject *object, const Coordinate &position)
+bool GameAbstractMap::freePlace(const GameObject *object, const Coordinate &position)
 {
     for (const Coordinate &delta : object->cellsRelative()) {
         if (!freeCell(position + delta)) {
@@ -76,7 +76,7 @@ GameObject *GameMap::at(const Coordinate &pos) const
     return map_.at(pos.x).at(pos.y);
 }
 
-bool GameMap::canPlace(GameObject *object, const Coordinate &position) const
+bool GameMap::canPlace(const GameObject *object, const Coordinate &position) const
 {
     if (!GameAbstractMap::canPlace(object, position)) {
         return false;

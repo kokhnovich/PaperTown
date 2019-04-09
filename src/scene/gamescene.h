@@ -2,45 +2,40 @@
 #define GAMESCENE_H
 
 #include <QGraphicsScene>
+#include <QGraphicsView>
 #include <QMap>
 #include <QPixmap>
 #include <QPointF>
 #include "../core/gameobjects.h"
 #include "../core/gamefield.h"
 #include "gametextures.h"
-#include "gameobjectrenderer.h"
+#include "gamefieldviews.h"
+#include "gamescenegeometry.h"
 
-const int CELL_SIZE = 25;
-const int FIELD_HEIGHT = 48;
-const int FIELD_WIDTH = 64;
-const int SLOPE_HEIGHT = 1;
-const int SLOPE_WIDTH = 2;
-const int TOP_MARGIN = 125;
-
-class GameScene : public RenderScene
+class GameScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    GameScene(QObject *parent = nullptr);
-    QGraphicsItem *drawTexture(const QString &name, const Coordinate &c, qreal priority = 0.0) override;
-    QGraphicsItem *moveTexture(QGraphicsItem *item, const QString &name,
-                               const Coordinate &c, qreal priority = 0.0) override;
-    GameField *field() const;
-    GameObjectRenderer *renderer() const;
-    GameObjectRepository *repository() const;
+    GameScene(QObject *parent, GameObjectRepository *repository,
+              GameField *field, GameTextureRepository *textures);
 protected:
-    QPolygonF coordinateToPoly(const Coordinate &c);
-    QRectF coordinateToRect(const Coordinate &c);
-    QPointF coordinateToTopLeft(const Coordinate &c);
-    qreal zOrder(const Coordinate &c, qreal priority = 0.0) const;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 private:
-    void setupField();
-    void initObjects();
-
     GameObjectRepository *repository_;
     GameField *field_;
-    GameObjectRenderer *renderer_;
     GameTextureRepository *textures_;
+
+    GameSceneGeometry *geometry_;
+    GameTextureRenderer *renderer_;
+    GameFieldView *view_;
+};
+
+class GameView : public QGraphicsView {
+public:
+    GameView(QWidget *parent);
 };
 
 #endif // GAMESCENE_H
+

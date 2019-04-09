@@ -13,10 +13,10 @@ public:
     explicit GameAbstractMap(QObject *parent, int height, int width);
     void add(GameObject *object);
     void remove(GameObject *object);
-    virtual bool canPlace(GameObject *object, const Coordinate &position) const;
+    virtual bool canPlace(const GameObject *object, const Coordinate &position) const;
     virtual bool freeCell(const Coordinate &position) = 0;
     virtual QVector<GameObject *> atPos(const Coordinate &position) = 0;
-    bool freePlace(GameObject *object, const Coordinate &position);
+    bool freePlace(const GameObject *object, const Coordinate &position);
     int height() const;
     int width() const;
 protected slots:
@@ -37,7 +37,7 @@ public:
     explicit GameMap(QObject *parent, int height, int width);
     GameObject *at(const Coordinate &pos) const;
     QVector<GameObject *> atPos(const Coordinate &position) override;
-    bool canPlace(GameObject *object, const Coordinate &position) const override;
+    bool canPlace(const GameObject *object, const Coordinate &position) const override;
     bool freeCell(const Coordinate &position) override;
 protected:
     void internalAdd(GameObject *object) override;
