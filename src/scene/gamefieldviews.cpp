@@ -54,7 +54,7 @@ QGraphicsItem *GameTextureRenderer::moveTexture(QGraphicsItem *item, const QStri
 QGraphicsItem *GameTextureRenderer::drawSelectionRect(GameObject *object)
 {
     QColor brush_color, pen_color;
-    if (object->canApplySelectPosition()) {
+    if (object->canApplyMovingPosition()) {
         brush_color = QColor(0, 192, 0, 160);
         pen_color = QColor(0, 128, 0, 160);
     } else {
@@ -73,7 +73,7 @@ QGraphicsItem *GameTextureRenderer::drawSelectionRect(GameObject *object)
     return scene_->addPolygon(poly, pen, QBrush(brush_color));
 }
 
-QGraphicsItemGroup *GameTextureRenderer::drawSelection(GameObject *object)
+QGraphicsItem *GameTextureRenderer::drawMoving(GameObject *object)
 {
     const GameTexture *texture = textures_->getTexture(object->name());
 
@@ -86,7 +86,7 @@ QGraphicsItemGroup *GameTextureRenderer::drawSelection(GameObject *object)
     group_items.append(drawSelectionRect(object));
 
     QGraphicsItemGroup *group = scene_->createItemGroup(group_items);
-    group->setPos(geometry_->coordinateToTopLeft(object->selectPosition()));
+    group->setPos(geometry_->coordinateToTopLeft(object->movingPosition()));
     group->setZValue(4e6);
     return group;
 }
@@ -95,12 +95,6 @@ QGraphicsWidget *GameTextureRenderer::drawControlButtons(const GameObject *objec
 {
     QFont font;
     font.setPixelSize(2 * geometry_->cellSize());
-    
-    QPalette button_palette;
-    //button_palette.setColor(QPalette::Button, QColor(240, 240, 240));
-    //button_palette.setColor(QPalette::Highlight, QColor(0, 0, 255));
-    QPalette delete_palette = button_palette;
-    //delete_palette.setColor(QPalette::ButtonText, QColor(192, 0, 0));
     
     auto parent_widget = new QWidget();
     parent_widget->move({0, 0});
@@ -146,12 +140,11 @@ QGraphicsWidget *GameTextureRenderer::drawControlButtons(const GameObject *objec
     
     auto move_btn = new QPushButton("Move", parent_widget);
     move_btn->setFont(font);
-    move_btn->setPalette(button_palette);
     layout->addWidget(move_btn);
+    connect(move_btn, &QPushButton::pressed, object, &GameObject::startMoving);
     
     auto delete_btn = new QPushButton("Delete", parent_widget);
     delete_btn->setFont(font);
-    delete_btn->setPalette(delete_palette);
     delete_btn->setObjectName(QStringLiteral("delete-btn"));
     layout->addWidget(delete_btn);
     connect(delete_btn, &QPushButton::clicked, object, &GameObject::removeSelf);
@@ -198,31 +191,38 @@ void GameFieldView::changeObjectSelectionState(GameObject *object, bool selected
     }
 }
 
-void GameFieldView::selectionMoved(const Coordinate &, const Coordinate &)
+void GameFieldView::movingPositionChanged(const Coordinate &, const Coordinate &)
 {
     GameObject *object = qobject_cast<GameObject *>(sender());
-    Q_CHECK_PTR(selection_group_);
-    scene_->removeItem(selection_group_);
-    delete selection_group_;
-    selection_group_ = renderer_->drawSelection(object);
-    selection_group_->setVisible(false);
+    Q_CHECK_PTR(moving_item_);
+    scene_->removeItem(moving_item_);
+    delete moving_item_;
+    moving_item_ = renderer_->drawMoving(object);
 }
 
 void GameFieldView::selectObject()
 {
     GameObject *object = qobject_cast<GameObject *>(sender());
     changeObjectSelectionState(object, true);
-    selection_group_ = renderer_->drawSelection(object);
-    selection_group_->setVisible(false);
 }
 
 void GameFieldView::unselectObject()
 {
     GameObject *object = qobject_cast<GameObject *>(sender());
     changeObjectSelectionState(object, false);
-    Q_CHECK_PTR(selection_group_);
-    scene_->removeItem(selection_group_);
-    delete selection_group_;
+}
+
+void GameFieldView::startMovingObject()
+{
+    GameObject *object = qobject_cast<GameObject *>(sender());
+    moving_item_ = renderer_->drawMoving(object);
+}
+
+void GameFieldView::endMovingObject()
+{
+    Q_CHECK_PTR(moving_item_);
+    scene_->removeItem(moving_item_);
+    delete moving_item_;
 }
 
 void GameFieldView::addObject(GameObject *object)
@@ -232,7 +232,9 @@ void GameFieldView::addObject(GameObject *object)
     connect(object, &GameObject::updated, this, &GameFieldView::updateObject);
     connect(object, &GameObject::selected, this, &GameFieldView::selectObject);
     connect(object, &GameObject::unselected, this, &GameFieldView::unselectObject);
-    connect(object, &GameObject::selectMoved, this, &GameFieldView::selectionMoved);
+    connect(object, &GameObject::startedMoving, this, &GameFieldView::startMovingObject);
+    connect(object, &GameObject::endedMoving, this, &GameFieldView::endMovingObject);
+    connect(object, &GameObject::movingPositionChanged, this, &GameFieldView::movingPositionChanged);
 
     if (object->active()) {
         putObject(object);
@@ -281,7 +283,7 @@ GameFieldView::GameFieldView(QObject *parent, GameTextureRenderer *renderer, Gam
       scene_(renderer_->scene()),
       repository_(repository),
       objects_(),
-      selection_group_(nullptr),
+      moving_item_(nullptr),
       control_buttons_(nullptr)
 {
     renderer_->setupScene();
@@ -304,7 +306,9 @@ void GameFieldView::removeObject(GameObject *object)
     disconnect(object, &GameObject::updated, this, &GameFieldView::updateObject);
     disconnect(object, &GameObject::selected, this, &GameFieldView::selectObject);
     disconnect(object, &GameObject::unselected, this, &GameFieldView::unselectObject);
-    disconnect(object, &GameObject::selectMoved, this, &GameFieldView::selectionMoved);
+    disconnect(object, &GameObject::startedMoving, this, &GameFieldView::startMovingObject);
+    disconnect(object, &GameObject::endedMoving, this, &GameFieldView::endMovingObject);
+    disconnect(object, &GameObject::movingPositionChanged, this, &GameFieldView::movingPositionChanged);
 
     if (objects_.contains(object)) {
         unputObject(object);
@@ -372,4 +376,5 @@ GameObjectRepository::GameObjectRepository(QObject *parent)
     type_priorities_["static"] = 0.33;
     type_priorities_["moving"] = 0.67;
 }
+
 

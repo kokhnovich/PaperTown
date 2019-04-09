@@ -22,10 +22,10 @@ GameScene::GameScene(QObject *parent, GameObjectRepository *repository,
 void GameScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsScene::mouseMoveEvent(event);
-    /*if (field_->selection() == nullptr) {
+    if (field_->selection() == nullptr || !field_->selection()->isMoving()) {
         return;
     }
-    field_->selection()->setSelectPosition(geometry_->scenePosToCoord(event->scenePos()));*/
+    field_->selection()->setMovingPosition(geometry_->scenePosToCoord(event->scenePos()));
 }
 
 void GameScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
@@ -52,11 +52,12 @@ void GameScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 void GameScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
+    qDebug() << "released";
     QGraphicsScene::mouseReleaseEvent(event);
-    /*if (field_->selection() == nullptr) {
+    if (field_->selection() == nullptr || !field_->selection()->isMoving()) {
         return;
     }
-    field_->selection()->applySelectPosition();*/
+    field_->selection()->applyMovingPosition();
 }
 
 GameView::GameView(QWidget* parent)

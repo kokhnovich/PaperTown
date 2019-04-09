@@ -124,8 +124,9 @@ GameObject::GameObject(const QString &name, GameObjectProperty *property)
       name_(name),
       active_(false),
       is_selected_(false),
+      is_moving_(false),
       position_(),
-      select_position_(),
+      moving_position_(),
       field_(nullptr),
       property_(property)
 {
@@ -140,16 +141,44 @@ void GameObject::removeSelf()
     field()->remove(this);
 }
 
-bool GameObject::applySelectPosition()
+bool GameObject::applyMovingPosition()
 {
-    Q_ASSERT(is_selected_);
-    return setPosition(select_position_);
+    Q_ASSERT(is_moving_);
+    if (!canApplyMovingPosition()) {
+        return false;
+    }
+    return setPosition(moving_position_);
 }
 
-bool GameObject::canApplySelectPosition() const
+bool GameObject::canApplyMovingPosition() const
 {
-    Q_ASSERT(is_selected_);
-    return canSetPosition(select_position_);
+    Q_ASSERT(is_moving_);
+    return canSetPosition(moving_position_);
+}
+
+bool GameObject::canMove() const
+{
+    return true;
+}
+
+void GameObject::startMoving()
+{
+    Q_ASSERT(is_selected_ && !is_moving_);
+    is_moving_ = true;
+    moving_position_ = position_;
+    emit startedMoving();
+}
+
+void GameObject::endMoving()
+{
+    Q_ASSERT(is_selected_ && is_moving_);    
+    is_moving_ = false;
+    emit endedMoving();
+}
+
+bool GameObject::isMoving() const
+{
+    return is_moving_;
 }
 
 bool GameObject::canSelect() const
@@ -160,9 +189,11 @@ bool GameObject::canSelect() const
 void GameObject::select()
 {
     Q_ASSERT(!is_selected_);
+    if (!canSelect()) {
+        return;
+    }
     emit selecting();
     is_selected_ = true;
-    select_position_ = position_;
     emit selected();
 }
 
@@ -171,23 +202,26 @@ bool GameObject::isSelected() const
     return is_selected_;
 }
 
-Coordinate GameObject::selectPosition() const
+Coordinate GameObject::movingPosition() const
 {
-    Q_ASSERT(is_selected_);
-    return select_position_;
+    Q_ASSERT(is_moving_);
+    return moving_position_;
 }
 
-void GameObject::setSelectPosition(const Coordinate& c)
+void GameObject::setMovingPosition(const Coordinate& c)
 {
-    Q_ASSERT(is_selected_);
-    Coordinate old_position = select_position_;
-    select_position_ = c;
-    emit selectMoved(old_position, select_position_);
+    Q_ASSERT(is_moving_);
+    Coordinate old_position = moving_position_;
+    moving_position_ = c;
+    emit movingPositionChanged(old_position, moving_position_);
 }
 
 void GameObject::unselect()
 {
     Q_ASSERT(is_selected_);
+    if (is_moving_) {
+        endMoving();
+    }
     is_selected_ = false;
     emit unselected();
 }
@@ -285,5 +319,4 @@ QString StaticObject::type() const
 }
 
 GameFieldBase::GameFieldBase(QObject *parent) : QObject(parent)
-{
-}
+{}

@@ -22,7 +22,7 @@ public:
     QGraphicsItem *drawTexture(const QString &name, const Coordinate &c, qreal priority = 0.0);
     QGraphicsItem *moveTexture(QGraphicsItem *item, const QString &name,
                                const Coordinate &c, qreal priority = 0.0);
-    QGraphicsItemGroup *drawSelection(GameObject *object);
+    QGraphicsItem *drawMoving(GameObject *object);
     QGraphicsWidget *drawControlButtons(const GameObject *object);
     
     void setupScene();
@@ -73,9 +73,11 @@ protected:
 protected slots:
     void placeObject(const Coordinate &);
     void moveObject(const Coordinate &, const Coordinate &newPosition);
+    void startMovingObject();
+    void endMovingObject();
     void updateObject();
     void selectObject();
-    void selectionMoved(const Coordinate &, const Coordinate &newPosition);
+    void movingPositionChanged(const Coordinate &, const Coordinate &newPosition);
     void unselectObject();
 private:
     struct TextureInfo {
@@ -98,7 +100,7 @@ private:
     QGraphicsScene *scene_;
     GameObjectRepository *repository_;
     QMultiHash<GameObject *, TextureInfo> objects_;
-    QGraphicsItemGroup *selection_group_;
+    QGraphicsItem *moving_item_;
     QGraphicsWidget *control_buttons_;
 };
 

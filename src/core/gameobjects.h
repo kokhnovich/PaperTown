@@ -13,7 +13,7 @@ struct Coordinate {
 
 struct Rect {
     int top, bottom, left, right;
-    
+
     Rect(int top, int bottom, int left, int right);
     Rect(Coordinate a, Coordinate b);
 };
@@ -72,7 +72,7 @@ public:
     Q_PROPERTY(Coordinate position READ position WRITE setPosition)
 
     GameObject(const QString &name, GameObjectProperty *property = nullptr);
-    
+
     QString name() const;
     virtual QString type() const = 0;
     Coordinate position() const;
@@ -85,40 +85,49 @@ public:
 
     bool active() const;
     bool isSelected() const;
-    
-    virtual bool canSelect() const;
-    void select();
-    void unselect();
+    bool isMoving() const;
 
-    Coordinate selectPosition() const;
-    void setSelectPosition(const Coordinate &c);
-    bool canApplySelectPosition() const;
-    bool applySelectPosition();
+    virtual bool canSelect() const;
+    virtual bool canMove() const;
     
+    Coordinate movingPosition() const;
+    void setMovingPosition(const Coordinate &c);
+    bool canApplyMovingPosition() const;
+    bool applyMovingPosition();
+
     GameFieldBase *field() const;
 
     bool canSetPosition(const Coordinate &pos) const;
     bool setPosition(const Coordinate &pos);
-    
+
     friend class GameFieldBase;
 signals:
     void placed(const Coordinate &position);
     void moved(const Coordinate &oldPosition, const Coordinate &newPosition);
-    void selectMoved(const Coordinate &oldPosition, const Coordinate &newPosition);
+    void movingPositionChanged(const Coordinate &oldPosition, const Coordinate &newPosition);
     void updated();
     void selecting();
     void selected();
     void unselected();
+    void startedMoving();
+    void endedMoving();
 public slots:
     void removeSelf();
+    
+    void select();
+    void unselect();
+    
+    void startMoving();
+    void endMoving();
 private:
     void setField(GameFieldBase *field);
-    
+
     QString name_;
     bool active_;
     bool is_selected_;
+    bool is_moving_;
     Coordinate position_;
-    Coordinate select_position_;
+    Coordinate moving_position_;
     GameFieldBase *field_;
     GameObjectProperty *property_;
 };
