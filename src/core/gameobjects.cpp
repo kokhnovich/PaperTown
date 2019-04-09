@@ -144,9 +144,6 @@ void GameObject::removeSelf()
 bool GameObject::applyMovingPosition()
 {
     Q_ASSERT(is_moving_);
-    if (!canApplyMovingPosition()) {
-        return false;
-    }
     return setPosition(moving_position_);
 }
 
@@ -164,6 +161,9 @@ bool GameObject::canMove() const
 void GameObject::startMoving()
 {
     Q_ASSERT(is_selected_ && !is_moving_);
+    if (!canMove()) {
+        return;
+    }
     is_moving_ = true;
     moving_position_ = position_;
     emit startedMoving();

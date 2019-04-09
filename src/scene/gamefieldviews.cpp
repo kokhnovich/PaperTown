@@ -95,13 +95,13 @@ QGraphicsWidget *GameTextureRenderer::drawControlButtons(const GameObject *objec
 {
     QFont font;
     font.setPixelSize(2 * geometry_->cellSize());
-    
+
     auto parent_widget = new QWidget();
     parent_widget->move({0, 0});
     parent_widget->setWindowFlags(Qt::FramelessWindowHint);
     parent_widget->setAttribute(Qt::WA_NoSystemBackground);
     parent_widget->setAttribute(Qt::WA_TranslucentBackground);
-    parent_widget->setStyleSheet(QStringLiteral(R"CSS(        
+    parent_widget->setStyleSheet(QStringLiteral(R"CSS(
         QPushButton {
             border: 5px groove #878AB5;
             border-radius: 12px;
@@ -135,30 +135,31 @@ QGraphicsWidget *GameTextureRenderer::drawControlButtons(const GameObject *objec
             border-color: #C14848;
         }
     )CSS"));
-    
+
     auto layout = new QVBoxLayout(parent_widget);
-    
+
     auto move_btn = new QPushButton("Move", parent_widget);
     move_btn->setFont(font);
+    move_btn->setVisible(object->canMove());
     layout->addWidget(move_btn);
     connect(move_btn, &QPushButton::pressed, object, &GameObject::startMoving);
-    
+
     auto delete_btn = new QPushButton("Delete", parent_widget);
     delete_btn->setFont(font);
     delete_btn->setObjectName(QStringLiteral("delete-btn"));
     layout->addWidget(delete_btn);
     connect(delete_btn, &QPushButton::clicked, object, &GameObject::removeSelf);
-    
+
     auto widget_proxy = scene_->addWidget(parent_widget);
-    
+
     Rect bound_rect = boundingRect(object->cells());
     QPointF top_left = geometry_->coordinateToRect({bound_rect.top, bound_rect.left}).topLeft();
     QPointF bottom_right = geometry_->coordinateToRect({bound_rect.bottom, bound_rect.right}).bottomRight();
     QPointF widget_middle(parent_widget->size().width() / 2, parent_widget->size().height());
-    
+
     widget_proxy->setZValue(3e6);
     widget_proxy->setPos((top_left + bottom_right) / 2 - widget_middle);
-    
+
     return widget_proxy;
 }
 
@@ -177,18 +178,56 @@ qreal GameTextureRenderer::zOrder(const Coordinate &c, qreal priority) const
     return (c.x + 1) * geometry_->fieldWidth() - c.y + priority;
 }
 
-void GameFieldView::changeObjectSelectionState(GameObject *object, bool selected)
+qreal GameFieldView::getStateZDelta(SelectionState state) const
+{
+    return (state == SelectionState::Selected) ? 1e6 : 0;
+}
+
+void GameFieldView::changeObjectSelectionState(GameObject *object, SelectionState state)
 {
     iterateTextures(object, [ = ](const TextureInfo & info) {
-        info.item->setOpacity(selected ? 0.75 : 1.0);
-        info.item->setZValue(info.item->zValue() + (selected ? 1e6 : -1e6));
+        qreal opacity = 1.0;
+        switch (state) {
+        case SelectionState::None: {
+            opacity = 1.0;
+            break;
+        }
+        case SelectionState::Moving: {
+            opacity = 0.5;
+            break;
+        }
+        case SelectionState::Selected: {
+            opacity = 0.75;
+            break;
+        }
+        default: {
+            Q_ASSERT(false);
+        }
+        }
+        info.item->setOpacity(opacity);
+
+        double zdelta = getStateZDelta(state) - getStateZDelta(last_state_);
+        if (!qFuzzyIsNull(zdelta)) {
+            info.item->setZValue(info.item->zValue() + zdelta);
+        }
     });
-    if (selected) {
+
+    if (state == SelectionState::Selected) {
         control_buttons_ = renderer_->drawControlButtons(object);
-    } else {
+    } else if (control_buttons_ != nullptr) {
         control_buttons_->deleteLater();
         control_buttons_ = nullptr;
     }
+
+    if (state == SelectionState::Moving) {
+        moving_item_ = renderer_->drawMoving(object);
+    } else if (moving_item_ != nullptr) {
+        scene_->removeItem(moving_item_);
+        delete moving_item_;
+        moving_item_ = nullptr;
+    }
+
+    last_state_ = state;
 }
 
 void GameFieldView::movingPositionChanged(const Coordinate &, const Coordinate &)
@@ -203,26 +242,26 @@ void GameFieldView::movingPositionChanged(const Coordinate &, const Coordinate &
 void GameFieldView::selectObject()
 {
     GameObject *object = qobject_cast<GameObject *>(sender());
-    changeObjectSelectionState(object, true);
+    changeObjectSelectionState(object, SelectionState::Selected);
 }
 
 void GameFieldView::unselectObject()
 {
     GameObject *object = qobject_cast<GameObject *>(sender());
-    changeObjectSelectionState(object, false);
+    changeObjectSelectionState(object, SelectionState::None);
 }
 
 void GameFieldView::startMovingObject()
 {
     GameObject *object = qobject_cast<GameObject *>(sender());
-    moving_item_ = renderer_->drawMoving(object);
+    changeObjectSelectionState(object, SelectionState::Moving);
+
 }
 
 void GameFieldView::endMovingObject()
 {
-    Q_CHECK_PTR(moving_item_);
-    scene_->removeItem(moving_item_);
-    delete moving_item_;
+    GameObject *object = qobject_cast<GameObject *>(sender());
+    changeObjectSelectionState(object, SelectionState::Selected);
 }
 
 void GameFieldView::addObject(GameObject *object)
@@ -252,6 +291,9 @@ void GameFieldView::putObject(GameObject *object)
             item,
             info->priority
         });
+    }
+    if (object->isSelected()) {
+        changeObjectSelectionState(object, object->isMoving() ? SelectionState::Moving : SelectionState::Selected);
     }
 }
 
@@ -284,7 +326,8 @@ GameFieldView::GameFieldView(QObject *parent, GameTextureRenderer *renderer, Gam
       repository_(repository),
       objects_(),
       moving_item_(nullptr),
-      control_buttons_(nullptr)
+      control_buttons_(nullptr),
+      last_state_(SelectionState::None)
 {
     renderer_->setupScene();
 }
@@ -292,6 +335,9 @@ GameFieldView::GameFieldView(QObject *parent, GameTextureRenderer *renderer, Gam
 void GameFieldView::unputObject(GameObject *object)
 {
     Q_ASSERT(objects_.contains(object));
+    if (object->isSelected()) {
+        changeObjectSelectionState(object, SelectionState::None);
+    }
     iterateTextures(object, [&](const TextureInfo & info) {
         scene_->removeItem(info.item);
         delete info.item;

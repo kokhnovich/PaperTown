@@ -17,20 +17,20 @@ class GameTextureRenderer : public QObject
     Q_OBJECT
 public:
     GameTextureRenderer(QObject *parent, GameSceneGeometry *geometry,
-                         GameTextureRepository *repository, QGraphicsScene *scene);
+                        GameTextureRepository *repository, QGraphicsScene *scene);
 
     QGraphicsItem *drawTexture(const QString &name, const Coordinate &c, qreal priority = 0.0);
     QGraphicsItem *moveTexture(QGraphicsItem *item, const QString &name,
                                const Coordinate &c, qreal priority = 0.0);
     QGraphicsItem *drawMoving(GameObject *object);
     QGraphicsWidget *drawControlButtons(const GameObject *object);
-    
+
     void setupScene();
-    
+
     QGraphicsScene *scene();
 protected:
     QGraphicsItem *drawSelectionRect(GameObject *object);
-    
+
     qreal zOrder(const Coordinate &c, qreal priority = 0.0) const;
 private:
     GameSceneGeometry *geometry_;
@@ -58,6 +58,12 @@ private:
     QHash<QString, qreal> type_priorities_;
 };
 
+enum SelectionState {
+    None,
+    Selected,
+    Moving
+};
+
 class GameFieldView : public QObject
 {
     Q_OBJECT
@@ -69,7 +75,9 @@ public slots:
 protected:
     void putObject(GameObject *object);
     void unputObject(GameObject *object);
-    void changeObjectSelectionState(GameObject *object, bool selected);
+    void changeObjectSelectionState(GameObject *object, SelectionState state);
+
+    qreal getStateZDelta(SelectionState state) const;
 protected slots:
     void placeObject(const Coordinate &);
     void moveObject(const Coordinate &, const Coordinate &newPosition);
@@ -102,6 +110,7 @@ private:
     QMultiHash<GameObject *, TextureInfo> objects_;
     QGraphicsItem *moving_item_;
     QGraphicsWidget *control_buttons_;
+    SelectionState last_state_;
 };
 
 #endif // GAMEOBJECTRENDERER_H

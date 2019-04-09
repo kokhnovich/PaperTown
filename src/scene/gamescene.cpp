@@ -52,7 +52,6 @@ void GameScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 void GameScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
-    qDebug() << "released";
     QGraphicsScene::mouseReleaseEvent(event);
     if (field_->selection() == nullptr || !field_->selection()->isMoving()) {
         return;
