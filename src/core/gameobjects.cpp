@@ -135,6 +135,11 @@ GameObject::GameObject(const QString &name, GameObjectProperty *property)
     }
 }
 
+void GameObject::removeSelf()
+{
+    field()->remove(this);
+}
+
 bool GameObject::applySelectPosition()
 {
     Q_ASSERT(is_selected_);

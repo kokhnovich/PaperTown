@@ -49,6 +49,8 @@ public:
     explicit GameFieldBase(QObject *parent);
     virtual GameObjectRepositoryBase *repository() const = 0;
     virtual bool canPlace(const GameObject *object, const Coordinate &pos) const = 0;
+    virtual GameObject *add(GameObject *object) = 0;
+    virtual void remove(GameObject *object) = 0;
 protected:
     void attach(GameObject *object);
     void detach(GameObject *object);
@@ -70,7 +72,7 @@ public:
     Q_PROPERTY(Coordinate position READ position WRITE setPosition)
 
     GameObject(const QString &name, GameObjectProperty *property = nullptr);
-
+    
     QString name() const;
     virtual QString type() const = 0;
     Coordinate position() const;
@@ -107,6 +109,8 @@ signals:
     void selecting();
     void selected();
     void unselected();
+public slots:
+    void removeSelf();
 private:
     void setField(GameFieldBase *field);
     

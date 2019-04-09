@@ -95,16 +95,53 @@ QGraphicsWidget *GameTextureRenderer::drawControlButtons(const GameObject *objec
 {
     QFont font;
     font.setPixelSize(2 * geometry_->cellSize());
+    
     QPalette button_palette;
-    button_palette.setColor(QPalette::Button, QColor(240, 240, 240));
+    //button_palette.setColor(QPalette::Button, QColor(240, 240, 240));
+    //button_palette.setColor(QPalette::Highlight, QColor(0, 0, 255));
     QPalette delete_palette = button_palette;
-    delete_palette.setColor(QPalette::ButtonText, QColor(192, 0, 0));
+    //delete_palette.setColor(QPalette::ButtonText, QColor(192, 0, 0));
     
     auto parent_widget = new QWidget();
     parent_widget->move({0, 0});
     parent_widget->setWindowFlags(Qt::FramelessWindowHint);
     parent_widget->setAttribute(Qt::WA_NoSystemBackground);
     parent_widget->setAttribute(Qt::WA_TranslucentBackground);
+    parent_widget->setStyleSheet(QStringLiteral(R"CSS(        
+        QPushButton {
+            border: 5px groove #878AB5;
+            border-radius: 12px;
+            padding: 4px;
+            background-color: rgb(242, 246, 248);
+        }
+        
+        QPushButton:pressed {
+            border-style: ridge;
+            background-color: rgb(224, 228, 232);
+        }
+        
+        QPushButton:focus {
+            border-color: #5E6596;
+        }
+        
+        QPushButton#delete-btn {
+            border-color: #A58A87;
+            background-color: rgb(248, 232, 228);
+        }
+        
+        QPushButton#delete-btn:pressed {
+            background-color: #FF6F70;
+        }
+        
+        QPushButton#delete-btn:pressed:focus {
+            border-color: #872525;
+        }
+        
+        QPushButton#delete-btn:focus {
+            border-color: #C14848;
+        }
+    )CSS"));
+    
     auto layout = new QVBoxLayout(parent_widget);
     
     auto move_btn = new QPushButton("Move", parent_widget);
@@ -115,7 +152,9 @@ QGraphicsWidget *GameTextureRenderer::drawControlButtons(const GameObject *objec
     auto delete_btn = new QPushButton("Delete", parent_widget);
     delete_btn->setFont(font);
     delete_btn->setPalette(delete_palette);
+    delete_btn->setObjectName(QStringLiteral("delete-btn"));
     layout->addWidget(delete_btn);
+    connect(delete_btn, &QPushButton::clicked, object, &GameObject::removeSelf);
     
     auto widget_proxy = scene_->addWidget(parent_widget);
     
@@ -154,7 +193,7 @@ void GameFieldView::changeObjectSelectionState(GameObject *object, bool selected
     if (selected) {
         control_buttons_ = renderer_->drawControlButtons(object);
     } else {
-        delete control_buttons_;
+        control_buttons_->deleteLater();
         control_buttons_ = nullptr;
     }
 }

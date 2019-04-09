@@ -10,8 +10,8 @@ class GameField : public GameFieldBase
     Q_OBJECT
 public:
     GameField(QObject *parent, GameObjectRepositoryBase *repository, int height, int width);
-    GameObject *add(GameObject *object);
-    void remove(GameObject *object);
+    GameObject *add(GameObject *object) override;
+    void remove(GameObject *object) override;
     bool canPlace(const GameObject *object, const Coordinate &pos) const override;
     GameList *getByType(const QString &type) const;
     QVector<GameObject *> getCell(const Coordinate &pos) const;
