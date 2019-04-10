@@ -1,7 +1,8 @@
-#include <QtDebug>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsEffect>
 #include <QGraphicsSceneMouseEvent>
+#include <QtDebug>
+#include <QtEvents>
 #include "gamescene.h"
 #include "../core/gameobjects.h"
 
@@ -50,7 +51,7 @@ void GameScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     }
 }
 
-void GameScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+void GameScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsScene::mouseReleaseEvent(event);
     if (field_->selection() == nullptr || !field_->selection()->isMoving()) {
@@ -59,7 +60,49 @@ void GameScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
     field_->selection()->applyMovingPosition();
 }
 
-GameView::GameView(QWidget* parent)
+void GameScene::mouseHovered(const QPointF &position)
+{
+    if (field_->selection() == nullptr || field_->selection()->active() || !field_->selection()->isMoving()) {
+        return;
+    }
+    field_->selection()->setMovingPosition(geometry_->scenePosToCoord(position));
+}
+
+GameFieldView *GameScene::fieldView() const
+{
+    return view_;
+}
+
+GameField *GameScene::field() const
+{
+    return field_;
+}
+
+GameView::GameView(QWidget *parent)
     : QGraphicsView(parent)
-{}
+{
+    setMouseTracking(true);
+}
+
+void GameView::startAddingObject(GameObject *object)
+{
+    GameScene *scene = qobject_cast<GameScene *>(this->scene());
+    Q_CHECK_PTR(scene);
+    if (scene->field()->selection() != nullptr && !scene->field()->selection()->active()) {
+        scene->field()->selection()->removeSelf();
+    }
+    scene->field()->add(object);
+    object->select();
+    object->startMoving();
+    scene->mouseHovered(mapToScene(mapFromGlobal(QCursor::pos())));
+}
+
+void GameView::mouseMoveEvent(QMouseEvent *event)
+{
+    QGraphicsView::mouseMoveEvent(event);
+    GameScene *scene = qobject_cast<GameScene *>(this->scene());
+    Q_CHECK_PTR(scene);
+    scene->mouseHovered(mapToScene(event->pos()));
+}
+
 

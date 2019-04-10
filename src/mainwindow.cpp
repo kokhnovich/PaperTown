@@ -1,5 +1,6 @@
 #include <QGraphicsView>
 #include <QHBoxLayout>
+#include <QtDebug>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -20,10 +21,10 @@ MainWindow::MainWindow(QWidget *parent) :
     
     ui->setupUi(this);
 
-    QGraphicsView *new_view = new GameView(ui->groupBox);
-    ui->horizontalLayout->replaceWidget(ui->graphicsView, new_view);
+    game_view = new GameView(ui->groupBox);
+    ui->horizontalLayout->replaceWidget(ui->graphicsView, game_view);
     delete ui->graphicsView;
-    ui->graphicsView = new_view;
+    ui->graphicsView = game_view;
     
     ui->graphicsView->setScene(scene);
     ui->graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
@@ -32,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
     scheduler.addEvent(new CustomEvent(this), 1000);
     timer.setInterval(40);
     timer.start();
-
+    
     connect(&timer, SIGNAL(timeout()), this, SLOT(timerTimeout()));
 }
 
@@ -68,11 +69,6 @@ void MainWindow::newEvent()
     //scheduler.addEvent(new CustomEvent(this), 1000); // devastating :)
 }
 
-void MainWindow::on_debug_push_button_clicked()
-{
-    ui->debug_label->setText("default");
-}
-
 void MainWindow::on_activateBtn_clicked()
 {
     scheduler.start();
@@ -94,4 +90,16 @@ void MainWindow::timerTimeout()
 void MainWindow::update()
 {
     ui->label->setText(QString::asprintf("events caught: %d, active : %s", event_count, scheduler.active() ? "true" : "false"));
+}
+
+void MainWindow::on_listWidget_itemSelectionChanged()
+{
+    auto items = ui->listWidget->selectedItems();
+    if (items.empty()) {
+        return;
+    }
+    auto item = items[0];
+    GameObject *object = new StaticObject(item->text());
+    connect(object, &GameObject::placed, ui->listWidget, &QListWidget::clearSelection);
+    game_view->startAddingObject(object);
 }

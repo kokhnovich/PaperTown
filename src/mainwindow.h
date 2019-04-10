@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <QTimer>
+#include <QListWidgetItem>
 #include "core/eventscheduler.h"
 #include "scene/gamescene.h"
 
@@ -22,13 +23,14 @@ public:
     void newEvent();
     void update();
 private slots:
-    void on_debug_push_button_clicked();
-
     void on_activateBtn_clicked();
 
     void on_deactivateBtn_clicked();
 
     void timerTimeout();
+
+    void on_listWidget_itemSelectionChanged();
+
 private:
     void initObjects();
     
@@ -38,6 +40,7 @@ private:
     GameField *field_;
     GameTextureRepository *textures_;
     GameScene *scene;
+    GameView *game_view;
     
     GameEventScheduler scheduler;
     QTimer timer;

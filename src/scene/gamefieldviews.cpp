@@ -80,7 +80,7 @@ QGraphicsItem *GameTextureRenderer::drawMoving(GameObject *object)
     QGraphicsPixmapItem *pixmap_item = scene_->addPixmap(texture->pixmap);
     pixmap_item->setOffset(texture->offset);
     pixmap_item->setZValue(1.0);
-
+    
     QList<QGraphicsItem *> group_items;
     group_items.append(pixmap_item);
     group_items.append(drawSelectionRect(object));
@@ -88,6 +88,7 @@ QGraphicsItem *GameTextureRenderer::drawMoving(GameObject *object)
     QGraphicsItemGroup *group = scene_->createItemGroup(group_items);
     group->setPos(geometry_->coordinateToTopLeft(object->movingPosition()));
     group->setZValue(4e6);
+    
     return group;
 }
 
