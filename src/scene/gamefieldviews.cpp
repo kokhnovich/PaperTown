@@ -201,7 +201,7 @@ void GameFieldView::changeObjectSelectionState(GameObject *object, SelectionStat
             break;
         }
         default: {
-            Q_ASSERT(false);
+            Q_UNREACHABLE();
         }
         }
         info.item->setOpacity(opacity);
