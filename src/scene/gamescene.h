@@ -2,6 +2,7 @@
 #define GAMESCENE_H
 
 #include <QGraphicsScene>
+#include <QGraphicsView>
 #include <QMap>
 #include <QPixmap>
 #include <QPointF>
@@ -18,9 +19,9 @@ public:
     GameScene(QObject *parent, GameObjectRepository *repository,
               GameField *field, GameTextureRepository *textures);
 protected:
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
-    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 private:
     GameObjectRepository *repository_;
     GameField *field_;
@@ -29,6 +30,11 @@ private:
     GameSceneGeometry *geometry_;
     GameTextureRenderer *renderer_;
     GameFieldView *view_;
+};
+
+class GameView : public QGraphicsView {
+public:
+    GameView(QWidget *parent);
 };
 
 #endif // GAMESCENE_H

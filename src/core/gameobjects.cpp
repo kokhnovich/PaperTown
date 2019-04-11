@@ -1,6 +1,19 @@
 #include <QtDebug>
 #include "gameobjects.h"
 
+Rect boundingRect(const QVector<Coordinate>& points)
+{
+    Q_ASSERT(!points.empty());
+    int top = points[0].x, bottom = points[0].x, left = points[0].y, right = points[0].y;
+    for (const Coordinate &coord : qAsConst(points)) {
+        top = qMin(top, coord.x);
+        bottom = qMax(bottom, coord.x);
+        left = qMin(left, coord.y);
+        right = qMax(right, coord.y);
+    }
+    return {top, bottom, left, right};
+}
+
 Coordinate::Coordinate(int x, int y)
     : x(x), y(y)
 {
@@ -30,14 +43,21 @@ Coordinate operator-(Coordinate a, const Coordinate &b)
     return a -= b;
 }
 
+Rect::Rect(Coordinate a, Coordinate b)
+    : top(qMin(a.x, b.x)), bottom(qMax(a.x, b.x)), left(qMin(a.y, b.y)), right(qMax(a.y, b.y))
+{}
+
+Rect::Rect(int top, int bottom, int left, int right)
+    : top(top), bottom(bottom), left(left), right(right)
+{}
+
 bool inBounds(int height, int width, const Coordinate& coord)
 {
     return 0 <= coord.x && coord.x < height && 0 <= coord.y && coord.y < width;
 }
 
 GameObjectRepositoryBase::GameObjectRepositoryBase(QObject *parent) : QObject(parent)
-{
-}
+{}
 
 void GameObjectRepositoryBase::addObject(const QString &type, const QString &name, const QVector<Coordinate> cells)
 {
@@ -104,8 +124,9 @@ GameObject::GameObject(const QString &name, GameObjectProperty *property)
       name_(name),
       active_(false),
       is_selected_(false),
+      is_moving_(false),
       position_(),
-      select_position_(),
+      moving_position_(),
       field_(nullptr),
       property_(property)
 {
@@ -115,16 +136,49 @@ GameObject::GameObject(const QString &name, GameObjectProperty *property)
     }
 }
 
-bool GameObject::applySelectPosition()
+void GameObject::removeSelf()
 {
-    Q_ASSERT(is_selected_);
-    return setPosition(select_position_);
+    field()->remove(this);
 }
 
-bool GameObject::canApplySelectPosition() const
+bool GameObject::applyMovingPosition()
 {
-    Q_ASSERT(is_selected_);
-    return canSetPosition(select_position_);
+    Q_ASSERT(is_moving_);
+    return setPosition(moving_position_);
+}
+
+bool GameObject::canApplyMovingPosition() const
+{
+    Q_ASSERT(is_moving_);
+    return canSetPosition(moving_position_);
+}
+
+bool GameObject::canMove() const
+{
+    return true;
+}
+
+void GameObject::startMoving()
+{
+    Q_ASSERT(is_selected_ && !is_moving_);
+    if (!canMove()) {
+        return;
+    }
+    is_moving_ = true;
+    moving_position_ = position_;
+    emit startedMoving();
+}
+
+void GameObject::endMoving()
+{
+    Q_ASSERT(is_selected_ && is_moving_);    
+    is_moving_ = false;
+    emit endedMoving();
+}
+
+bool GameObject::isMoving() const
+{
+    return is_moving_;
 }
 
 bool GameObject::canSelect() const
@@ -135,9 +189,11 @@ bool GameObject::canSelect() const
 void GameObject::select()
 {
     Q_ASSERT(!is_selected_);
+    if (!canSelect()) {
+        return;
+    }
     emit selecting();
     is_selected_ = true;
-    select_position_ = position_;
     emit selected();
 }
 
@@ -146,23 +202,26 @@ bool GameObject::isSelected() const
     return is_selected_;
 }
 
-Coordinate GameObject::selectPosition() const
+Coordinate GameObject::movingPosition() const
 {
-    Q_ASSERT(is_selected_);
-    return select_position_;
+    Q_ASSERT(is_moving_);
+    return moving_position_;
 }
 
-void GameObject::setSelectPosition(const Coordinate& c)
+void GameObject::setMovingPosition(const Coordinate& c)
 {
-    Q_ASSERT(is_selected_);
-    Coordinate old_position = select_position_;
-    select_position_ = c;
-    emit selectMoved(old_position, select_position_);
+    Q_ASSERT(is_moving_);
+    Coordinate old_position = moving_position_;
+    moving_position_ = c;
+    emit movingPositionChanged(old_position, moving_position_);
 }
 
 void GameObject::unselect()
 {
     Q_ASSERT(is_selected_);
+    if (is_moving_) {
+        endMoving();
+    }
     is_selected_ = false;
     emit unselected();
 }
@@ -260,5 +319,4 @@ QString StaticObject::type() const
 }
 
 GameFieldBase::GameFieldBase(QObject *parent) : QObject(parent)
-{
-}
+{}

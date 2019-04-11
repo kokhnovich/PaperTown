@@ -23,6 +23,8 @@ public:
     QRectF fieldRect() const;
     QPolygonF fieldActivePolygon() const;
     
+    int cellSize() const;
+    
     Coordinate scenePosToCoord(const QPointF &point);
     
     inline int fieldHeight() const { return field_->height(); }

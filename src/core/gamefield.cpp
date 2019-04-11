@@ -10,8 +10,7 @@ GameField::GameField(QObject *parent, GameObjectRepositoryBase *repository, int 
     static_list_(new GameList(this)),
     moving_list_(new GameList(this)),
     selection_(nullptr)
-{
-}
+{}
 
 int GameField::height() const
 {
