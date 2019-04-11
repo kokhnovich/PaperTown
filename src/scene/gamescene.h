@@ -19,9 +19,8 @@ public:
     GameScene(QObject *parent, GameObjectRepository *repository,
               GameField *field, GameTextureRepository *textures);
 protected:
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseHovered(const QPointF &position);
 
     GameFieldView *fieldView() const;

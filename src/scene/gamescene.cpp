@@ -20,15 +20,6 @@ GameScene::GameScene(QObject *parent, GameObjectRepository *repository,
     connect(field_, &GameField::removed, view_, &GameFieldView::removeObject);
 }
 
-void GameScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-{
-    QGraphicsScene::mouseMoveEvent(event);
-    if (field_->selection() == nullptr || !field_->selection()->isMoving()) {
-        return;
-    }
-    field_->selection()->setMovingPosition(geometry_->scenePosToCoord(event->scenePos()));
-}
-
 void GameScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsScene::mouseDoubleClickEvent(event);
@@ -51,9 +42,9 @@ void GameScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     }
 }
 
-void GameScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+void GameScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    QGraphicsScene::mouseReleaseEvent(event);
+    QGraphicsScene::mousePressEvent(event);
     if (field_->selection() == nullptr || !field_->selection()->isMoving()) {
         return;
     }
@@ -62,7 +53,7 @@ void GameScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 void GameScene::mouseHovered(const QPointF &position)
 {
-    if (field_->selection() == nullptr || field_->selection()->active() || !field_->selection()->isMoving()) {
+    if (field_->selection() == nullptr || !field_->selection()->isMoving()) {
         return;
     }
     field_->selection()->setMovingPosition(geometry_->scenePosToCoord(position));
@@ -84,14 +75,6 @@ GameView::GameView(QWidget *parent)
     setMouseTracking(true);
 }
 
-void GameView::startAddingObject(GameObject *object)
-{
-    GameScene *scene = qobject_cast<GameScene *>(this->scene());
-    Q_CHECK_PTR(scene);
-    scene->field()->add(object);
-    scene->mouseHovered(mapToScene(mapFromGlobal(QCursor::pos())));
-}
-
 void GameView::mouseMoveEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseMoveEvent(event);
@@ -99,5 +82,3 @@ void GameView::mouseMoveEvent(QMouseEvent *event)
     Q_CHECK_PTR(scene);
     scene->mouseHovered(mapToScene(event->pos()));
 }
-
-

@@ -143,7 +143,7 @@ QGraphicsWidget *GameTextureRenderer::drawControlButtons(const GameObject *objec
     move_btn->setFont(font);
     move_btn->setVisible(object->canMove());
     layout->addWidget(move_btn);
-    connect(move_btn, &QPushButton::pressed, object, &GameObject::startMoving);
+    connect(move_btn, &QPushButton::released, object, &GameObject::startMoving);
 
     auto delete_btn = new QPushButton("Delete", parent_widget);
     delete_btn->setFont(font);

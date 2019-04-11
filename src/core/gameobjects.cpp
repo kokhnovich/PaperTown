@@ -132,7 +132,7 @@ GameObject::GameObject(const QString &name, GameObjectProperty *property)
       is_selected_(false),
       is_moving_(false),
       is_removing_(false),
-      position_(),
+      position_({-65536, -65536}),
       moving_position_(),
       field_(nullptr),
       property_(property)

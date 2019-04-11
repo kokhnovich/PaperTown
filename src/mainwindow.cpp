@@ -105,5 +105,5 @@ void MainWindow::on_listWidget_itemSelectionChanged()
     
     connect(object, &GameObject::placed, this, selectionCleaner);
     connect(object, &GameObject::declined, this, selectionCleaner);
-    game_view->startAddingObject(object);
+    field_->add(object);
 }
