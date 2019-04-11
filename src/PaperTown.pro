@@ -40,7 +40,9 @@ SOURCES += \
     scene/gamescene.cpp \
     scene/gametextures.cpp \
     scene/gamefieldviews.cpp \
-    scene/gamescenegeometry.cpp
+    scene/gamescenegeometry.cpp \
+    util/coordinates.cpp \
+    util/misc.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -54,7 +56,9 @@ HEADERS += \
     scene/gamescene.h \
     scene/gametextures.h \
     scene/gamefieldviews.h \
-    scene/gamescenegeometry.h
+    scene/gamescenegeometry.h \
+    util/coordinates.h \
+    util/misc.h
 
 FORMS += \
     mainwindow.ui
