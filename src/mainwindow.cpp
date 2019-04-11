@@ -3,6 +3,7 @@
 #include <QtDebug>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "gameobjectpickermodel.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -33,6 +34,12 @@ MainWindow::MainWindow(QWidget *parent) :
     scheduler.addEvent(new CustomEvent(this), 1000);
     timer.setInterval(40);
     timer.start();
+    
+    GameObjectPickerModel *picker_model = new GameObjectPickerModel(repository_, textures_, this);
+    GameObjectSelectionModel *selection_model = new GameObjectSelectionModel(field_, this);
+    selection_model->setModel(picker_model);
+    ui->listView->setModel(picker_model);
+    ui->listView->setSelectionModel(selection_model);
     
     connect(&timer, SIGNAL(timeout()), this, SLOT(timerTimeout()));
 }
@@ -88,22 +95,4 @@ void MainWindow::timerTimeout()
 void MainWindow::update()
 {
     ui->label->setText(QString::asprintf("events caught: %d, active : %s", event_count, scheduler.active() ? "true" : "false"));
-}
-
-void MainWindow::on_listWidget_itemSelectionChanged()
-{
-    auto items = ui->listWidget->selectedItems();
-    if (items.empty()) {
-        return;
-    }
-    auto item = items[0];
-    GameObject *object = new StaticObject(item->text());
-    
-    auto selectionCleaner = [ = ]() {
-        item->setSelected(false);
-    };
-    
-    connect(object, &GameObject::placed, this, selectionCleaner);
-    connect(object, &GameObject::declined, this, selectionCleaner);
-    field_->add(object);
 }

@@ -45,6 +45,7 @@ public:
     struct RenderInfo {
         QVector<QString> textures;
         qreal priority;
+        QString caption;
     };
 
     GameObjectRepository(QObject *parent = nullptr);

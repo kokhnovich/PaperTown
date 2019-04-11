@@ -64,10 +64,10 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="QListWidget" name="listWidget">
+           <widget class="QListView" name="listView">
             <property name="minimumSize">
              <size>
-              <width>512</width>
+              <width>384</width>
               <height>0</height>
              </size>
             </property>
@@ -77,42 +77,9 @@
               <height>128</height>
              </size>
             </property>
-            <property name="movement">
-             <enum>QListView::Static</enum>
-            </property>
             <property name="viewMode">
              <enum>QListView::IconMode</enum>
             </property>
-            <item>
-             <property name="text">
-              <string>cinema</string>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normalon>:/img/cinema.png</normalon>
-              </iconset>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>tree1</string>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normalon>:/img/tree1.png</normalon>
-              </iconset>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>tree2</string>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normalon>:/img/tree2.png</normalon>
-              </iconset>
-             </property>
-            </item>
            </widget>
           </item>
           <item>

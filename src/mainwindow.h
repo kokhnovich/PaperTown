@@ -28,9 +28,6 @@ private slots:
     void on_deactivateBtn_clicked();
 
     void timerTimeout();
-
-    void on_listWidget_itemSelectionChanged();
-
 private:
     void initObjects();
     

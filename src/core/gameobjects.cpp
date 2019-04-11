@@ -78,6 +78,23 @@ QString GameObjectRepositoryBase::fullName(const QString &type, const QString &n
     return type + "::" + name;
 }
 
+QVector<GameObjectKey> GameObjectRepositoryBase::keys() const
+{
+    QList<QString> keys = cells_.keys();
+    QVector<GameObjectKey> obj_keys(keys.size());
+    for (int i = 0; i < keys.size(); ++i) {
+        obj_keys[i] = splitName(keys[i]);
+    }
+    return obj_keys;
+}
+
+GameObjectKey GameObjectRepositoryBase::splitName(const QString& full_name)
+{
+    auto list = full_name.split("::");
+    Q_ASSERT(list.size() == 2);
+    return {list[0], list[1]};
+}
+
 GameObject *GameObjectProperty::gameObject() const
 {
     return qobject_cast<GameObject *>(parent());

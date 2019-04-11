@@ -29,6 +29,10 @@ bool inBounds(int height, int width, const Coordinate &coord);
 
 class GameObject;
 
+struct GameObjectKey {
+    QString type, name;
+};
+
 class GameObjectRepositoryBase : public QObject
 {
     Q_OBJECT
@@ -36,7 +40,9 @@ public:
     explicit GameObjectRepositoryBase(QObject *parent = nullptr);
     void addObject(const QString &type, const QString &name, const QVector<Coordinate> cells);
     QVector<Coordinate> getCells(const QString &type, const QString &name) const;
+    QVector<GameObjectKey> keys() const;
 protected:
+    static GameObjectKey splitName(const QString &full_name);
     static QString fullName(const QString &type, const QString &name);
 private:
     QHash<QString, QVector<Coordinate>> cells_;

@@ -400,6 +400,7 @@ void GameObjectRepository::loadFromJson(const QJsonDocument &document)
             cells[i].y = cell_arr.at(i).toArray().at(1).toInt();
         }
         info.priority = local_object.value("priority").toDouble(type_priorities_[type]);
+        info.caption = local_object.value("caption").toString(it.key());
         addRenderInfo(type, it.key(), info);
         addObject(type, it.key(), cells);
     }

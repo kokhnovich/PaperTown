@@ -4,6 +4,7 @@
 GameField::GameField(QObject *parent, GameObjectRepositoryBase *repository, int height, int width) :
     GameFieldBase(parent),
     repository_(repository),
+    factory_(new GameObjectFactory(this)),
     ground_map_(new GameMap(this, height, width)),
     static_map_(new GameMap(this, height, width)),
     moving_map_(new GameMultimap(this, height, width)),
@@ -12,6 +13,16 @@ GameField::GameField(QObject *parent, GameObjectRepositoryBase *repository, int 
     moving_list_(new GameList(this)),
     selection_(nullptr)
 {}
+
+GameObject *GameField::add(const QString &type, const QString &name)
+{
+    return add(factory_->createObject(type, name));
+}
+
+GameObjectFactory *GameField::factory() const
+{
+    return factory_;
+}
 
 int GameField::height() const
 {
