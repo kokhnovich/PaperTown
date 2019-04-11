@@ -15,4 +15,5 @@ GameObject *GameObjectFactory::createObject(const QString &type, const QString &
     if (type == "moving") {
         return new MovingObject(name);
     }
+    Q_UNREACHABLE();
 }
