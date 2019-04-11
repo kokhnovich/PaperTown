@@ -30,10 +30,12 @@ CONFIG += c++14
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
+    gameobjectpickermodel.cpp \
     core/gameobjects.cpp \
     core/gamelist.cpp \
     core/gamemap.cpp \
     core/gamefield.cpp \
+    core/gameobjectfactory.cpp \
     core/eventscheduler.cpp \
     scene/gamescene.cpp \
     scene/gametextures.cpp \
@@ -42,10 +44,12 @@ SOURCES += \
 
 HEADERS += \
     mainwindow.h \
+    gameobjectpickermodel.h \
     core/gameobjects.h \
     core/gamelist.h \
     core/gamemap.h \
     core/gamefield.h \
+    core/gameobjectfactory.h \
     core/eventscheduler.h \
     scene/gamescene.h \
     scene/gametextures.h \

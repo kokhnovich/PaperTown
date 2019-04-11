@@ -29,6 +29,10 @@ bool inBounds(int height, int width, const Coordinate &coord);
 
 class GameObject;
 
+struct GameObjectKey {
+    QString type, name;
+};
+
 class GameObjectRepositoryBase : public QObject
 {
     Q_OBJECT
@@ -36,7 +40,9 @@ public:
     explicit GameObjectRepositoryBase(QObject *parent = nullptr);
     void addObject(const QString &type, const QString &name, const QVector<Coordinate> cells);
     QVector<Coordinate> getCells(const QString &type, const QString &name) const;
+    QVector<GameObjectKey> keys() const;
 protected:
+    static GameObjectKey splitName(const QString &full_name);
     static QString fullName(const QString &type, const QString &name);
 private:
     QHash<QString, QVector<Coordinate>> cells_;
@@ -54,6 +60,7 @@ public:
 protected:
     void attach(GameObject *object);
     void detach(GameObject *object);
+    void startObjectRemoval(GameObject *object);
 };
 
 class GameObjectProperty : public QObject
@@ -86,6 +93,7 @@ public:
     bool active() const;
     bool isSelected() const;
     bool isMoving() const;
+    bool isRemoving() const;
 
     virtual bool canSelect() const;
     virtual bool canMove() const;
@@ -111,6 +119,7 @@ signals:
     void unselected();
     void startedMoving();
     void endedMoving();
+    void declined();
 public slots:
     void removeSelf();
     
@@ -119,13 +128,17 @@ public slots:
     
     void startMoving();
     void endMoving();
+protected:
+    void decline();
 private:
     void setField(GameFieldBase *field);
 
     QString name_;
     bool active_;
+    bool activating_;
     bool is_selected_;
     bool is_moving_;
+    bool is_removing_;
     Coordinate position_;
     Coordinate moving_position_;
     GameFieldBase *field_;
@@ -137,7 +150,7 @@ class GroundObject : public GameObject
     Q_OBJECT
 public:
     GroundObject(const QString &name, GameObjectProperty *property = nullptr);
-    virtual QString type() const override;
+    QString type() const override;
 };
 
 class StaticObject : public GameObject
@@ -145,7 +158,7 @@ class StaticObject : public GameObject
     Q_OBJECT
 public:
     StaticObject(const QString &name, GameObjectProperty *property = nullptr);
-    virtual QString type() const override;
+    QString type() const override;
 };
 
 class MovingObject : public GameObject
@@ -153,7 +166,7 @@ class MovingObject : public GameObject
     Q_OBJECT
 public:
     MovingObject(const QString &name, GameObjectProperty *property = nullptr);
-    virtual QString type() const override;
+    QString type() const override;
 };
 
 #endif // GAMEOBJECT_H

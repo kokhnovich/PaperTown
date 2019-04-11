@@ -1,7 +1,9 @@
 #include <QGraphicsView>
 #include <QHBoxLayout>
+#include <QtDebug>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "gameobjectpickermodel.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -20,10 +22,10 @@ MainWindow::MainWindow(QWidget *parent) :
     
     ui->setupUi(this);
 
-    QGraphicsView *new_view = new GameView(ui->groupBox);
-    ui->horizontalLayout->replaceWidget(ui->graphicsView, new_view);
+    game_view = new GameView(ui->groupBox);
+    ui->horizontalLayout->replaceWidget(ui->graphicsView, game_view);
     delete ui->graphicsView;
-    ui->graphicsView = new_view;
+    ui->graphicsView = game_view;
     
     ui->graphicsView->setScene(scene);
     ui->graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
@@ -32,7 +34,13 @@ MainWindow::MainWindow(QWidget *parent) :
     scheduler.addEvent(new CustomEvent(this), 1000);
     timer.setInterval(40);
     timer.start();
-
+    
+    GameObjectPickerModel *picker_model = new GameObjectPickerModel(repository_, textures_, this);
+    GameObjectSelectionModel *selection_model = new GameObjectSelectionModel(field_, this);
+    selection_model->setModel(picker_model);
+    ui->listView->setModel(picker_model);
+    ui->listView->setSelectionModel(selection_model);
+    
     connect(&timer, SIGNAL(timeout()), this, SLOT(timerTimeout()));
 }
 
@@ -45,9 +53,7 @@ void MainWindow::initObjects()
                 continue;
             }
             auto obj = field_->add(new StaticObject(objects[qrand() % 3]));
-            if (!obj->setPosition({i, j})) {
-                field_->remove(obj);
-            }
+            obj->setPosition({i, j});
         }
     }
 }
@@ -66,11 +72,6 @@ void MainWindow::newEvent()
     ++event_count;
     scheduler.addEvent(new CustomEvent(this), 1000);
     //scheduler.addEvent(new CustomEvent(this), 1000); // devastating :)
-}
-
-void MainWindow::on_debug_push_button_clicked()
-{
-    ui->debug_label->setText("default");
 }
 
 void MainWindow::on_activateBtn_clicked()

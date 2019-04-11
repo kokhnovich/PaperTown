@@ -1,8 +1,10 @@
+#include <QtDebug>
 #include "gamefield.h"
 
 GameField::GameField(QObject *parent, GameObjectRepositoryBase *repository, int height, int width) :
     GameFieldBase(parent),
     repository_(repository),
+    factory_(new GameObjectFactory(this)),
     ground_map_(new GameMap(this, height, width)),
     static_map_(new GameMap(this, height, width)),
     moving_map_(new GameMultimap(this, height, width)),
@@ -11,6 +13,16 @@ GameField::GameField(QObject *parent, GameObjectRepositoryBase *repository, int 
     moving_list_(new GameList(this)),
     selection_(nullptr)
 {}
+
+GameObject *GameField::add(const QString &type, const QString &name)
+{
+    return add(factory_->createObject(type, name));
+}
+
+GameObjectFactory *GameField::factory() const
+{
+    return factory_;
+}
 
 int GameField::height() const
 {
@@ -33,13 +45,21 @@ GameObject *GameField::add(GameObject *object)
     });
     connect(object, &GameObject::updated, this, [ = ]() {
         emit updated(qobject_cast<GameObject *>(sender()));
-    });    
+    });
     connect(object, &GameObject::selecting, this, &GameField::objectSelecting);
     connect(object, &GameObject::selected, this, [ = ]() {
         emit selected(qobject_cast<GameObject *>(sender()));
     });
     connect(object, &GameObject::unselected, this, &GameField::objectUnselected);
+
     object->setParent(this);
+
+    if (object->isSelected()) {
+        if (selection_ != nullptr) {
+            selection_->unselect();
+        }
+        selection_ = object;
+    }
 
     Q_ASSERT(!object->active() || canPlace(object, object->position()));
 
@@ -62,6 +82,11 @@ GameObject *GameField::add(GameObject *object)
 
 void GameField::remove(GameObject *object)
 {
+    if (object->isRemoving()) {
+        return;
+    }
+    startObjectRemoval(object);
+
     if (object->type() == "ground") {
         ground_list_->remove(object);
         ground_map_->remove(object);

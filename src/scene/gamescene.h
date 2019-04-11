@@ -19,9 +19,14 @@ public:
     GameScene(QObject *parent, GameObjectRepository *repository,
               GameField *field, GameTextureRepository *textures);
 protected:
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseHovered(const QPointF &position);
+
+    GameFieldView *fieldView() const;
+    GameField *field() const;
+    
+    friend class GameView;
 private:
     GameObjectRepository *repository_;
     GameField *field_;
@@ -35,6 +40,9 @@ private:
 class GameView : public QGraphicsView {
 public:
     GameView(QWidget *parent);
+    void startAddingObject(GameObject *object);
+protected:
+    void mouseMoveEvent(QMouseEvent *event) override;
 };
 
 #endif // GAMESCENE_H

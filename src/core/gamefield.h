@@ -4,6 +4,7 @@
 #include <QObject>
 #include "gamemap.h"
 #include "gamelist.h"
+#include "gameobjectfactory.h"
 
 class GameField : public GameFieldBase
 {
@@ -11,6 +12,7 @@ class GameField : public GameFieldBase
 public:
     GameField(QObject *parent, GameObjectRepositoryBase *repository, int height, int width);
     GameObject *add(GameObject *object) override;
+    GameObject *add(const QString &type, const QString &name);
     void remove(GameObject *object) override;
     bool canPlace(const GameObject *object, const Coordinate &pos) const override;
     GameList *getByType(const QString &type) const;
@@ -19,6 +21,7 @@ public:
     GameObject *selection() const;
     int height() const;
     int width() const;
+    GameObjectFactory *factory() const;
 signals:
     void added(GameObject *object);
     void removed(GameObject *object);
@@ -32,7 +35,8 @@ protected slots:
     void objectUnselected();
 private:
     GameObjectRepositoryBase *repository_;
-
+    GameObjectFactory *factory_;
+    
     GameMap *ground_map_;
     GameMap *static_map_;
     GameMultimap *moving_map_;
