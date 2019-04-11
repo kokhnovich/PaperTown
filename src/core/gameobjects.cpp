@@ -33,7 +33,7 @@ QVector<GameObjectKey> GameObjectRepositoryBase::keys() const
     return obj_keys;
 }
 
-GameObjectKey GameObjectRepositoryBase::splitName(const QString& full_name)
+GameObjectKey GameObjectRepositoryBase::splitName(const QString &full_name)
 {
     auto list = full_name.split("::");
     Q_ASSERT(list.size() == 2);
@@ -45,17 +45,41 @@ GameObject *GameObjectProperty::gameObject() const
     return qobject_cast<GameObject *>(parent());
 }
 
-void GameFieldBase::attach(GameObject* object)
+bool GameObjectProperty::canMove(bool last_value) const
+{
+    return mergeBooleans(last_value, canMove());
+}
+
+bool GameObjectProperty::canSelect(bool last_value) const
+{
+    return mergeBooleans(last_value, canSelect());
+}
+
+bool GameObjectProperty::canSetPosition(bool last_value, const Coordinate &) const
+{
+    return last_value;
+}
+
+GameObjectProperty::GameObjectProperty(QObject *parent)
+    : QObject(parent)
+{}
+
+QString GameObjectProperty::objectName()
+{
+    return gameObject()->name();
+}
+
+void GameFieldBase::attach(GameObject *object)
 {
     object->setField(this);
 }
 
-void GameFieldBase::detach(GameObject* object)
+void GameFieldBase::detach(GameObject *object)
 {
     object->setField(nullptr);
 }
 
-void GameFieldBase::startObjectRemoval(GameObject* object)
+void GameFieldBase::startObjectRemoval(GameObject *object)
 {
     object->is_removing_ = true;
 }
@@ -79,11 +103,14 @@ const QVector<Coordinate> GameObject::cellsRelative() const
 
 bool GameObject::canSetPosition(const Coordinate &pos) const
 {
-    if (!field()) {
-        return true;
-    } else {
-        return field()->canPlace(this, pos);
+    bool res = true;
+    if (field()) {
+        res = field()->canPlace(this, pos);
     }
+    if (property_) {
+        res = property_->canSetPosition(res, pos);
+    }
+    return res;
 }
 
 GameObject::GameObject(const QString &name, GameObjectProperty *property)
@@ -95,9 +122,9 @@ GameObject::GameObject(const QString &name, GameObjectProperty *property)
       is_moving_(false),
       is_removing_(false),
       position_({-65536, -65536}),
-      moving_position_(),
-      field_(nullptr),
-      property_(property)
+moving_position_(),
+field_(nullptr),
+property_(property)
 {
     if (property_) {
         connect(this, SIGNAL(updated()), property_, SIGNAL(updated));
@@ -134,6 +161,15 @@ bool GameObject::canApplyMovingPosition() const
 
 bool GameObject::canMove() const
 {
+    bool res = internalCanMove();
+    if (property_ != nullptr) {
+        res = property_->canMove(res);
+    }
+    return res;
+}
+
+bool GameObject::internalCanMove() const
+{
     return true;
 }
 
@@ -150,7 +186,7 @@ void GameObject::startMoving()
 
 void GameObject::endMoving()
 {
-    Q_ASSERT(is_selected_ && is_moving_);    
+    Q_ASSERT(is_selected_ && is_moving_);
     is_moving_ = false;
     emit endedMoving();
 }
@@ -166,6 +202,15 @@ bool GameObject::isRemoving() const
 }
 
 bool GameObject::canSelect() const
+{
+    bool res = internalCanSelect();
+    if (property_ != nullptr) {
+        res = property_->canSelect(res);
+    }
+    return res;
+}
+
+bool GameObject::internalCanSelect() const
 {
     return true;
 }
@@ -192,7 +237,7 @@ Coordinate GameObject::movingPosition() const
     return moving_position_;
 }
 
-void GameObject::setMovingPosition(const Coordinate& c)
+void GameObject::setMovingPosition(const Coordinate &c)
 {
     Q_ASSERT(is_moving_);
     Coordinate old_position = moving_position_;
@@ -274,7 +319,7 @@ GameFieldBase *GameObject::field() const
     return field_;
 }
 
-void GameObject::setField(GameFieldBase* field)
+void GameObject::setField(GameFieldBase *field)
 {
     Q_ASSERT(field_ == nullptr || field == nullptr);
     field_ = field;
@@ -290,6 +335,11 @@ QString GroundObject::type() const
     return "ground";
 }
 
+bool GroundObject::internalCanMove() const
+{
+    return false;
+}
+
 MovingObject::MovingObject(const QString &name, GameObjectProperty *property)
     : GameObject(name, property)
 {
@@ -298,6 +348,11 @@ MovingObject::MovingObject(const QString &name, GameObjectProperty *property)
 QString MovingObject::type() const
 {
     return "moving";
+}
+
+bool StaticObject::internalCanMove() const
+{
+    return false;
 }
 
 StaticObject::StaticObject(const QString &name, GameObjectProperty *property)

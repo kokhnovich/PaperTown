@@ -46,8 +46,18 @@ protected:
 class GameObjectProperty : public QObject
 {
     Q_OBJECT
-private:
+public:
+    virtual bool canSelect(bool last_value) const;
+    virtual bool canMove(bool last_value) const;
+    virtual bool canSetPosition(bool last_value, const Coordinate &position) const;
+    
+    QString objectName();
     GameObject *gameObject() const;
+
+    GameObjectProperty(QObject *parent = nullptr);
+protected:
+    virtual Util::Bool3 canSelect() const = 0;
+    virtual Util::Bool3 canMove() const = 0;
 signals:
     void updated();
 };
@@ -89,6 +99,9 @@ public:
     bool setPosition(const Coordinate &pos);
 
     friend class GameFieldBase;
+protected:
+    virtual bool internalCanSelect() const;
+    virtual bool internalCanMove() const;
 signals:
     void placed(const Coordinate &position);
     void moved(const Coordinate &oldPosition, const Coordinate &newPosition);
@@ -131,6 +144,8 @@ class GroundObject : public GameObject
 public:
     GroundObject(const QString &name, GameObjectProperty *property = nullptr);
     QString type() const override;
+protected:
+    bool internalCanMove() const override;
 };
 
 class StaticObject : public GameObject
@@ -139,6 +154,8 @@ class StaticObject : public GameObject
 public:
     StaticObject(const QString &name, GameObjectProperty *property = nullptr);
     QString type() const override;
+protected:
+    bool internalCanMove() const override;
 };
 
 class MovingObject : public GameObject
