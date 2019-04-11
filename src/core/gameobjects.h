@@ -144,7 +144,7 @@ class GroundObject : public GameObject
     Q_OBJECT
 public:
     GroundObject(const QString &name, GameObjectProperty *property = nullptr);
-    virtual QString type() const override;
+    QString type() const override;
 };
 
 class StaticObject : public GameObject
@@ -152,7 +152,7 @@ class StaticObject : public GameObject
     Q_OBJECT
 public:
     StaticObject(const QString &name, GameObjectProperty *property = nullptr);
-    virtual QString type() const override;
+    QString type() const override;
 };
 
 class MovingObject : public GameObject
@@ -160,7 +160,7 @@ class MovingObject : public GameObject
     Q_OBJECT
 public:
     MovingObject(const QString &name, GameObjectProperty *property = nullptr);
-    virtual QString type() const override;
+    QString type() const override;
 };
 
 #endif // GAMEOBJECT_H

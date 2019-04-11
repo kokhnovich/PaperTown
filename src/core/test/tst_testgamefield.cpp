@@ -19,7 +19,7 @@ private slots:
     void humans();
     void placement();
 private:
-    GameObjectRepository repository;
+    GameObjectRepositoryBase repository;
 };
 
 TestGameField::TestGameField()
