@@ -34,22 +34,22 @@ GameObject *GameField::add(GameObject *object)
     });
     connect(object, &GameObject::updated, this, [ = ]() {
         emit updated(qobject_cast<GameObject *>(sender()));
-    });    
+    });
     connect(object, &GameObject::selecting, this, &GameField::objectSelecting);
     connect(object, &GameObject::selected, this, [ = ]() {
         emit selected(qobject_cast<GameObject *>(sender()));
     });
     connect(object, &GameObject::unselected, this, &GameField::objectUnselected);
-    
+
     object->setParent(this);
-    
+
     if (object->isSelected()) {
         if (selection_ != nullptr) {
             selection_->unselect();
         }
         selection_ = object;
     }
-    
+
     Q_ASSERT(!object->active() || canPlace(object, object->position()));
 
     if (object->type() == "ground") {
@@ -75,7 +75,7 @@ void GameField::remove(GameObject *object)
         return;
     }
     startObjectRemoval(object);
-    
+
     if (object->type() == "ground") {
         ground_list_->remove(object);
         ground_map_->remove(object);

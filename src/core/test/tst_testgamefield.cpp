@@ -82,16 +82,16 @@ void TestGameField::humans()
     GameField field(nullptr, &repository, 30, 30);
     // add ground and building
     GameObject *ground = field.add(new GroundObject("sand"));
-    GameObject *building = field.add(new StaticObject("square"));
     ground->setPosition({1, 1});
+    GameObject *building = field.add(new StaticObject("square"));
     building->setPosition({2, 2});
     // add humans
     GameObject *human1 = field.add(new MovingObject("human"));
-    GameObject *human2 = field.add(new MovingObject("human"));
     QVERIFY(human1->canSetPosition({0, 0}));
     QVERIFY(human1->canSetPosition({1, 1}));
     QVERIFY(!human1->canSetPosition({2, 2}));
     human1->setPosition({0, 0});
+    GameObject *human2 = field.add(new MovingObject("human"));
     QVERIFY(human2->canSetPosition({0, 0}));
     QVERIFY(human2->canSetPosition({1, 1}));
     QVERIFY(!human2->canSetPosition({2, 2}));
@@ -111,16 +111,18 @@ void TestGameField::humans()
 void TestGameField::placement()
 {
     GameField field(nullptr, &repository, 10, 10);
+
     auto ground = field.add(new GroundObject("sand"));
-    auto building = field.add(new StaticObject("square"));
-    auto human1 = field.add(new MovingObject("lying-human1"));
-    auto human2 = field.add(new MovingObject("human"));
     QVERIFY(!ground->canSetPosition({-1, -1}));
     QVERIFY(!ground->canSetPosition({-1, 8}));
     QVERIFY(!ground->canSetPosition({10, 10}));
     ground->setPosition({5, 5});
+
+    auto building = field.add(new StaticObject("square"));
     QVERIFY(building->canSetPosition({5, 5}));
     building->setPosition({5, 5});
+
+    auto human1 = field.add(new MovingObject("lying-human1"));
     QVERIFY(!human1->canSetPosition({4, 5}));
     QVERIFY(!human1->canSetPosition({5, 5}));
     QVERIFY(!human1->canSetPosition({9, 5}));
@@ -130,6 +132,8 @@ void TestGameField::placement()
     QVERIFY(human1->canSetPosition({4, 5}));
     human1->setPosition({4, 5});
     QVERIFY(!building->canSetPosition({5, 5}));
+
+    auto human2 = field.add(new MovingObject("human"));
     QVERIFY(human2->canSetPosition({5, 5}));
     human2->setPosition({5, 5});
 }
