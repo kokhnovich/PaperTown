@@ -88,12 +88,7 @@ void GameView::startAddingObject(GameObject *object)
 {
     GameScene *scene = qobject_cast<GameScene *>(this->scene());
     Q_CHECK_PTR(scene);
-    if (scene->field()->selection() != nullptr && !scene->field()->selection()->active()) {
-        scene->field()->selection()->removeSelf();
-    }
     scene->field()->add(object);
-    object->select();
-    object->startMoving();
     scene->mouseHovered(mapToScene(mapFromGlobal(QCursor::pos())));
 }
 

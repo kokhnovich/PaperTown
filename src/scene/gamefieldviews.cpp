@@ -80,7 +80,7 @@ QGraphicsItem *GameTextureRenderer::drawMoving(GameObject *object)
     QGraphicsPixmapItem *pixmap_item = scene_->addPixmap(texture->pixmap);
     pixmap_item->setOffset(texture->offset);
     pixmap_item->setZValue(1.0);
-    
+
     QList<QGraphicsItem *> group_items;
     group_items.append(pixmap_item);
     group_items.append(drawSelectionRect(object));
@@ -88,7 +88,7 @@ QGraphicsItem *GameTextureRenderer::drawMoving(GameObject *object)
     QGraphicsItemGroup *group = scene_->createItemGroup(group_items);
     group->setPos(geometry_->coordinateToTopLeft(object->movingPosition()));
     group->setZValue(4e6);
-    
+
     return group;
 }
 
@@ -213,7 +213,7 @@ void GameFieldView::changeObjectSelectionState(GameObject *object, SelectionStat
         }
     });
 
-    if (state == SelectionState::Selected) {
+    if (state == SelectionState::Selected && object->active()) {
         control_buttons_ = renderer_->drawControlButtons(object);
     } else if (control_buttons_ != nullptr) {
         control_buttons_->deleteLater();
@@ -276,22 +276,22 @@ void GameFieldView::addObject(GameObject *object)
     connect(object, &GameObject::endedMoving, this, &GameFieldView::endMovingObject);
     connect(object, &GameObject::movingPositionChanged, this, &GameFieldView::movingPositionChanged);
 
-    if (object->active()) {
-        putObject(object);
-    }
+    putObject(object);
 }
 
 void GameFieldView::putObject(GameObject *object)
 {
-    auto info = repository_->getRenderInfo(object);
-    for (const QString &texture_name : info->textures) {
-        QGraphicsItem *item = renderer_->drawTexture(texture_name, object->position(), info->priority);
-        item->setData(DATA_KEY_GAMEOBJECT, QVariant::fromValue(object));
-        objects_.insert(object, {
-            texture_name,
-            item,
-            info->priority
-        });
+    if (object->active()) {
+        auto info = repository_->getRenderInfo(object);
+        for (const QString &texture_name : info->textures) {
+            QGraphicsItem *item = renderer_->drawTexture(texture_name, object->position(), info->priority);
+            item->setData(DATA_KEY_GAMEOBJECT, QVariant::fromValue(object));
+            objects_.insert(object, {
+                texture_name,
+                item,
+                info->priority
+            });
+        }
     }
     if (object->isSelected()) {
         changeObjectSelectionState(object, object->isMoving() ? SelectionState::Moving : SelectionState::Selected);
@@ -335,15 +335,16 @@ GameFieldView::GameFieldView(QObject *parent, GameTextureRenderer *renderer, Gam
 
 void GameFieldView::unputObject(GameObject *object)
 {
-    Q_ASSERT(objects_.contains(object));
     if (object->isSelected()) {
         changeObjectSelectionState(object, SelectionState::None);
     }
-    iterateTextures(object, [&](const TextureInfo & info) {
-        scene_->removeItem(info.item);
-        delete info.item;
-    });
-    objects_.remove(object);
+    if (objects_.contains(object)) {
+        iterateTextures(object, [&](const TextureInfo & info) {
+            scene_->removeItem(info.item);
+            delete info.item;
+        });
+        objects_.remove(object);
+    }
 }
 
 void GameFieldView::removeObject(GameObject *object)
@@ -357,9 +358,7 @@ void GameFieldView::removeObject(GameObject *object)
     disconnect(object, &GameObject::endedMoving, this, &GameFieldView::endMovingObject);
     disconnect(object, &GameObject::movingPositionChanged, this, &GameFieldView::movingPositionChanged);
 
-    if (objects_.contains(object)) {
-        unputObject(object);
-    }
+    unputObject(object);
 }
 
 void GameObjectRepository::addRenderInfo(const QString &type, const QString &name,

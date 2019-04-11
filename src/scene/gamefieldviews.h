@@ -58,16 +58,18 @@ private:
     QHash<QString, qreal> type_priorities_;
 };
 
-enum SelectionState {
-    None,
-    Selected,
-    Moving
-};
 
 class GameFieldView : public QObject
 {
     Q_OBJECT
 public:
+    enum SelectionState {
+        None,
+        Selected,
+        Moving
+    };
+    Q_ENUM(SelectionState)
+    
     GameFieldView(QObject *parent, GameTextureRenderer *renderer, GameObjectRepository *repository);
 public slots:
     void addObject(GameObject *object);

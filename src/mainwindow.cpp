@@ -46,9 +46,7 @@ void MainWindow::initObjects()
                 continue;
             }
             auto obj = field_->add(new StaticObject(objects[qrand() % 3]));
-            if (!obj->setPosition({i, j})) {
-                field_->remove(obj);
-            }
+            obj->setPosition({i, j});
         }
     }
 }
@@ -100,6 +98,12 @@ void MainWindow::on_listWidget_itemSelectionChanged()
     }
     auto item = items[0];
     GameObject *object = new StaticObject(item->text());
-    connect(object, &GameObject::placed, ui->listWidget, &QListWidget::clearSelection);
+    
+    auto selectionCleaner = [ = ]() {
+        item->setSelected(false);
+    };
+    
+    connect(object, &GameObject::placed, this, selectionCleaner);
+    connect(object, &GameObject::declined, this, selectionCleaner);
     game_view->startAddingObject(object);
 }

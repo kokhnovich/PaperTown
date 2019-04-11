@@ -1,3 +1,4 @@
+#include <QtDebug>
 #include "gamefield.h"
 
 GameField::GameField(QObject *parent, GameObjectRepositoryBase *repository, int height, int width) :
@@ -39,8 +40,16 @@ GameObject *GameField::add(GameObject *object)
         emit selected(qobject_cast<GameObject *>(sender()));
     });
     connect(object, &GameObject::unselected, this, &GameField::objectUnselected);
+    
     object->setParent(this);
-
+    
+    if (object->isSelected()) {
+        if (selection_ != nullptr) {
+            selection_->unselect();
+        }
+        selection_ = object;
+    }
+    
     Q_ASSERT(!object->active() || canPlace(object, object->position()));
 
     if (object->type() == "ground") {
@@ -62,6 +71,11 @@ GameObject *GameField::add(GameObject *object)
 
 void GameField::remove(GameObject *object)
 {
+    if (object->isRemoving()) {
+        return;
+    }
+    startObjectRemoval(object);
+    
     if (object->type() == "ground") {
         ground_list_->remove(object);
         ground_map_->remove(object);

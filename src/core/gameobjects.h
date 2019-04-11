@@ -54,6 +54,7 @@ public:
 protected:
     void attach(GameObject *object);
     void detach(GameObject *object);
+    void startObjectRemoval(GameObject *object);
 };
 
 class GameObjectProperty : public QObject
@@ -86,6 +87,7 @@ public:
     bool active() const;
     bool isSelected() const;
     bool isMoving() const;
+    bool isRemoving() const;
 
     virtual bool canSelect() const;
     virtual bool canMove() const;
@@ -111,6 +113,7 @@ signals:
     void unselected();
     void startedMoving();
     void endedMoving();
+    void declined();
 public slots:
     void removeSelf();
     
@@ -119,13 +122,17 @@ public slots:
     
     void startMoving();
     void endMoving();
+protected:
+    void decline();
 private:
     void setField(GameFieldBase *field);
 
     QString name_;
     bool active_;
+    bool activating_;
     bool is_selected_;
     bool is_moving_;
+    bool is_removing_;
     Coordinate position_;
     Coordinate moving_position_;
     GameFieldBase *field_;
