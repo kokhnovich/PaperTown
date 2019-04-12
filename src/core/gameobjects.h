@@ -53,15 +53,29 @@ public:
     virtual bool canMove(bool last_value) const;
     virtual bool canSetPosition(bool last_value, const Coordinate &position) const;
     
-    QString objectName();
+    QString objectName() const;
     GameObject *gameObject() const;
+    void setGameObject(GameObject *object);
+    
+    Q_INVOKABLE GameObjectProperty();
 
-    GameObjectProperty(QObject *parent = nullptr);
+    virtual GameObjectProperty *castTo(const QMetaObject *meta);
+    
+    template<typename T>
+    inline friend T *gameProperty_cast(GameObjectProperty *property) {
+        if (!property) {
+            return nullptr;
+        }
+        return qobject_cast<T *>(property->castTo(&T::staticMetaObject));
+    }
 protected:
     virtual Util::Bool3 canSelect() const;
     virtual Util::Bool3 canMove() const;
 signals:
     void updated();
+    void gameObjectSet();
+private:
+    GameObject *game_object_;
 };
 
 class GameObject : public QObject

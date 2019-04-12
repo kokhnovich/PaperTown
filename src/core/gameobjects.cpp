@@ -47,7 +47,14 @@ GameObjectKey GameObjectRepositoryBase::splitName(const QString &full_name)
 
 GameObject *GameObjectProperty::gameObject() const
 {
-    return qobject_cast<GameObject *>(parent());
+    return game_object_;
+}
+
+void GameObjectProperty::setGameObject(GameObject* object)
+{
+    Q_ASSERT(!game_object_);
+    game_object_ = object;
+    emit gameObjectSet();
 }
 
 bool GameObjectProperty::canMove(bool last_value) const
@@ -75,13 +82,21 @@ bool GameObjectProperty::canSetPosition(bool last_value, const Coordinate &) con
     return last_value;
 }
 
-GameObjectProperty::GameObjectProperty(QObject *parent)
-    : QObject(parent)
+GameObjectProperty::GameObjectProperty()
+    : QObject(nullptr), game_object_(nullptr)
 {}
 
-QString GameObjectProperty::objectName()
+QString GameObjectProperty::objectName() const
 {
     return gameObject()->name();
+}
+
+GameObjectProperty *GameObjectProperty::castTo(const QMetaObject *meta)
+{
+    if (meta->inherits(metaObject()) || metaObject()->inherits(meta)) {
+        return this;
+    }
+    return nullptr;
 }
 
 void GameFieldBase::attach(GameObject *object)
@@ -144,6 +159,7 @@ GameObject::GameObject(const QString &name, GameObjectProperty *property)
     if (property_) {
         connect(this, &GameObject::updated, property_, &GameObjectProperty::updated);
         property_->setParent(this);
+        property_->setGameObject(this);
     }
     select();
     startMoving();

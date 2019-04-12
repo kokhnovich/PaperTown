@@ -1,5 +1,5 @@
-#include "gameobjectrepository.h"
 #include <algorithm>
+#include "gameobjectrepository.h"
 
 GameObjectRepository::GameObjectRepository(QObject *parent)
     : GameObjectRepositoryBase(parent)
@@ -54,7 +54,6 @@ QVector<GameObjectKey> GameObjectRepository::keys(bool show_hidden)
     }), keys.end());
     return keys;
 }
-
 
 void GameObjectRepository::doLoadObject(const QString &type, const QString &name, const QJsonObject &json)
 {

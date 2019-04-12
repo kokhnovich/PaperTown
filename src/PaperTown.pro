@@ -38,6 +38,7 @@ SOURCES += \
     core/gameobjectfactory.cpp \
     core/eventscheduler.cpp \
     objects/gameobjectrepository.cpp \
+    objects/gameobjectproperties.cpp \
     scene/gamescene.cpp \
     scene/gametextures.cpp \
     scene/gamefieldviews.cpp \
@@ -55,6 +56,7 @@ HEADERS += \
     core/gameobjectfactory.h \
     core/eventscheduler.h \
     objects/gameobjectrepository.h \
+    objects/gameobjectproperties.h \
     scene/gamescene.h \
     scene/gametextures.h \
     scene/gamefieldviews.h \
