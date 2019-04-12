@@ -8,7 +8,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    repository_(new GameObjectRepository(this)),
+    repository_(new GameObjectRenderRepository(this)),
     field_(new GameField(this, repository_, 20, 40)),
     textures_(new GameTextureRepository(this)),
     scene(new GameScene(this, repository_, field_, textures_)),

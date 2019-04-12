@@ -37,6 +37,7 @@ SOURCES += \
     core/gamefield.cpp \
     core/gameobjectfactory.cpp \
     core/eventscheduler.cpp \
+    objects/gameobjectrepository.cpp \
     scene/gamescene.cpp \
     scene/gametextures.cpp \
     scene/gamefieldviews.cpp \
@@ -53,6 +54,7 @@ HEADERS += \
     core/gamefield.h \
     core/gameobjectfactory.h \
     core/eventscheduler.h \
+    objects/gameobjectrepository.h \
     scene/gamescene.h \
     scene/gametextures.h \
     scene/gamefieldviews.h \
@@ -62,10 +64,6 @@ HEADERS += \
 
 FORMS += \
     mainwindow.ui
-
-DISTFILES += \
-    img/cell.png \
-    img/cell-dark.png
 
 SUBDIRS += \
     PaperTown.pros

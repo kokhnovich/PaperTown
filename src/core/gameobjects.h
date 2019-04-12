@@ -23,7 +23,6 @@ public:
     QVector<Coordinate> getCells(const QString &type, const QString &name) const;
     QVector<GameObjectKey> keys() const;
     virtual GameObjectProperty *createProperty(const QString &type, const QString &name) const;
-    // TODO : allow adding objects and move keys() to GameObjectRepository!
 protected:
     static GameObjectKey splitName(const QString &full_name);
     static QString fullName(const QString &type, const QString &name);

@@ -17,10 +17,10 @@ public:
     int rowCount(const QModelIndex &parent) const override;
     QModelIndex parent(const QModelIndex &child) const override;
     GameObjectKey indexToObjectKey(const QModelIndex &index) const;
-    GameObjectPickerModel(GameObjectRepository *repository, GameTextureRepository *textures,
+    GameObjectPickerModel(GameObjectRenderRepository *repository, GameTextureRepository *textures,
                           QObject *parent = nullptr);
 private:
-    GameObjectRepository *repository_;
+    GameObjectRenderRepository *repository_;
     GameTextureRepository *textures_;
     QVector<GameObjectKey> keys_;
 };

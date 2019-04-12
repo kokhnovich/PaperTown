@@ -6,7 +6,7 @@
 #include "gamescene.h"
 #include "../core/gameobjects.h"
 
-GameScene::GameScene(QObject *parent, GameObjectRepository *repository,
+GameScene::GameScene(QObject *parent, GameObjectRenderRepository *repository,
                      GameField *field, GameTextureRepository *textures)
     : QGraphicsScene(parent),
       repository_(repository),

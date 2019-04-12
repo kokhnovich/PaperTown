@@ -320,7 +320,7 @@ void GameFieldView::updateObject()
     }
 }
 
-GameFieldView::GameFieldView(QObject *parent, GameTextureRenderer *renderer, GameObjectRepository *repository)
+GameFieldView::GameFieldView(QObject *parent, GameTextureRenderer *renderer, GameObjectRenderRepository *repository)
     : QObject(parent),
       renderer_(renderer),
       scene_(renderer_->scene()),
@@ -361,63 +361,39 @@ void GameFieldView::removeObject(GameObject *object)
     unputObject(object);
 }
 
-void GameObjectRepository::addRenderInfo(const QString &type, const QString &name,
-        const GameObjectRepository::RenderInfo &info)
+void GameObjectRenderRepository::addRenderInfo(const QString &type, const QString &name,
+        const GameObjectRenderRepository::RenderInfo &info)
 {
     QString full_name = fullName(type, name);
     render_info_[full_name] = QSharedPointer<RenderInfo>(new RenderInfo(info));
 }
 
-void GameObjectRepository::loadFromFile(const QString &file_name)
+void GameObjectRenderRepository::doLoadObject(const QString& type, const QString& name, const QJsonObject& json)
 {
-    QFile file(file_name);
-    file.open(QIODevice::ReadOnly);
-    QJsonParseError error;
-    QJsonDocument document = QJsonDocument::fromJson(file.readAll(), &error);
-    qDebug() << "GameObjectRepository: json parsed, error =" << error.errorString();
-    Q_ASSERT(error.error == QJsonParseError::NoError);
-    return loadFromJson(document);
-}
-
-void GameObjectRepository::loadFromJson(const QJsonDocument &document)
-{
-    Q_ASSERT(document.isObject());
-    auto root_object = document.object();
-    for (auto it = root_object.begin(); it != root_object.end(); ++it) {
-        Q_ASSERT(it->isObject());
-        auto local_object = it->toObject();
-        RenderInfo info;
-        QString type = local_object.value("type").toString();
-        auto texture_arr = local_object.value("textures").toArray();
-        info.textures.resize(texture_arr.size());
-        for (int i = 0; i < texture_arr.size(); ++i) {
-            info.textures[i] = texture_arr[i].toString();
-        }
-        auto cell_arr = local_object.value("cells").toArray();
-        QVector<Coordinate> cells(cell_arr.size());
-        for (int i = 0; i < cell_arr.size(); ++i) {
-            cells[i].x = cell_arr.at(i).toArray().at(0).toInt();
-            cells[i].y = cell_arr.at(i).toArray().at(1).toInt();
-        }
-        info.priority = local_object.value("priority").toDouble(type_priorities_[type]);
-        info.caption = local_object.value("caption").toString(it.key());
-        addRenderInfo(type, it.key(), info);
-        addObject(type, it.key(), cells);
+    GameObjectRepository::doLoadObject(type, name, json);
+    RenderInfo info;
+    auto texture_arr = json.value("textures").toArray();
+    info.textures.resize(texture_arr.size());
+    for (int i = 0; i < texture_arr.size(); ++i) {
+        info.textures[i] = texture_arr[i].toString();
     }
+    info.priority = json.value("priority").toDouble(type_priorities_[type]);
+    info.caption = json.value("caption").toString(name);
+    addRenderInfo(type, name, info);
 }
 
-const GameObjectRepository::RenderInfo *GameObjectRepository::getRenderInfo(const QString &type, const QString &name) const
+const GameObjectRenderRepository::RenderInfo *GameObjectRenderRepository::getRenderInfo(const QString &type, const QString &name) const
 {
     return render_info_[fullName(type, name)].data();
 }
 
-const GameObjectRepository::RenderInfo *GameObjectRepository::getRenderInfo(GameObject *object) const
+const GameObjectRenderRepository::RenderInfo *GameObjectRenderRepository::getRenderInfo(GameObject *object) const
 {
     return getRenderInfo(object->type(), object->name());
 }
 
-GameObjectRepository::GameObjectRepository(QObject *parent)
-    : GameObjectRepositoryBase(parent)
+GameObjectRenderRepository::GameObjectRenderRepository(QObject *parent)
+    : GameObjectRepository(parent)
 {
     type_priorities_["ground"] = 0;
     type_priorities_["static"] = 0.33;

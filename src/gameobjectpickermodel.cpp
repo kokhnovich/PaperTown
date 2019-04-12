@@ -48,7 +48,7 @@ QModelIndex GameObjectPickerModel::parent(const QModelIndex &) const
     return QModelIndex();
 }
 
-GameObjectPickerModel::GameObjectPickerModel(GameObjectRepository *repository, GameTextureRepository *textures,
+GameObjectPickerModel::GameObjectPickerModel(GameObjectRenderRepository *repository, GameTextureRepository *textures,
         QObject *parent)
     : QAbstractListModel(parent), repository_(repository), textures_(textures)
 {

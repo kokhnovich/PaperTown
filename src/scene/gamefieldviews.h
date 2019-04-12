@@ -9,6 +9,7 @@
 #include "../core/gameobjects.h"
 #include "gametextures.h"
 #include "gamescenegeometry.h"
+#include "../objects/gameobjectrepository.h"
 
 const int DATA_KEY_GAMEOBJECT = 42;
 
@@ -38,7 +39,7 @@ private:
     QGraphicsScene *scene_;
 };
 
-class GameObjectRepository : public GameObjectRepositoryBase
+class GameObjectRenderRepository : public GameObjectRepository
 {
     Q_OBJECT
 public:
@@ -48,12 +49,12 @@ public:
         QString caption;
     };
 
-    GameObjectRepository(QObject *parent = nullptr);
+    GameObjectRenderRepository(QObject *parent = nullptr);
     void addRenderInfo(const QString &type, const QString &name, const RenderInfo &info);
     const RenderInfo *getRenderInfo(const QString &type, const QString &name) const;
     const RenderInfo *getRenderInfo(GameObject *object) const;
-    void loadFromJson(const QJsonDocument &document);
-    void loadFromFile(const QString &file_name);
+protected:
+    void doLoadObject(const QString & type, const QString & name, const QJsonObject & json) override;
 private:
     QHash<QString, QSharedPointer<RenderInfo>> render_info_;
     QHash<QString, qreal> type_priorities_;
@@ -71,7 +72,7 @@ public:
     };
     Q_ENUM(SelectionState)
     
-    GameFieldView(QObject *parent, GameTextureRenderer *renderer, GameObjectRepository *repository);
+    GameFieldView(QObject *parent, GameTextureRenderer *renderer, GameObjectRenderRepository *repository);
 public slots:
     void addObject(GameObject *object);
     void removeObject(GameObject *object);
@@ -109,7 +110,7 @@ private:
 
     GameTextureRenderer *renderer_;
     QGraphicsScene *scene_;
-    GameObjectRepository *repository_;
+    GameObjectRenderRepository *repository_;
     QMultiHash<GameObject *, TextureInfo> objects_;
     QGraphicsItem *moving_item_;
     QGraphicsWidget *control_buttons_;
