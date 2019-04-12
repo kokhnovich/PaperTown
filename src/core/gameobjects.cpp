@@ -33,6 +33,11 @@ QVector<GameObjectKey> GameObjectRepositoryBase::keys() const
     return obj_keys;
 }
 
+GameObjectProperty *GameObjectRepositoryBase::createProperty(const QString &, const QString &) const
+{
+    return nullptr;
+}
+
 GameObjectKey GameObjectRepositoryBase::splitName(const QString &full_name)
 {
     auto list = full_name.split("::");
@@ -50,9 +55,19 @@ bool GameObjectProperty::canMove(bool last_value) const
     return mergeBooleans(last_value, canMove());
 }
 
+Util::Bool3 GameObjectProperty::canMove() const
+{
+    return Util::Dont_Care;
+}
+
 bool GameObjectProperty::canSelect(bool last_value) const
 {
     return mergeBooleans(last_value, canSelect());
+}
+
+Util::Bool3 GameObjectProperty::canSelect() const
+{
+    return Util::Dont_Care;
 }
 
 bool GameObjectProperty::canSetPosition(bool last_value, const Coordinate &) const
@@ -121,13 +136,13 @@ GameObject::GameObject(const QString &name, GameObjectProperty *property)
       is_selected_(false),
       is_moving_(false),
       is_removing_(false),
-      position_({-65536, -65536}),
-moving_position_(),
-field_(nullptr),
-property_(property)
+      position_(-65536, -65536),
+      moving_position_(),
+      field_(nullptr),
+      property_(property)
 {
     if (property_) {
-        connect(this, SIGNAL(updated()), property_, SIGNAL(updated));
+        connect(this, &GameObject::updated, property_, &GameObjectProperty::updated);
         property_->setParent(this);
     }
     select();

@@ -8,6 +8,7 @@
 #include "../util/misc.h"
 
 class GameObject;
+class GameObjectProperty;
 
 struct GameObjectKey {
     QString type, name;
@@ -21,6 +22,8 @@ public:
     void addObject(const QString &type, const QString &name, const QVector<Coordinate> cells);
     QVector<Coordinate> getCells(const QString &type, const QString &name) const;
     QVector<GameObjectKey> keys() const;
+    virtual GameObjectProperty *createProperty(const QString &type, const QString &name) const;
+    // TODO : allow adding objects and move keys() to GameObjectRepository!
 protected:
     static GameObjectKey splitName(const QString &full_name);
     static QString fullName(const QString &type, const QString &name);
@@ -56,8 +59,8 @@ public:
 
     GameObjectProperty(QObject *parent = nullptr);
 protected:
-    virtual Util::Bool3 canSelect() const = 0;
-    virtual Util::Bool3 canMove() const = 0;
+    virtual Util::Bool3 canSelect() const;
+    virtual Util::Bool3 canMove() const;
 signals:
     void updated();
 };
@@ -68,7 +71,7 @@ class GameObject : public QObject
 public:
     Q_PROPERTY(Coordinate position READ position WRITE setPosition)
 
-    GameObject(const QString &name, GameObjectProperty *property = nullptr);
+    GameObject(const QString &name, GameObjectProperty *property);
 
     QString name() const;
     virtual QString type() const = 0;
@@ -142,7 +145,7 @@ class GroundObject : public GameObject
 {
     Q_OBJECT
 public:
-    GroundObject(const QString &name, GameObjectProperty *property = nullptr);
+    GroundObject(const QString &name, GameObjectProperty *property);
     QString type() const override;
 protected:
     bool internalCanMove() const override;
@@ -152,7 +155,7 @@ class StaticObject : public GameObject
 {
     Q_OBJECT
 public:
-    StaticObject(const QString &name, GameObjectProperty *property = nullptr);
+    StaticObject(const QString &name, GameObjectProperty *property);
     QString type() const override;
 protected:
     bool internalCanMove() const override;
@@ -162,7 +165,7 @@ class MovingObject : public GameObject
 {
     Q_OBJECT
 public:
-    MovingObject(const QString &name, GameObjectProperty *property = nullptr);
+    MovingObject(const QString &name, GameObjectProperty *property);
     QString type() const override;
 };
 

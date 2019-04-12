@@ -11,11 +11,17 @@ SOURCES +=  tst_testgamefield.cpp \
     ../gamefield.cpp \
     ../gamelist.cpp \
     ../gamemap.cpp \
-    ../gameobjects.cpp
+    ../gameobjects.cpp \
+    ../gameobjectfactory.cpp \
+    ../../util/coordinates.cpp \
+    ../../util/misc.cpp
 
 HEADERS += \
     ../eventscheduler.h \
     ../gamefield.h \
     ../gamelist.h \
     ../gamemap.h \
-    ../gameobjects.h
+    ../gameobjects.h \
+    ../gameobjectfactory.h \
+    ../../util/coordinates.h \
+    ../../util/misc.h

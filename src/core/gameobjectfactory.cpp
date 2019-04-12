@@ -1,19 +1,20 @@
 #include "gameobjectfactory.h"
 
-GameObjectFactory::GameObjectFactory(QObject *parent)
-    : QObject(parent)
+GameObjectFactory::GameObjectFactory(GameObjectRepositoryBase *repository, QObject *parent)
+    : QObject(parent), repository_(repository)
 {}
 
 GameObject *GameObjectFactory::createObject(const QString &type, const QString &name)
 {
+    GameObjectProperty *property = repository_->createProperty(type, name);
     if (type == "ground") {
-        return new GroundObject(name);
+        return new GroundObject(name, property);
     }
     if (type == "static") {
-        return new StaticObject(name);
+        return new StaticObject(name, property);
     }
     if (type == "moving") {
-        return new MovingObject(name);
+        return new MovingObject(name, property);
     }
     Q_UNREACHABLE();
 }

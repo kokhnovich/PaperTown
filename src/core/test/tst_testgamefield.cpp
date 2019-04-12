@@ -49,7 +49,7 @@ void TestGameField::basicFeatures()
 {
     GameField field(nullptr, &repository, 30, 30);
     // add obj1
-    GameObject *obj1 = new StaticObject("square");
+    GameObject *obj1 = new StaticObject("square", nullptr);
     QVERIFY(field.canPlace(obj1, Coordinate {2, 2}));
     field.add(obj1);
     obj1->setPosition(Coordinate {2, 2});
@@ -57,7 +57,7 @@ void TestGameField::basicFeatures()
     QCOMPARE(field.getCell({3, 3}), QVector<GameObject *>{obj1});
     QCOMPARE(field.getCell({1, 1}), QVector<GameObject *>{});
     // add obj2
-    GameObject *obj2 = new StaticObject("horz-line");
+    GameObject *obj2 = new StaticObject("horz-line", nullptr);
     field.add(obj2);
     QVERIFY(!field.canPlace(obj2, Coordinate {2, 2}));
     QVERIFY(!obj2->canSetPosition(Coordinate {2, 2}));
@@ -81,17 +81,17 @@ void TestGameField::humans()
 {
     GameField field(nullptr, &repository, 30, 30);
     // add ground and building
-    GameObject *ground = field.add(new GroundObject("sand"));
+    GameObject *ground = field.add("ground", "sand");
     ground->setPosition({1, 1});
-    GameObject *building = field.add(new StaticObject("square"));
+    GameObject *building = field.add("static", "square");
     building->setPosition({2, 2});
     // add humans
-    GameObject *human1 = field.add(new MovingObject("human"));
+    GameObject *human1 = field.add("moving", "human");
     QVERIFY(human1->canSetPosition({0, 0}));
     QVERIFY(human1->canSetPosition({1, 1}));
     QVERIFY(!human1->canSetPosition({2, 2}));
     human1->setPosition({0, 0});
-    GameObject *human2 = field.add(new MovingObject("human"));
+    GameObject *human2 = field.add(new MovingObject("human", nullptr));
     QVERIFY(human2->canSetPosition({0, 0}));
     QVERIFY(human2->canSetPosition({1, 1}));
     QVERIFY(!human2->canSetPosition({2, 2}));
@@ -112,17 +112,17 @@ void TestGameField::placement()
 {
     GameField field(nullptr, &repository, 10, 10);
 
-    auto ground = field.add(new GroundObject("sand"));
+    auto ground = field.add(new GroundObject("sand", nullptr));
     QVERIFY(!ground->canSetPosition({-1, -1}));
     QVERIFY(!ground->canSetPosition({-1, 8}));
     QVERIFY(!ground->canSetPosition({10, 10}));
     ground->setPosition({5, 5});
 
-    auto building = field.add(new StaticObject("square"));
+    auto building = field.add(new StaticObject("square", nullptr));
     QVERIFY(building->canSetPosition({5, 5}));
     building->setPosition({5, 5});
 
-    auto human1 = field.add(new MovingObject("lying-human1"));
+    auto human1 = field.add(new MovingObject("lying-human1", nullptr));
     QVERIFY(!human1->canSetPosition({4, 5}));
     QVERIFY(!human1->canSetPosition({5, 5}));
     QVERIFY(!human1->canSetPosition({9, 5}));
@@ -133,7 +133,7 @@ void TestGameField::placement()
     human1->setPosition({4, 5});
     QVERIFY(!building->canSetPosition({5, 5}));
 
-    auto human2 = field.add(new MovingObject("human"));
+    auto human2 = field.add(new MovingObject("human", nullptr));
     QVERIFY(human2->canSetPosition({5, 5}));
     human2->setPosition({5, 5});
 }

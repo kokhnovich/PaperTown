@@ -52,7 +52,7 @@ void MainWindow::initObjects()
             if (qrand() % 12 != 0) {
                 continue;
             }
-            auto obj = field_->add(new StaticObject(objects[qrand() % 3]));
+            auto obj = field_->add("static", objects[qrand() % 3]);
             obj->setPosition({i, j});
         }
     }
