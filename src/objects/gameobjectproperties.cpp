@@ -64,7 +64,7 @@ void GameObjectPropertyContainer::setGameObjectToChildren()
     }
 }
 
-static QHash<QString, const QMetaObject *> g_properties;
+static QHash<QString, const QMetaObject *> g_properties; // clazy:exclude=non-pod-global-static
 
 GameObjectProperty *createProperty(const QString& name)
 {
@@ -82,4 +82,4 @@ void registerProperty(const QString& name, const QMetaObject* meta)
     qDebug() << "registerProperty: property" << name << "with type" << meta->className() << "registered";
 }
 
-GAME_PROPERTY_REGISTER("empty", GameObjectProperty)
+GAME_PROPERTY_REGISTER("empty", GameObjectProperty) // clazy:exclude=non-pod-global-static

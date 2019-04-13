@@ -28,7 +28,7 @@ GameObjectProperty *createProperty(const QString &name);
 
 #define GAME_PROPERTY_REGISTER(name, type) \
     namespace type##__Registerer__ { \
-        bool registered = []() { \
+        static bool registered = []() { \
             registerProperty(name, &type::staticMetaObject); \
             return true; \
         }(); \
