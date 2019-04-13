@@ -1,4 +1,5 @@
 #include "gameobjectfactory.h"
+#include "gameobjecttypes.h"
 
 GameObjectFactory::GameObjectFactory(GameObjectRepositoryBase *repository, QObject *parent)
     : QObject(parent), repository_(repository)

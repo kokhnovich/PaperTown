@@ -15,11 +15,14 @@ public:
     void hideKey(const QString &type, const QString &name);
     void unhideKey(const QString &type, const QString &name);
     QVector<GameObjectKey> keys(bool show_hidden = false);
+    GameObjectProperty *createProperty(const QString &type, const QString &name) const override;
+    void addPropertyByName(const QString &type, const QString &name, const QString &prop_name);
 protected:
     virtual void doLoadObject(const QString &type, const QString &name, const QJsonObject &json);
     bool isKeyHidden(const GameObjectKey &key);
 private:
     QHash<QString, bool> is_hidden_;
+    QHash<QString, QVector<QString>> properties_;
 };
 
 #endif // GAMEOBJECTREPOSITORY_H

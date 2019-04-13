@@ -1,5 +1,6 @@
 #include <algorithm>
 #include "gameobjectrepository.h"
+#include "gameobjectproperties.h"
 
 GameObjectRepository::GameObjectRepository(QObject *parent)
     : GameObjectRepositoryBase(parent)
@@ -49,7 +50,7 @@ QVector<GameObjectKey> GameObjectRepository::keys(bool show_hidden)
     if (show_hidden) {
         return keys;
     }
-    keys.erase(std::remove_if(keys.begin(), keys.end(), [this](const GameObjectKey &key) {
+    keys.erase(std::remove_if(keys.begin(), keys.end(), [this](const GameObjectKey & key) {
         return isKeyHidden(key);
     }), keys.end());
     return keys;
@@ -68,9 +69,29 @@ void GameObjectRepository::doLoadObject(const QString &type, const QString &name
     if (keys_obj.isObject()) {
         info.keys = keys_obj.toVariant().toMap();
     }
+    auto props_arr = json.value("props").toArray();
+    for (int i = 0; i < props_arr.size(); ++i) {
+        addPropertyByName(type, name, props_arr[i].toString());
+    }
     addObject(type, name, info);
     if (json.value("hidden").toBool(false)) {
         hideKey(type, name);
     }
 }
 
+void GameObjectRepository::addPropertyByName(const QString &type, const QString &name, const QString &prop_name)
+{
+    QString full = fullName(type, name);
+    properties_[full].append(prop_name);
+}
+
+GameObjectProperty *GameObjectRepository::createProperty(const QString &type, const QString &name) const
+{
+    QString full = fullName(type, name);
+    GameObjectPropertyContainer *container = new GameObjectPropertyContainer();
+    const auto &props = properties_[full];
+    for (const QString &prop_name : props) {
+        container->addProperty(::createProperty(prop_name));
+    }
+    return container;
+}

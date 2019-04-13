@@ -163,32 +163,4 @@ private:
     GameObjectRepositoryBase *repository_;
 };
 
-class GroundObject : public GameObject
-{
-    Q_OBJECT
-public:
-    GroundObject(const QString &name, GameObjectProperty *property, GameObjectRepositoryBase *repository);
-    QString type() const override;
-protected:
-    bool internalCanMove() const override;
-};
-
-class StaticObject : public GameObject
-{
-    Q_OBJECT
-public:
-    StaticObject(const QString &name, GameObjectProperty *property, GameObjectRepositoryBase *repository);
-    QString type() const override;
-protected:
-    bool internalCanMove() const override;
-};
-
-class MovingObject : public GameObject
-{
-    Q_OBJECT
-public:
-    MovingObject(const QString &name, GameObjectProperty *property, GameObjectRepositoryBase *repository);
-    QString type() const override;
-};
-
 #endif // GAMEOBJECT_H

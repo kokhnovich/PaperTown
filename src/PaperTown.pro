@@ -36,6 +36,7 @@ SOURCES += \
     core/gamemap.cpp \
     core/gamefield.cpp \
     core/gameobjectfactory.cpp \
+    core/gameobjecttypes.cpp \
     core/eventscheduler.cpp \
     objects/gameobjectrepository.cpp \
     objects/gameobjectproperties.cpp \
@@ -54,6 +55,7 @@ HEADERS += \
     core/gamemap.h \
     core/gamefield.h \
     core/gameobjectfactory.h \
+    core/gameobjecttypes.h \
     core/eventscheduler.h \
     objects/gameobjectrepository.h \
     objects/gameobjectproperties.h \
