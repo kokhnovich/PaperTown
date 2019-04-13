@@ -8,13 +8,13 @@ GameObject *GameObjectFactory::createObject(const QString &type, const QString &
 {
     GameObjectProperty *property = repository_->createProperty(type, name);
     if (type == "ground") {
-        return new GroundObject(name, property);
+        return new GroundObject(name, property, repository_);
     }
     if (type == "static") {
-        return new StaticObject(name, property);
+        return new StaticObject(name, property, repository_);
     }
     if (type == "moving") {
-        return new MovingObject(name, property);
+        return new MovingObject(name, property, repository_);
     }
     Q_UNREACHABLE();
 }

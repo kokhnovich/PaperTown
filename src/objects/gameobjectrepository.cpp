@@ -58,12 +58,17 @@ QVector<GameObjectKey> GameObjectRepository::keys(bool show_hidden)
 void GameObjectRepository::doLoadObject(const QString &type, const QString &name, const QJsonObject &json)
 {
     auto cell_arr = json.value("cells").toArray();
-    QVector<Coordinate> cells(cell_arr.size());
+    GameObjectRepositoryBase::GameObjectInfo info;
+    info.cells.resize(cell_arr.size());
     for (int i = 0; i < cell_arr.size(); ++i) {
-        cells[i].x = cell_arr.at(i).toArray().at(0).toInt();
-        cells[i].y = cell_arr.at(i).toArray().at(1).toInt();
+        info.cells[i].x = cell_arr.at(i).toArray().at(0).toInt();
+        info.cells[i].y = cell_arr.at(i).toArray().at(1).toInt();
     }
-    addObject(type, name, cells);
+    auto keys_obj = json.value("keys");
+    if (keys_obj.isObject()) {
+        info.keys = keys_obj.toVariant().toMap();
+    }
+    addObject(type, name, info);
     if (json.value("hidden").toBool(false)) {
         hideKey(type, name);
     }

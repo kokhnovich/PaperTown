@@ -18,16 +18,21 @@ class GameObjectRepositoryBase : public QObject
 {
     Q_OBJECT
 public:
+    struct GameObjectInfo {
+        QVector<Coordinate> cells;
+        QVariantMap keys;
+    };
+    
     explicit GameObjectRepositoryBase(QObject *parent = nullptr);
-    void addObject(const QString &type, const QString &name, const QVector<Coordinate> cells);
-    QVector<Coordinate> getCells(const QString &type, const QString &name) const;
+    void addObject(const QString &type, const QString &name, const GameObjectInfo &info);
+    GameObjectInfo *getInfo(const QString &type, const QString &name) const;
     QVector<GameObjectKey> keys() const;
     virtual GameObjectProperty *createProperty(const QString &type, const QString &name) const;
 protected:
     static GameObjectKey splitName(const QString &full_name);
     static QString fullName(const QString &type, const QString &name);
 private:
-    QHash<QString, QVector<Coordinate>> cells_;
+    QHash<QString, QSharedPointer<GameObjectInfo>> info_;
 };
 
 class GameFieldBase : public QObject
@@ -68,6 +73,8 @@ public:
         }
         return qobject_cast<T *>(property->castTo(&T::staticMetaObject));
     }
+    
+    GameObjectRepositoryBase *repository() const;
 protected:
     virtual Util::Bool3 canSelect() const;
     virtual Util::Bool3 canMove() const;
@@ -84,7 +91,7 @@ class GameObject : public QObject
 public:
     Q_PROPERTY(Coordinate position READ position WRITE setPosition)
 
-    GameObject(const QString &name, GameObjectProperty *property);
+    GameObject(const QString &name, GameObjectProperty *property, GameObjectRepositoryBase *repository);
 
     QString name() const;
     virtual QString type() const = 0;
@@ -110,6 +117,7 @@ public:
     bool applyMovingPosition();
 
     GameFieldBase *field() const;
+    GameObjectRepositoryBase *repository() const;
 
     bool canSetPosition(const Coordinate &pos) const;
     bool setPosition(const Coordinate &pos);
@@ -152,13 +160,14 @@ private:
     Coordinate moving_position_;
     GameFieldBase *field_;
     GameObjectProperty *property_;
+    GameObjectRepositoryBase *repository_;
 };
 
 class GroundObject : public GameObject
 {
     Q_OBJECT
 public:
-    GroundObject(const QString &name, GameObjectProperty *property);
+    GroundObject(const QString &name, GameObjectProperty *property, GameObjectRepositoryBase *repository);
     QString type() const override;
 protected:
     bool internalCanMove() const override;
@@ -168,7 +177,7 @@ class StaticObject : public GameObject
 {
     Q_OBJECT
 public:
-    StaticObject(const QString &name, GameObjectProperty *property);
+    StaticObject(const QString &name, GameObjectProperty *property, GameObjectRepositoryBase *repository);
     QString type() const override;
 protected:
     bool internalCanMove() const override;
@@ -178,7 +187,7 @@ class MovingObject : public GameObject
 {
     Q_OBJECT
 public:
-    MovingObject(const QString &name, GameObjectProperty *property);
+    MovingObject(const QString &name, GameObjectProperty *property, GameObjectRepositoryBase *repository);
     QString type() const override;
 };
 
