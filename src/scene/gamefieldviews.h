@@ -54,7 +54,7 @@ public:
     const RenderInfo *getRenderInfo(const QString &type, const QString &name) const;
     const RenderInfo *getRenderInfo(GameObject *object) const;
 protected:
-    void doLoadObject(const QString & type, const QString & name, const QJsonObject & json) override;
+    void doLoadObject(const QString &type, const QString &name, const QJsonObject &json) override;
 private:
     QHash<QString, QSharedPointer<RenderInfo>> render_info_;
     QHash<QString, qreal> type_priorities_;
@@ -71,7 +71,7 @@ public:
         Moving
     };
     Q_ENUM(SelectionState)
-    
+
     GameFieldView(QObject *parent, GameTextureRenderer *renderer, GameObjectRenderRepository *repository);
 public slots:
     void addObject(GameObject *object);
