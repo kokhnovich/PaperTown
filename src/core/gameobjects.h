@@ -10,6 +10,19 @@
 class GameObject;
 class GameObjectProperty;
 
+namespace Selection
+{
+    Q_NAMESPACE
+    
+    enum State {
+        None,
+        Selected,
+        Moving
+    };
+    Q_ENUM_NS(State);
+}
+using SelectionState = Selection::State;
+
 struct GameObjectKey {
     QString type, name;
 };
@@ -108,6 +121,8 @@ public:
     bool isMoving() const;
     bool isRemoving() const;
 
+    SelectionState getSelectionState() const;
+    
     virtual bool canSelect() const;
     virtual bool canMove() const;
 

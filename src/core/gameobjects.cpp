@@ -172,6 +172,14 @@ GameObject::GameObject(const QString &name, GameObjectProperty *property, GameOb
     startMoving();
 }
 
+SelectionState GameObject::getSelectionState() const
+{
+    if (isSelected()) {
+        return isMoving() ? Selection::Moving : Selection::Selected;
+    }
+    return Selection::None;
+}
+
 void GameObject::removeSelf()
 {
     if (field()) {

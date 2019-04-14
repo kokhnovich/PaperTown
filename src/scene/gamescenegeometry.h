@@ -25,7 +25,13 @@ public:
     
     int cellSize() const;
     
-    Coordinate scenePosToCoord(const QPointF &point);
+    Coordinate scenePosToCoord(const QPointF &point) const;
+    
+    qreal zOrder(const Coordinate &c, qreal priority = 0.0) const;
+    qreal selectionStateZDelta(SelectionState state) const;
+    
+    inline qreal movingZDelta() const { return 1e9; }
+    inline qreal controlZDelta() const { return 1e9; }
     
     inline int fieldHeight() const { return field_->height(); }
     inline int fieldWidth() const { return field_->width(); }

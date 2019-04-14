@@ -32,7 +32,7 @@ QGraphicsItem *GameTextureRenderer::drawTexture(const QString &name, const Coord
     Q_CHECK_PTR(texture);
     QGraphicsPixmapItem *item = scene_->addPixmap(texture->pixmap);
     item->setPos(texture->offset + geometry_->coordinateToTopLeft(c));
-    item->setZValue(zOrder(c + texture->z_offset, priority));
+    item->setZValue(geometry_->zOrder(c + texture->z_offset, priority));
     return item;
 }
 
@@ -41,7 +41,7 @@ void GameTextureRenderer::moveTexture(QGraphicsItem *item, const QString &name, 
     const GameTexture *texture = textures_->getTexture(name);
     Q_CHECK_PTR(texture);
     item->setPos(texture->offset + geometry_->coordinateToTopLeft(c));
-    item->setZValue(zOrder(c + texture->z_offset, priority));
+    item->setZValue(geometry_->zOrder(c + texture->z_offset, priority));
 }
 
 QList<QGraphicsItem *> GameTextureRenderer::drawObject(GameObject *object)
@@ -92,7 +92,7 @@ void GameTextureRenderer::changeObjectSelectionState(GameObject *, const QList<Q
         }
         item->setOpacity(opacity);
 
-        double zdelta = getStateZDelta(new_state) - getStateZDelta(old_state);
+        double zdelta = geometry_->selectionStateZDelta(new_state) - geometry_->selectionStateZDelta(old_state);
         if (!qFuzzyIsNull(zdelta)) {
             item->setZValue(item->zValue() + zdelta);
         }
@@ -135,7 +135,7 @@ QGraphicsItem *GameTextureRenderer::drawMoving(GameObject *object)
 
     QGraphicsItemGroup *group = scene_->createItemGroup(group_items);
     group->setPos(geometry_->coordinateToTopLeft(object->movingPosition()));
-    group->setZValue(4e6);
+    group->setZValue(geometry_->movingZDelta());
 
     return group;
 }
@@ -206,13 +206,13 @@ QGraphicsWidget *GameTextureRenderer::drawSelectionControl(const GameObject *obj
     QPointF bottom_right = geometry_->coordinateToRect({bound_rect.bottom, bound_rect.right}).bottomRight();
     QPointF widget_middle(parent_widget->size().width() / 2, parent_widget->size().height());
 
-    widget_proxy->setZValue(3e6);
+    widget_proxy->setZValue(geometry_->controlZDelta());
     widget_proxy->setPos((top_left + bottom_right) / 2 - widget_middle);
 
     return widget_proxy;
 }
 
-QGraphicsScene *GameTextureRenderer::scene()
+QGraphicsScene *GameTextureRenderer::scene() const
 {
     return scene_;
 }
@@ -225,13 +225,3 @@ GameTextureRenderer::GameTextureRenderer(QObject *parent, GameSceneGeometry *geo
       repository_(repository),
       scene_(scene)
 {}
-
-qreal GameTextureRenderer::zOrder(const Coordinate &c, qreal priority) const
-{
-    return (c.x + 1) * geometry_->fieldWidth() - c.y + priority;
-}
-
-qreal GameTextureRenderer::getStateZDelta(SelectionState state) const
-{
-    return (state == SelectionState::Selected) ? 1e6 : 0;
-}

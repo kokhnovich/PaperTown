@@ -2,13 +2,13 @@
 #define GAMEPROPERTYRENDERER_H
 
 #include <QObject>
+#include <QGraphicsItem>
+#include "gameobjectrenderrepository.h"
+#include "../objects/gameobjectproperties.h"
 
-// TODO
-
-class GamePropertyRenderer : public QObject
+class GameAbstractPropertyRenderer : public QObject
 {
     Q_OBJECT
-
 };
 
 #endif // GAMEPROPERTYRENDERER_H

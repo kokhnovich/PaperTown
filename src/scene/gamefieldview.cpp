@@ -81,7 +81,7 @@ void GameFieldView::putObject(GameObject *object)
         }
     }
     if (object->isSelected()) {
-        changeObjectSelectionState(object, object->isMoving() ? SelectionState::Moving : SelectionState::Selected);
+        changeObjectSelectionState(object, object->getSelectionState());
     }
 }
 

@@ -22,12 +22,12 @@ protected:
     void changeObjectSelectionState(GameObject *object, SelectionState state);
 protected slots:
     void placeObject(const Coordinate &);
-    void moveObject(const Coordinate &, const Coordinate &newPosition);
+    void moveObject(const Coordinate &, const Coordinate &);
     void startMovingObject();
     void endMovingObject();
     void updateObject();
     void selectObject();
-    void movingPositionChanged(const Coordinate &, const Coordinate &newPosition);
+    void movingPositionChanged(const Coordinate &, const Coordinate &);
     void unselectObject();
 private:
     template<typename T>
