@@ -12,13 +12,6 @@ class GameFieldView : public QObject
 {
     Q_OBJECT
 public:
-    enum SelectionState {
-        None,
-        Selected,
-        Moving
-    };
-    Q_ENUM(SelectionState);
-    
     GameFieldView(QObject *parent, GameTextureRenderer *renderer);
 public slots:
     void addObject(GameObject *object);
@@ -27,8 +20,6 @@ protected:
     void putObject(GameObject *object);
     void unputObject(GameObject *object);
     void changeObjectSelectionState(GameObject *object, SelectionState state);
-
-    qreal getStateZDelta(SelectionState state) const;
 protected slots:
     void placeObject(const Coordinate &);
     void moveObject(const Coordinate &, const Coordinate &newPosition);

@@ -68,6 +68,37 @@ void GameTextureRenderer::moveObject(GameObject *object, const QList<QGraphicsIt
     }
 }
 
+void GameTextureRenderer::changeObjectSelectionState(GameObject *, const QList<QGraphicsItem *> &items,
+        SelectionState old_state, SelectionState new_state)
+{
+    for (QGraphicsItem *item : items) {
+        qreal opacity = 1.0;
+        switch (new_state) {
+        case SelectionState::None: {
+            opacity = 1.0;
+            break;
+        }
+        case SelectionState::Moving: {
+            opacity = 0.5;
+            break;
+        }
+        case SelectionState::Selected: {
+            opacity = 0.75;
+            break;
+        }
+        default: {
+            Q_UNREACHABLE();
+        }
+        }
+        item->setOpacity(opacity);
+
+        double zdelta = getStateZDelta(new_state) - getStateZDelta(old_state);
+        if (!qFuzzyIsNull(zdelta)) {
+            item->setZValue(item->zValue() + zdelta);
+        }
+    }
+}
+
 QGraphicsItem *GameTextureRenderer::drawSelectionRect(GameObject *object)
 {
     QColor brush_color, pen_color;
@@ -109,7 +140,7 @@ QGraphicsItem *GameTextureRenderer::drawMoving(GameObject *object)
     return group;
 }
 
-QGraphicsWidget *GameTextureRenderer::drawControlButtons(const GameObject *object)
+QGraphicsWidget *GameTextureRenderer::drawSelectionControl(const GameObject *object)
 {
     QFont font;
     font.setPixelSize(2 * geometry_->cellSize());
@@ -198,4 +229,9 @@ GameTextureRenderer::GameTextureRenderer(QObject *parent, GameSceneGeometry *geo
 qreal GameTextureRenderer::zOrder(const Coordinate &c, qreal priority) const
 {
     return (c.x + 1) * geometry_->fieldWidth() - c.y + priority;
+}
+
+qreal GameTextureRenderer::getStateZDelta(SelectionState state) const
+{
+    return (state == SelectionState::Selected) ? 1e6 : 0;
 }

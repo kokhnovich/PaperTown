@@ -3,42 +3,12 @@
 #include "gamefieldview.h"
 #include "gamescenegeometry.h"
 
-qreal GameFieldView::getStateZDelta(SelectionState state) const
-{
-    return (state == SelectionState::Selected) ? 1e6 : 0;
-}
-
 void GameFieldView::changeObjectSelectionState(GameObject *object, SelectionState state)
 {
-    iterateTextures(object, [ = ](QGraphicsItem *item) {
-        qreal opacity = 1.0;
-        switch (state) {
-        case SelectionState::None: {
-            opacity = 1.0;
-            break;
-        }
-        case SelectionState::Moving: {
-            opacity = 0.5;
-            break;
-        }
-        case SelectionState::Selected: {
-            opacity = 0.75;
-            break;
-        }
-        default: {
-            Q_UNREACHABLE();
-        }
-        }
-        item->setOpacity(opacity);
-
-        double zdelta = getStateZDelta(state) - getStateZDelta(last_state_);
-        if (!qFuzzyIsNull(zdelta)) {
-            item->setZValue(item->zValue() + zdelta);
-        }
-    });
+    renderer_->changeObjectSelectionState(object, objects_.values(object), last_state_, state);
 
     if (state == SelectionState::Selected && object->active()) {
-        selection_control_ = renderer_->drawControlButtons(object);
+        selection_control_ = renderer_->drawSelectionControl(object);
     } else if (selection_control_ != nullptr) {
         selection_control_->deleteLater();
         selection_control_ = nullptr;
@@ -80,7 +50,6 @@ void GameFieldView::startMovingObject()
 {
     GameObject *object = qobject_cast<GameObject *>(sender());
     changeObjectSelectionState(object, SelectionState::Moving);
-
 }
 
 void GameFieldView::endMovingObject()
