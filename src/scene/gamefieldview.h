@@ -4,34 +4,9 @@
 #include <QObject>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
-#include <QHash>
-#include <QSharedPointer>
 #include "../core/gameobjects.h"
-#include "../objects/gameobjectrepository.h"
 #include "gametexturerenderer.h"
-
-const int DATA_KEY_GAMEOBJECT = 42;
-
-class GameObjectRenderRepository : public GameObjectRepository
-{
-    Q_OBJECT
-public:
-    struct RenderInfo {
-        QVector<QString> textures;
-        qreal priority;
-        QString caption;
-    };
-
-    GameObjectRenderRepository(QObject *parent = nullptr);
-    void addRenderInfo(const QString &type, const QString &name, const RenderInfo &info);
-    const RenderInfo *getRenderInfo(const QString &type, const QString &name) const;
-    const RenderInfo *getRenderInfo(GameObject *object) const;
-protected:
-    void doLoadObject(const QString &type, const QString &name, const QJsonObject &json) override;
-private:
-    QHash<QString, QSharedPointer<RenderInfo>> render_info_;
-    QHash<QString, qreal> type_priorities_;
-};
+#include "gameobjectrenderrepository.h"
 
 class GameFieldView : public QObject
 {
@@ -42,9 +17,9 @@ public:
         Selected,
         Moving
     };
-    Q_ENUM(SelectionState)
-
-    GameFieldView(QObject *parent, GameTextureRenderer *renderer, GameObjectRenderRepository *repository);
+    Q_ENUM(SelectionState);
+    
+    GameFieldView(QObject *parent, GameTextureRenderer *renderer);
 public slots:
     void addObject(GameObject *object);
     void removeObject(GameObject *object);
@@ -64,12 +39,6 @@ protected slots:
     void movingPositionChanged(const Coordinate &, const Coordinate &newPosition);
     void unselectObject();
 private:
-    struct TextureInfo {
-        QString name;
-        QGraphicsItem *item;
-        qreal priority;
-    };
-
     template<typename T>
     void iterateTextures(GameObject *object, const T &func)
     {
@@ -82,8 +51,7 @@ private:
 
     GameTextureRenderer *renderer_;
     QGraphicsScene *scene_;
-    GameObjectRenderRepository *repository_;
-    QMultiHash<GameObject *, TextureInfo> objects_;
+    QMultiHash<GameObject *, QGraphicsItem *> objects_;
     QGraphicsItem *moving_item_;
     QGraphicsWidget *selection_control_;
     SelectionState last_state_;

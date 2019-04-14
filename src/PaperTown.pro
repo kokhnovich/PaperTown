@@ -42,9 +42,11 @@ SOURCES += \
     objects/gameobjectproperties.cpp \
     scene/gamescene.cpp \
     scene/gametextures.cpp \
-    scene/gamefieldviews.cpp \
+    scene/gamefieldview.cpp \
     scene/gamescenegeometry.cpp \
     scene/gametexturerenderer.cpp \
+    scene/gamepropertyrenderer.cpp \
+    scene/gameobjectrenderrepository.cpp \
     util/coordinates.cpp \
     util/misc.cpp
 
@@ -62,9 +64,11 @@ HEADERS += \
     objects/gameobjectproperties.h \
     scene/gamescene.h \
     scene/gametextures.h \
-    scene/gamefieldviews.h \
+    scene/gamefieldview.h \
     scene/gamescenegeometry.h \
     scene/gametexturerenderer.h \
+    scene/gamepropertyrenderer.h \
+    scene/gameobjectrenderrepository.h \
     util/coordinates.h \
     util/misc.h
 

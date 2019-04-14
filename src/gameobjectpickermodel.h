@@ -4,7 +4,9 @@
 #include <QAbstractItemModel>
 #include <QItemSelectionModel>
 #include <QVector>
-#include "scene/gamefieldviews.h"
+#include "core/gamefield.h"
+#include "scene/gameobjectrenderrepository.h"
+#include "scene/gametextures.h"
 
 // FIXME : support dynamic adding of new objects
 class GameObjectPickerModel : public QAbstractListModel

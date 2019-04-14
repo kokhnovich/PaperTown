@@ -26,7 +26,7 @@ QString MovingObject::type() const
 
 bool StaticObject::internalCanMove() const
 {
-    return false;
+    return true;
 }
 
 StaticObject::StaticObject(const QString &name, GameObjectProperty *property, GameObjectRepositoryBase *repository)

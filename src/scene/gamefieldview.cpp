@@ -1,6 +1,6 @@
 #include <QtDebug>
 #include <QGraphicsWidget>
-#include "gamefieldviews.h"
+#include "gamefieldview.h"
 #include "gamescenegeometry.h"
 
 qreal GameFieldView::getStateZDelta(SelectionState state) const
@@ -10,7 +10,7 @@ qreal GameFieldView::getStateZDelta(SelectionState state) const
 
 void GameFieldView::changeObjectSelectionState(GameObject *object, SelectionState state)
 {
-    iterateTextures(object, [ = ](const TextureInfo & info) {
+    iterateTextures(object, [ = ](QGraphicsItem *item) {
         qreal opacity = 1.0;
         switch (state) {
         case SelectionState::None: {
@@ -29,11 +29,11 @@ void GameFieldView::changeObjectSelectionState(GameObject *object, SelectionStat
             Q_UNREACHABLE();
         }
         }
-        info.item->setOpacity(opacity);
+        item->setOpacity(opacity);
 
         double zdelta = getStateZDelta(state) - getStateZDelta(last_state_);
         if (!qFuzzyIsNull(zdelta)) {
-            info.item->setZValue(info.item->zValue() + zdelta);
+            item->setZValue(item->zValue() + zdelta);
         }
     });
 
@@ -106,15 +106,9 @@ void GameFieldView::addObject(GameObject *object)
 void GameFieldView::putObject(GameObject *object)
 {
     if (object->active()) {
-        auto info = repository_->getRenderInfo(object);
-        for (const QString &texture_name : info->textures) {
-            QGraphicsItem *item = renderer_->drawTexture(texture_name, object->position(), info->priority);
-            item->setData(DATA_KEY_GAMEOBJECT, QVariant::fromValue(object));
-            objects_.insert(object, {
-                texture_name,
-                item,
-                info->priority
-            });
+        auto items = renderer_->drawObject(object);
+        for (QGraphicsItem *item : items) {
+            objects_.insert(object, item);
         }
     }
     if (object->isSelected()) {
@@ -122,12 +116,10 @@ void GameFieldView::putObject(GameObject *object)
     }
 }
 
-void GameFieldView::moveObject(const Coordinate &, const Coordinate &newPosition)
+void GameFieldView::moveObject(const Coordinate &, const Coordinate &)
 {
     GameObject *object = qobject_cast<GameObject *>(sender());
-    iterateTextures(object, [ = ](const TextureInfo & info) {
-        renderer_->moveTexture(info.item, info.name, newPosition);
-    });
+    renderer_->moveObject(object, objects_.values(object));
 }
 
 void GameFieldView::placeObject(const Coordinate &)
@@ -144,11 +136,10 @@ void GameFieldView::updateObject()
     }
 }
 
-GameFieldView::GameFieldView(QObject *parent, GameTextureRenderer *renderer, GameObjectRenderRepository *repository)
+GameFieldView::GameFieldView(QObject *parent, GameTextureRenderer *renderer)
     : QObject(parent),
       renderer_(renderer),
       scene_(renderer_->scene()),
-      repository_(repository),
       objects_(),
       moving_item_(nullptr),
       selection_control_(nullptr),
@@ -163,9 +154,9 @@ void GameFieldView::unputObject(GameObject *object)
         changeObjectSelectionState(object, SelectionState::None);
     }
     if (objects_.contains(object)) {
-        iterateTextures(object, [&](const TextureInfo & info) {
-            scene_->removeItem(info.item);
-            delete info.item;
+        iterateTextures(object, [&](QGraphicsItem *item) {
+            scene_->removeItem(item);
+            delete item;
         });
         objects_.remove(object);
     }
@@ -184,44 +175,3 @@ void GameFieldView::removeObject(GameObject *object)
 
     unputObject(object);
 }
-
-void GameObjectRenderRepository::addRenderInfo(const QString &type, const QString &name,
-        const GameObjectRenderRepository::RenderInfo &info)
-{
-    QString full_name = fullName(type, name);
-    render_info_[full_name] = QSharedPointer<RenderInfo>(new RenderInfo(info));
-}
-
-void GameObjectRenderRepository::doLoadObject(const QString& type, const QString& name, const QJsonObject& json)
-{
-    GameObjectRepository::doLoadObject(type, name, json);
-    RenderInfo info;
-    auto texture_arr = json.value("textures").toArray();
-    info.textures.resize(texture_arr.size());
-    for (int i = 0; i < texture_arr.size(); ++i) {
-        info.textures[i] = texture_arr[i].toString();
-    }
-    info.priority = json.value("priority").toDouble(type_priorities_[type]);
-    info.caption = json.value("caption").toString(name);
-    addRenderInfo(type, name, info);
-}
-
-const GameObjectRenderRepository::RenderInfo *GameObjectRenderRepository::getRenderInfo(const QString &type, const QString &name) const
-{
-    return render_info_[fullName(type, name)].data();
-}
-
-const GameObjectRenderRepository::RenderInfo *GameObjectRenderRepository::getRenderInfo(GameObject *object) const
-{
-    return getRenderInfo(object->type(), object->name());
-}
-
-GameObjectRenderRepository::GameObjectRenderRepository(QObject *parent)
-    : GameObjectRepository(parent)
-{
-    type_priorities_["ground"] = 0;
-    type_priorities_["static"] = 0.33;
-    type_priorities_["moving"] = 0.67;
-}
-
-

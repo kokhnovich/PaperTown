@@ -36,13 +36,36 @@ QGraphicsItem *GameTextureRenderer::drawTexture(const QString &name, const Coord
     return item;
 }
 
-QGraphicsItem *GameTextureRenderer::moveTexture(QGraphicsItem *item, const QString &name, const Coordinate &c, qreal priority)
+void GameTextureRenderer::moveTexture(QGraphicsItem *item, const QString &name, const Coordinate &c, qreal priority)
 {
     const GameTexture *texture = textures_->getTexture(name);
     Q_CHECK_PTR(texture);
     item->setPos(texture->offset + geometry_->coordinateToTopLeft(c));
     item->setZValue(zOrder(c + texture->z_offset, priority));
-    return item;
+}
+
+QList<QGraphicsItem *> GameTextureRenderer::drawObject(GameObject *object)
+{
+    auto info = repository_->getRenderInfo(object);
+    QList<QGraphicsItem *> items;
+    for (const QString &texture_name : info->textures) {
+        QGraphicsItem *item = drawTexture(texture_name, object->position(), info->priority);
+        item->setData(DATA_KEY_GAMEOBJECT, QVariant::fromValue(object));
+        item->setData(DATA_KEY_TEXTURE_NAME, QVariant::fromValue(texture_name));
+        item->setData(DATA_KEY_PRIORITY, QVariant::fromValue(info->priority));
+        items.push_back(item);
+    }
+    return items;
+}
+
+void GameTextureRenderer::moveObject(GameObject *object, const QList<QGraphicsItem *> &items)
+{
+    for (auto item : items) {
+        moveTexture(item,
+                    item->data(DATA_KEY_TEXTURE_NAME).toString(),
+                    object->position(),
+                    item->data(DATA_KEY_PRIORITY).toReal());
+    }
 }
 
 QGraphicsItem *GameTextureRenderer::drawSelectionRect(GameObject *object)
@@ -164,8 +187,12 @@ QGraphicsScene *GameTextureRenderer::scene()
 }
 
 GameTextureRenderer::GameTextureRenderer(QObject *parent, GameSceneGeometry *geometry,
-        GameTextureRepository *textures, QGraphicsScene *scene)
-    : QObject(parent), geometry_(geometry), textures_(textures), scene_(scene)
+        GameTextureRepository *textures, GameObjectRenderRepository *repository, QGraphicsScene *scene)
+    : QObject(parent),
+      geometry_(geometry),
+      textures_(textures),
+      repository_(repository),
+      scene_(scene)
 {}
 
 qreal GameTextureRenderer::zOrder(const Coordinate &c, qreal priority) const

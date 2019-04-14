@@ -13,8 +13,8 @@ GameScene::GameScene(QObject *parent, GameObjectRenderRepository *repository,
       field_(field),
       textures_(textures),
       geometry_(new GameSceneGeometry(this, field_)),
-      renderer_(new GameTextureRenderer(this, geometry_, textures_, this)),
-      view_(new GameFieldView(this, renderer_, repository_))
+      renderer_(new GameTextureRenderer(this, geometry_, textures_, repository_, this)),
+      view_(new GameFieldView(this, renderer_))
 {
     connect(field_, &GameField::added, view_, &GameFieldView::addObject);
     connect(field_, &GameField::removed, view_, &GameFieldView::removeObject);

@@ -9,7 +9,7 @@
 #include "../core/gameobjects.h"
 #include "../core/gamefield.h"
 #include "gametextures.h"
-#include "gamefieldviews.h"
+#include "gamefieldview.h"
 #include "gamescenegeometry.h"
 
 class GameScene : public QGraphicsScene
