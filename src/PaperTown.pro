@@ -44,6 +44,7 @@ SOURCES += \
     scene/gametextures.cpp \
     scene/gamefieldviews.cpp \
     scene/gamescenegeometry.cpp \
+    scene/gametexturerenderer.cpp \
     util/coordinates.cpp \
     util/misc.cpp
 
@@ -63,6 +64,7 @@ HEADERS += \
     scene/gametextures.h \
     scene/gamefieldviews.h \
     scene/gamescenegeometry.h \
+    scene/gametexturerenderer.h \
     util/coordinates.h \
     util/misc.h
 

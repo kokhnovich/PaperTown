@@ -7,37 +7,10 @@
 #include <QHash>
 #include <QSharedPointer>
 #include "../core/gameobjects.h"
-#include "gametextures.h"
-#include "gamescenegeometry.h"
 #include "../objects/gameobjectrepository.h"
+#include "gametexturerenderer.h"
 
 const int DATA_KEY_GAMEOBJECT = 42;
-
-class GameTextureRenderer : public QObject
-{
-    Q_OBJECT
-public:
-    GameTextureRenderer(QObject *parent, GameSceneGeometry *geometry,
-                        GameTextureRepository *repository, QGraphicsScene *scene);
-
-    QGraphicsItem *drawTexture(const QString &name, const Coordinate &c, qreal priority = 0.0);
-    QGraphicsItem *moveTexture(QGraphicsItem *item, const QString &name,
-                               const Coordinate &c, qreal priority = 0.0);
-    QGraphicsItem *drawMoving(GameObject *object);
-    QGraphicsWidget *drawControlButtons(const GameObject *object);
-
-    void setupScene();
-
-    QGraphicsScene *scene();
-protected:
-    QGraphicsItem *drawSelectionRect(GameObject *object);
-
-    qreal zOrder(const Coordinate &c, qreal priority = 0.0) const;
-private:
-    GameSceneGeometry *geometry_;
-    GameTextureRepository *textures_;
-    QGraphicsScene *scene_;
-};
 
 class GameObjectRenderRepository : public GameObjectRepository
 {
@@ -59,7 +32,6 @@ private:
     QHash<QString, QSharedPointer<RenderInfo>> render_info_;
     QHash<QString, qreal> type_priorities_;
 };
-
 
 class GameFieldView : public QObject
 {
@@ -113,7 +85,7 @@ private:
     GameObjectRenderRepository *repository_;
     QMultiHash<GameObject *, TextureInfo> objects_;
     QGraphicsItem *moving_item_;
-    QGraphicsWidget *control_buttons_;
+    QGraphicsWidget *selection_control_;
     SelectionState last_state_;
 };
 
