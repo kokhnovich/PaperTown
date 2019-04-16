@@ -191,7 +191,7 @@ QGraphicsWidget *GameTextureRenderer::drawSelectionControl(const GameObject *obj
     if (object->property() != nullptr) {
         auto prop_widget = prop_render_->drawControlWidget(object->property());
         if (prop_widget != nullptr) {
-            layout->addWidget(prop_widget);
+            layout->addWidget(prop_widget, 0, Qt::AlignCenter);
         }
     }
     
