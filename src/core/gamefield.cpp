@@ -19,6 +19,18 @@ GameObject *GameField::add(const QString &type, const QString &name)
     return add(factory_->createObject(type, name));
 }
 
+GameObject *GameField::add(const QString& type, const QString& name, const Coordinate& pos)
+{
+    GameObject *object = factory_->createObject(type, name);
+    if (!canPlace(object, pos)) {
+        delete object;
+        return nullptr;
+    }
+    object->setPosition(pos);
+    add(object);
+    return object;
+}
+
 GameObjectFactory *GameField::factory() const
 {
     return factory_;

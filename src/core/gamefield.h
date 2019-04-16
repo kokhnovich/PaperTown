@@ -13,6 +13,7 @@ public:
     GameField(QObject *parent, GameObjectRepositoryBase *repository, int height, int width);
     GameObject *add(GameObject *object) override;
     GameObject *add(const QString &type, const QString &name);
+    GameObject *add(const QString &type, const QString &name, const Coordinate &pos);
     void remove(GameObject *object) override;
     bool canPlace(const GameObject *object, const Coordinate &pos) const override;
     GameList *getByType(const QString &type) const;
