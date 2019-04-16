@@ -14,7 +14,7 @@
 	},
 	
 	"cinema": {
-		"textures": ["cinema.l1", "cinema.l2", "cinema.l3", "cinema.l4"],
+		"textures": ["cinema.l*"],
 		"type": "static",
 		"cells": [
 			[0, 0], [0, 1], [0, 2], [0, 3],
@@ -27,5 +27,37 @@
 		"keys": {
 			"population": [100, 200]
 		}
+	},
+	
+	"angle-ne": {
+		"textures": ["angle-ne.l*"],
+		"type": "static",
+		"cells": [
+			[-2, 0], [-2, 1],
+			[-1, 0], [-1, 1],
+			[ 0, 0], [ 0, 1], [0, 2], [0, 3],
+			[ 1, 0], [ 1, 1], [1, 2], [1, 3]
+		],
+		"caption": "Angle (north-east)",
+		"properties": ["house"],
+		"keys": {
+			"population": [75, 125]
+		}
+	},
+	
+	"angle-nw": {
+		"textures": ["angle-nw.l*"],
+		"type": "static",
+		"cells": [
+			                    [-2, 0], [-2, 1],
+			                    [-1, 0], [-1, 1],
+			[ 0, -2], [ 0, -1], [0,  0], [0,  1],
+			[ 1, -2], [ 1, -1], [1,  0], [1,  1]
+		],
+		"caption": "Angle (north-west)",
+		"properties": ["house"],
+		"keys": {
+			"population": [75, 125]
+		}
 	}
-} 
+}

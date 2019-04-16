@@ -1,5 +1,17 @@
 <RCC>
   <qresource prefix="/">
+    <file>../img/angle-nw.l1.png</file>
+    <file>../img/angle-nw.l2.png</file>
+    <file>../img/angle-nw.l3.png</file>
+    <file>../img/angle-nw.l4.png</file>
+    <file>../img/angle-ne.l1.png</file>
+    <file>../img/angle-ne.l2.png</file>
+    <file>../img/angle-ne.l3.png</file>
+    <file>../img/angle-ne.l4.png</file>
+    <file>../img/angle-ne.png</file>
+    <file>../img/angle-nw.png</file>
+    <file>../img/angle-se.png</file>
+    <file>../img/angle-sw.png</file>
     <file>../img/icon-population.png</file>
     <file>../img/cinema.l1.png</file>
     <file>../img/cinema.l4.png</file>

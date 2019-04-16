@@ -10,14 +10,29 @@ void GameObjectRenderRepository::addRenderInfo(const QString &type, const QStrin
 void GameObjectRenderRepository::doLoadObject(const QString& type, const QString& name, const QJsonObject& json)
 {
     GameObjectRepository::doLoadObject(type, name, json);
+    
+    Rect bounding_rect = boundingRect(getInfo(type, name)->cells);
+    int layer_count = bounding_rect.bottom - bounding_rect.top + 1;
+    
     RenderInfo info;
+    
     auto texture_arr = json.value("textures").toArray();
-    info.textures.resize(texture_arr.size());
     for (int i = 0; i < texture_arr.size(); ++i) {
-        info.textures[i] = texture_arr[i].toString();
+        QString texture_name = texture_arr[i].toString();
+        if (texture_name.indexOf("*") >= 0) {
+            for (int j = 1; j <= layer_count; ++j) {
+                QString cur_name = texture_name;
+                cur_name.replace("*", QString::number(j));
+                info.textures.append(cur_name);
+            }
+            continue;
+        }
+        info.textures.append(texture_name);
     }
+    
     info.priority = json.value("priority").toDouble(type_priorities_[type]);
     info.caption = json.value("caption").toString(name);
+    
     addRenderInfo(type, name, info);
 }
 

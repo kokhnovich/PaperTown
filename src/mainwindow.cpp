@@ -9,7 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     repository_(new GameObjectRenderRepository(this)),
-    field_(new GameField(this, repository_, 20, 40)),
+    field_(new GameField(this, repository_, 120, 80)),
     textures_(new GameTextureRepository(this)),
     scene(new GameScene(this, repository_, field_, textures_)),
     scheduler(),
@@ -46,13 +46,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::initObjects()
 {
-    const char *objects[3] = {"tree1", "tree2", "cinema"};
+    const char *objects[5] = {"tree1", "tree2", "cinema", "angle-ne", "angle-nw"};
     for (int i = 0; i < field_->height(); ++i) {
         for (int j = 0; j < field_->width(); ++j) {
-            if (qrand() % 12 != 0) {
+            if (qrand() % 25 != 0) {
                 continue;
             }
-            auto obj = field_->add("static", objects[qrand() % 3]);
+            auto obj = field_->add("static", objects[qrand() % 5]);
             obj->setPosition({i, j});
         }
     }
