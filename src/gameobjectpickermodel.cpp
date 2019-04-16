@@ -48,7 +48,7 @@ QModelIndex GameObjectPickerModel::parent(const QModelIndex &) const
     return QModelIndex();
 }
 
-GameObjectPickerModel::GameObjectPickerModel(GameObjectRepository *repository, GameTextureRepository *textures,
+GameObjectPickerModel::GameObjectPickerModel(GameObjectRenderRepository *repository, GameTextureRepository *textures,
         QObject *parent)
     : QAbstractListModel(parent), repository_(repository), textures_(textures)
 {
@@ -64,7 +64,8 @@ void GameObjectSelectionModel::changeSelection(const QItemSelection &selected, c
     if (!picker_model) {
         return;
     }
-    for (auto index : selected.indexes()) {
+    const auto &indexes = selected.indexes();
+    for (const auto &index : indexes) {
         GameObjectKey key = picker_model->indexToObjectKey(index);
         auto object = field_->add(key.type, key.name);
         

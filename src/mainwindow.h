@@ -33,7 +33,7 @@ private:
     
     Ui::MainWindow *ui;
     
-    GameObjectRepository *repository_;
+    GameObjectRenderRepository *repository_;
     GameField *field_;
     GameTextureRepository *textures_;
     GameScene *scene;

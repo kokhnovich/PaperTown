@@ -4,7 +4,9 @@
 #include <QAbstractItemModel>
 #include <QItemSelectionModel>
 #include <QVector>
-#include "scene/gamefieldviews.h"
+#include "core/gamefield.h"
+#include "scene/gameobjectrenderrepository.h"
+#include "scene/gametextures.h"
 
 // FIXME : support dynamic adding of new objects
 class GameObjectPickerModel : public QAbstractListModel
@@ -17,10 +19,10 @@ public:
     int rowCount(const QModelIndex &parent) const override;
     QModelIndex parent(const QModelIndex &child) const override;
     GameObjectKey indexToObjectKey(const QModelIndex &index) const;
-    GameObjectPickerModel(GameObjectRepository *repository, GameTextureRepository *textures,
+    GameObjectPickerModel(GameObjectRenderRepository *repository, GameTextureRepository *textures,
                           QObject *parent = nullptr);
 private:
-    GameObjectRepository *repository_;
+    GameObjectRenderRepository *repository_;
     GameTextureRepository *textures_;
     QVector<GameObjectKey> keys_;
 };

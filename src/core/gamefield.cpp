@@ -4,7 +4,7 @@
 GameField::GameField(QObject *parent, GameObjectRepositoryBase *repository, int height, int width) :
     GameFieldBase(parent),
     repository_(repository),
-    factory_(new GameObjectFactory(this)),
+    factory_(new GameObjectFactory(repository, this)),
     ground_map_(new GameMap(this, height, width)),
     static_map_(new GameMap(this, height, width)),
     moving_map_(new GameMultimap(this, height, width)),

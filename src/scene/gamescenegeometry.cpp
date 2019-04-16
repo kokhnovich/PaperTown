@@ -72,11 +72,21 @@ QRectF GameSceneGeometry::fieldRect() const
            );
 }
 
-Coordinate GameSceneGeometry::scenePosToCoord(const QPointF& point)
+Coordinate GameSceneGeometry::scenePosToCoord(const QPointF& point) const
 {
     double x = point.x() / (CELL_SIZE * SLOPE_WIDTH);
     double y = point.y() / (CELL_SIZE * SLOPE_HEIGHT) + 1;
     return {static_cast<int>(floor((x + y) / 2)), static_cast<int>(floor((x - y) / 2))};
+}
+
+qreal GameSceneGeometry::zOrder(const Coordinate& c, qreal priority) const
+{
+    return (c.x + 1) * fieldWidth() - c.y + priority;
+}
+
+qreal GameSceneGeometry::selectionStateZDelta(SelectionState state) const
+{
+    return (state == SelectionState::Selected) ? 1e6 : 0;
 }
 
 GameSceneGeometry::GameSceneGeometry(QObject *parent, GameField *field)

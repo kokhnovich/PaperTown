@@ -8,7 +8,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    repository_(new GameObjectRepository(this)),
+    repository_(new GameObjectRenderRepository(this)),
     field_(new GameField(this, repository_, 20, 40)),
     textures_(new GameTextureRepository(this)),
     scene(new GameScene(this, repository_, field_, textures_)),
@@ -52,7 +52,7 @@ void MainWindow::initObjects()
             if (qrand() % 12 != 0) {
                 continue;
             }
-            auto obj = field_->add(new StaticObject(objects[qrand() % 3]));
+            auto obj = field_->add("static", objects[qrand() % 3]);
             obj->setPosition({i, j});
         }
     }

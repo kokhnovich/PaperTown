@@ -1,76 +1,22 @@
 #include <QtDebug>
 #include "gameobjects.h"
 
-Rect boundingRect(const QVector<Coordinate>& points)
-{
-    Q_ASSERT(!points.empty());
-    int top = points[0].x, bottom = points[0].x, left = points[0].y, right = points[0].y;
-    for (const Coordinate &coord : qAsConst(points)) {
-        top = qMin(top, coord.x);
-        bottom = qMax(bottom, coord.x);
-        left = qMin(left, coord.y);
-        right = qMax(right, coord.y);
-    }
-    return {top, bottom, left, right};
-}
-
-Coordinate::Coordinate(int x, int y)
-    : x(x), y(y)
-{
-}
-
-Coordinate &operator+=(Coordinate &a, const Coordinate &b)
-{
-    a.x += b.x;
-    a.y += b.y;
-    return a;
-}
-
-Coordinate &operator-=(Coordinate &a, const Coordinate &b)
-{
-    a.x -= b.x;
-    a.y -= b.y;
-    return a;
-}
-
-Coordinate operator+(Coordinate a, const Coordinate &b)
-{
-    return a += b;
-}
-
-Coordinate operator-(Coordinate a, const Coordinate &b)
-{
-    return a -= b;
-}
-
-Rect::Rect(Coordinate a, Coordinate b)
-    : top(qMin(a.x, b.x)), bottom(qMax(a.x, b.x)), left(qMin(a.y, b.y)), right(qMax(a.y, b.y))
-{}
-
-Rect::Rect(int top, int bottom, int left, int right)
-    : top(top), bottom(bottom), left(left), right(right)
-{}
-
-bool inBounds(int height, int width, const Coordinate& coord)
-{
-    return 0 <= coord.x && coord.x < height && 0 <= coord.y && coord.y < width;
-}
-
 GameObjectRepositoryBase::GameObjectRepositoryBase(QObject *parent) : QObject(parent)
 {}
 
-void GameObjectRepositoryBase::addObject(const QString &type, const QString &name, const QVector<Coordinate> cells)
+GameObjectInfo *GameObjectRepositoryBase::getInfo(const QString &type, const QString &name) const
 {
     QString full = fullName(type, name);
-    Q_ASSERT(!cells_.contains(full));
-    cells_[full] = cells;
+    Q_ASSERT(info_.contains(full));
+    return info_[full].data();
 }
 
-QVector<Coordinate> GameObjectRepositoryBase::getCells(const QString &type, const QString &name) const
+void GameObjectRepositoryBase::addObject(const QString &type, const QString &name,
+        const GameObjectInfo &info)
 {
     QString full = fullName(type, name);
-    Q_ASSERT(cells_.contains(full));
-    return cells_[full];
+    Q_ASSERT(!info_.contains(full));
+    info_[full] = QSharedPointer<GameObjectInfo>::create(info);
 }
 
 QString GameObjectRepositoryBase::fullName(const QString &type, const QString &name)
@@ -80,7 +26,7 @@ QString GameObjectRepositoryBase::fullName(const QString &type, const QString &n
 
 QVector<GameObjectKey> GameObjectRepositoryBase::keys() const
 {
-    QList<QString> keys = cells_.keys();
+    QList<QString> keys = info_.keys();
     QVector<GameObjectKey> obj_keys(keys.size());
     for (int i = 0; i < keys.size(); ++i) {
         obj_keys[i] = splitName(keys[i]);
@@ -88,7 +34,12 @@ QVector<GameObjectKey> GameObjectRepositoryBase::keys() const
     return obj_keys;
 }
 
-GameObjectKey GameObjectRepositoryBase::splitName(const QString& full_name)
+GameObjectProperty *GameObjectRepositoryBase::createProperty(const QString &, const QString &) const
+{
+    return nullptr;
+}
+
+GameObjectKey GameObjectRepositoryBase::splitName(const QString &full_name)
 {
     auto list = full_name.split("::");
     Q_ASSERT(list.size() == 2);
@@ -97,23 +48,96 @@ GameObjectKey GameObjectRepositoryBase::splitName(const QString& full_name)
 
 GameObject *GameObjectProperty::gameObject() const
 {
-    return qobject_cast<GameObject *>(parent());
+    return game_object_;
 }
 
-void GameFieldBase::attach(GameObject* object)
+void GameObjectProperty::initialize(GameObject *object)
+{
+    Q_ASSERT(object);
+    Q_ASSERT(!game_object_ && !initialized_);
+    game_object_ = object;
+    doInitialize();
+    emit initializing();
+    initialized_ = true;
+}
+
+void GameObjectProperty::doInitialize()
+{}
+
+bool GameObjectProperty::canMove(bool last_value) const
+{
+    return mergeBooleans(last_value, canMove());
+}
+
+Util::Bool3 GameObjectProperty::canMove() const
+{
+    return Util::Dont_Care;
+}
+
+bool GameObjectProperty::canSelect(bool last_value) const
+{
+    return mergeBooleans(last_value, canSelect());
+}
+
+Util::Bool3 GameObjectProperty::canSelect() const
+{
+    return Util::Dont_Care;
+}
+
+bool GameObjectProperty::canSetPosition(bool last_value, const Coordinate &) const
+{
+    return last_value;
+}
+
+GameObjectProperty::GameObjectProperty()
+    : QObject(nullptr), game_object_(nullptr), initialized_(false)
+{}
+
+QString GameObjectProperty::objectName() const
+{
+    return gameObject()->name();
+}
+
+GameObjectProperty *GameObjectProperty::castTo(const QMetaObject *meta)
+{
+    if (meta->inherits(metaObject()) || metaObject()->inherits(meta)) {
+        return this;
+    }
+    return nullptr;
+}
+
+bool GameObjectProperty::isInitialized() const
+{
+    return initialized_;
+}
+
+GameObjectInfo *GameObjectProperty::objectInfo() const
+{
+    return gameObject()->objectInfo();
+}
+
+GameObjectRepositoryBase *GameObjectProperty::repository() const
+{
+    return game_object_->repository();
+}
+
+void GameFieldBase::attach(GameObject *object)
 {
     object->setField(this);
 }
 
-void GameFieldBase::detach(GameObject* object)
+void GameFieldBase::detach(GameObject *object)
 {
     object->setField(nullptr);
 }
 
-void GameFieldBase::startObjectRemoval(GameObject* object)
+void GameFieldBase::startObjectRemoval(GameObject *object)
 {
     object->is_removing_ = true;
 }
+
+GameFieldBase::GameFieldBase(QObject *parent) : QObject(parent)
+{}
 
 const QVector<Coordinate> GameObject::cells() const
 {
@@ -126,22 +150,22 @@ const QVector<Coordinate> GameObject::cells() const
 
 const QVector<Coordinate> GameObject::cellsRelative() const
 {
-    if (!field() || !field()->repository()) {
-        return {};
-    }
-    return field()->repository()->getCells(type(), name());
+    return repository_->getInfo(type(), name())->cells;
 }
 
 bool GameObject::canSetPosition(const Coordinate &pos) const
 {
-    if (!field()) {
-        return true;
-    } else {
-        return field()->canPlace(this, pos);
+    bool res = true;
+    if (field()) {
+        res = field()->canPlace(this, pos);
     }
+    if (property_) {
+        res = property_->canSetPosition(res, pos);
+    }
+    return res;
 }
 
-GameObject::GameObject(const QString &name, GameObjectProperty *property)
+GameObject::GameObject(const QString &name, GameObjectRepositoryBase *repository)
     : QObject(nullptr),
       name_(name),
       active_(false),
@@ -149,17 +173,39 @@ GameObject::GameObject(const QString &name, GameObjectProperty *property)
       is_selected_(false),
       is_moving_(false),
       is_removing_(false),
-      position_({-65536, -65536}),
+      position_(-65536, -65536),
       moving_position_(),
       field_(nullptr),
-      property_(property)
+      property_(nullptr),
+      repository_(repository)
 {
-    if (property_) {
-        connect(this, SIGNAL(updated()), property_, SIGNAL(updated));
-        property_->setParent(this);
-    }
     select();
     startMoving();
+}
+
+void GameObject::initProperty(GameObjectProperty* property)
+{
+    Q_ASSERT(property_ == nullptr);
+    property_ = property;
+    if (property_) {
+        connect(this, &GameObject::updated, property_, &GameObjectProperty::updated);
+        property_->setParent(this);
+        property_->initialize(this);
+    }
+}
+
+
+GameObjectInfo *GameObject::objectInfo() const
+{
+    return repository_->getInfo(type(), name_);
+}
+
+SelectionState GameObject::getSelectionState() const
+{
+    if (isSelected()) {
+        return isMoving() ? Selection::Moving : Selection::Selected;
+    }
+    return Selection::None;
 }
 
 void GameObject::removeSelf()
@@ -189,6 +235,15 @@ bool GameObject::canApplyMovingPosition() const
 
 bool GameObject::canMove() const
 {
+    bool res = internalCanMove();
+    if (property_ != nullptr) {
+        res = property_->canMove(res);
+    }
+    return res;
+}
+
+bool GameObject::internalCanMove() const
+{
     return true;
 }
 
@@ -205,7 +260,7 @@ void GameObject::startMoving()
 
 void GameObject::endMoving()
 {
-    Q_ASSERT(is_selected_ && is_moving_);    
+    Q_ASSERT(is_selected_ && is_moving_);
     is_moving_ = false;
     emit endedMoving();
 }
@@ -221,6 +276,15 @@ bool GameObject::isRemoving() const
 }
 
 bool GameObject::canSelect() const
+{
+    bool res = internalCanSelect();
+    if (property_ != nullptr) {
+        res = property_->canSelect(res);
+    }
+    return res;
+}
+
+bool GameObject::internalCanSelect() const
 {
     return true;
 }
@@ -247,7 +311,7 @@ Coordinate GameObject::movingPosition() const
     return moving_position_;
 }
 
-void GameObject::setMovingPosition(const Coordinate& c)
+void GameObject::setMovingPosition(const Coordinate &c)
 {
     Q_ASSERT(is_moving_);
     Coordinate old_position = moving_position_;
@@ -329,41 +393,14 @@ GameFieldBase *GameObject::field() const
     return field_;
 }
 
-void GameObject::setField(GameFieldBase* field)
+void GameObject::setField(GameFieldBase *field)
 {
     Q_ASSERT(field_ == nullptr || field == nullptr);
+    Q_ASSERT_X(field->repository() == repository_, "GameObject::setField", "field and object repository must be the same");
     field_ = field;
 }
 
-GroundObject::GroundObject(const QString &name, GameObjectProperty *property)
-    : GameObject(name, property)
+GameObjectRepositoryBase *GameObject::repository() const
 {
+    return repository_;
 }
-
-QString GroundObject::type() const
-{
-    return "ground";
-}
-
-MovingObject::MovingObject(const QString &name, GameObjectProperty *property)
-    : GameObject(name, property)
-{
-}
-
-QString MovingObject::type() const
-{
-    return "moving";
-}
-
-StaticObject::StaticObject(const QString &name, GameObjectProperty *property)
-    : GameObject(name, property)
-{
-}
-
-QString StaticObject::type() const
-{
-    return "static";
-}
-
-GameFieldBase::GameFieldBase(QObject *parent) : QObject(parent)
-{}

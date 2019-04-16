@@ -4,48 +4,48 @@
 #include <QObject>
 #include <QVector>
 #include <QHash>
-
-struct Coordinate {
-    int x, y;
-
-    Coordinate(int x = 0, int y = 0);
-};
-
-struct Rect {
-    int top, bottom, left, right;
-
-    Rect(int top, int bottom, int left, int right);
-    Rect(Coordinate a, Coordinate b);
-};
-
-Rect boundingRect(const QVector<Coordinate> &points);
-
-Coordinate operator+(Coordinate a, const Coordinate &b);
-Coordinate operator-(Coordinate a, const Coordinate &b);
-Coordinate &operator+=(Coordinate &a, const Coordinate &b);
-Coordinate &operator-=(Coordinate &a, const Coordinate &b);
-
-bool inBounds(int height, int width, const Coordinate &coord);
+#include "../util/coordinates.h"
+#include "../util/misc.h"
 
 class GameObject;
+class GameObjectProperty;
+
+namespace Selection
+{
+    Q_NAMESPACE
+    
+    enum State {
+        None,
+        Selected,
+        Moving
+    };
+    Q_ENUM_NS(State);
+}
+using SelectionState = Selection::State;
 
 struct GameObjectKey {
     QString type, name;
 };
 
+struct GameObjectInfo {
+    QVector<Coordinate> cells;
+    QVariantMap keys;
+};
+
 class GameObjectRepositoryBase : public QObject
 {
     Q_OBJECT
-public:
+public:    
     explicit GameObjectRepositoryBase(QObject *parent = nullptr);
-    void addObject(const QString &type, const QString &name, const QVector<Coordinate> cells);
-    QVector<Coordinate> getCells(const QString &type, const QString &name) const;
+    void addObject(const QString &type, const QString &name, const GameObjectInfo &info);
+    GameObjectInfo *getInfo(const QString &type, const QString &name) const;
     QVector<GameObjectKey> keys() const;
+    virtual GameObjectProperty *createProperty(const QString &type, const QString &name) const;
 protected:
     static GameObjectKey splitName(const QString &full_name);
     static QString fullName(const QString &type, const QString &name);
 private:
-    QHash<QString, QVector<Coordinate>> cells_;
+    QHash<QString, QSharedPointer<GameObjectInfo>> info_;
 };
 
 class GameFieldBase : public QObject
@@ -66,10 +66,42 @@ protected:
 class GameObjectProperty : public QObject
 {
     Q_OBJECT
-private:
+public:
+    virtual bool canSelect(bool last_value) const;
+    virtual bool canMove(bool last_value) const;
+    virtual bool canSetPosition(bool last_value, const Coordinate &position) const;
+    
+    QString objectName() const;
     GameObject *gameObject() const;
+    void initialize(GameObject *object);
+    bool isInitialized() const;
+    
+    Q_INVOKABLE GameObjectProperty();
+
+    virtual GameObjectProperty *castTo(const QMetaObject *meta);
+    
+    template<typename T>
+    inline friend T *gameProperty_cast(GameObjectProperty *property) {
+        if (!property) {
+            return nullptr;
+        }
+        return qobject_cast<T *>(property->castTo(&T::staticMetaObject));
+    }
+
+    GameObjectInfo *objectInfo() const;
+    
+    GameObjectRepositoryBase *repository() const;
+protected:
+    virtual Util::Bool3 canSelect() const;
+    virtual Util::Bool3 canMove() const;
+    
+    virtual void doInitialize();
 signals:
     void updated();
+    void initializing();
+private:
+    GameObject *game_object_;
+    bool initialized_;
 };
 
 class GameObject : public QObject
@@ -78,8 +110,9 @@ class GameObject : public QObject
 public:
     Q_PROPERTY(Coordinate position READ position WRITE setPosition)
 
-    GameObject(const QString &name, GameObjectProperty *property = nullptr);
-
+    GameObject(const QString &name, GameObjectRepositoryBase *repository);
+    void initProperty(GameObjectProperty *property);
+    
     QString name() const;
     virtual QString type() const = 0;
     Coordinate position() const;
@@ -95,20 +128,28 @@ public:
     bool isMoving() const;
     bool isRemoving() const;
 
+    SelectionState getSelectionState() const;
+    
     virtual bool canSelect() const;
     virtual bool canMove() const;
-    
+
     Coordinate movingPosition() const;
     void setMovingPosition(const Coordinate &c);
     bool canApplyMovingPosition() const;
     bool applyMovingPosition();
 
     GameFieldBase *field() const;
+    GameObjectRepositoryBase *repository() const;
 
     bool canSetPosition(const Coordinate &pos) const;
     bool setPosition(const Coordinate &pos);
 
+    GameObjectInfo *objectInfo() const;
+    
     friend class GameFieldBase;
+protected:
+    virtual bool internalCanSelect() const;
+    virtual bool internalCanMove() const;
 signals:
     void placed(const Coordinate &position);
     void moved(const Coordinate &oldPosition, const Coordinate &newPosition);
@@ -122,10 +163,10 @@ signals:
     void declined();
 public slots:
     void removeSelf();
-    
+
     void select();
     void unselect();
-    
+
     void startMoving();
     void endMoving();
 protected:
@@ -143,30 +184,7 @@ private:
     Coordinate moving_position_;
     GameFieldBase *field_;
     GameObjectProperty *property_;
-};
-
-class GroundObject : public GameObject
-{
-    Q_OBJECT
-public:
-    GroundObject(const QString &name, GameObjectProperty *property = nullptr);
-    QString type() const override;
-};
-
-class StaticObject : public GameObject
-{
-    Q_OBJECT
-public:
-    StaticObject(const QString &name, GameObjectProperty *property = nullptr);
-    QString type() const override;
-};
-
-class MovingObject : public GameObject
-{
-    Q_OBJECT
-public:
-    MovingObject(const QString &name, GameObjectProperty *property = nullptr);
-    QString type() const override;
+    GameObjectRepositoryBase *repository_;
 };
 
 #endif // GAMEOBJECT_H

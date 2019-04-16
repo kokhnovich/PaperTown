@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
+    <file>../img/icon-population.png</file>
     <file>../img/cinema.l1.png</file>
     <file>../img/cinema.l4.png</file>
     <file>../img/cinema.l3.png</file>

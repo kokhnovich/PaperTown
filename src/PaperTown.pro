@@ -36,11 +36,21 @@ SOURCES += \
     core/gamemap.cpp \
     core/gamefield.cpp \
     core/gameobjectfactory.cpp \
+    core/gameobjecttypes.cpp \
     core/eventscheduler.cpp \
+    objects/gameobjectrepository.cpp \
+    objects/gameobjectproperties.cpp \
+    objects/stdproperties.cpp \
     scene/gamescene.cpp \
     scene/gametextures.cpp \
-    scene/gamefieldviews.cpp \
-    scene/gamescenegeometry.cpp
+    scene/gamefieldview.cpp \
+    scene/gamescenegeometry.cpp \
+    scene/gametexturerenderer.cpp \
+    scene/gamepropertyrenderer.cpp \
+    scene/gameobjectrenderrepository.cpp \
+    scene/stdpropertyrenderers.cpp \
+    util/coordinates.cpp \
+    util/misc.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -50,18 +60,24 @@ HEADERS += \
     core/gamemap.h \
     core/gamefield.h \
     core/gameobjectfactory.h \
+    core/gameobjecttypes.h \
     core/eventscheduler.h \
+    objects/gameobjectrepository.h \
+    objects/gameobjectproperties.h \
+    objects/stdproperties.h \
     scene/gamescene.h \
     scene/gametextures.h \
-    scene/gamefieldviews.h \
-    scene/gamescenegeometry.h
+    scene/gamefieldview.h \
+    scene/gamescenegeometry.h \
+    scene/gametexturerenderer.h \
+    scene/gamepropertyrenderer.h \
+    scene/gameobjectrenderrepository.h \
+    scene/stdpropertyrenderers.h \
+    util/coordinates.h \
+    util/misc.h
 
 FORMS += \
     mainwindow.ui
-
-DISTFILES += \
-    img/cell.png \
-    img/cell-dark.png
 
 SUBDIRS += \
     PaperTown.pros

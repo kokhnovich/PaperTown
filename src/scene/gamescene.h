@@ -9,14 +9,14 @@
 #include "../core/gameobjects.h"
 #include "../core/gamefield.h"
 #include "gametextures.h"
-#include "gamefieldviews.h"
+#include "gamefieldview.h"
 #include "gamescenegeometry.h"
 
 class GameScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    GameScene(QObject *parent, GameObjectRepository *repository,
+    GameScene(QObject *parent, GameObjectRenderRepository *repository,
               GameField *field, GameTextureRepository *textures);
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
@@ -28,7 +28,7 @@ protected:
     
     friend class GameView;
 private:
-    GameObjectRepository *repository_;
+    GameObjectRenderRepository *repository_;
     GameField *field_;
     GameTextureRepository *textures_;
 
