@@ -51,11 +51,13 @@ GameObject *GameObjectProperty::gameObject() const
     return game_object_;
 }
 
-void GameObjectProperty::setGameObject(GameObject *object)
+void GameObjectProperty::initialize(GameObject *object)
 {
-    Q_ASSERT(!game_object_);
+    Q_ASSERT(object);
+    Q_ASSERT(!game_object_ && !initialized_);
     game_object_ = object;
-    emit gameObjectSet();
+    emit initializing();
+    initialized_ = true;
 }
 
 bool GameObjectProperty::canMove(bool last_value) const
@@ -84,7 +86,7 @@ bool GameObjectProperty::canSetPosition(bool last_value, const Coordinate &) con
 }
 
 GameObjectProperty::GameObjectProperty()
-    : QObject(nullptr), game_object_(nullptr)
+    : QObject(nullptr), game_object_(nullptr), initialized_(false)
 {}
 
 QString GameObjectProperty::objectName() const
@@ -100,11 +102,15 @@ GameObjectProperty *GameObjectProperty::castTo(const QMetaObject *meta)
     return nullptr;
 }
 
+bool GameObjectProperty::isInitialized() const
+{
+    return initialized_;
+}
+
 GameObjectInfo *GameObjectProperty::objectInfo() const
 {
     return gameObject()->objectInfo();
 }
-
 
 GameObjectRepositoryBase *GameObjectProperty::repository() const
 {
@@ -172,7 +178,7 @@ GameObject::GameObject(const QString &name, GameObjectProperty *property, GameOb
     if (property_) {
         connect(this, &GameObject::updated, property_, &GameObjectProperty::updated);
         property_->setParent(this);
-        property_->setGameObject(this);
+        property_->initialize(this);
     }
     select();
     startMoving();

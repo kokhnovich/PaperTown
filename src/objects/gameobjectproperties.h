@@ -20,7 +20,7 @@ public:
 protected:
     GameObjectProperty *castTo(const QMetaObject *meta) override;
 private slots:
-    void setGameObjectToChildren();
+    void initializeChildren();
 private:
     QVector<GameObjectProperty *> properties_;
 };

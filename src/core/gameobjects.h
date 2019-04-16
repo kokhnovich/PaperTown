@@ -73,7 +73,8 @@ public:
     
     QString objectName() const;
     GameObject *gameObject() const;
-    void setGameObject(GameObject *object);
+    void initialize(GameObject *object);
+    bool isInitialized() const;
     
     Q_INVOKABLE GameObjectProperty();
 
@@ -95,9 +96,10 @@ protected:
     virtual Util::Bool3 canMove() const;
 signals:
     void updated();
-    void gameObjectSet();
+    void initializing();
 private:
     GameObject *game_object_;
+    bool initialized_;
 };
 
 class GameObject : public QObject
