@@ -9,7 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     repository_(new GameObjectRenderRepository(this)),
-    field_(new GameField(this, repository_, 120, 300)),
+    field_(new GameField(this, repository_, 120, 280)),
     textures_(new GameTextureRepository(this)),
     scene(new GameScene(this, repository_, field_, textures_)),
     scheduler(),
@@ -52,7 +52,7 @@ void MainWindow::initObjects()
             if (qrand() % 25 != 0) {
                 continue;
             }
-            auto obj = field_->add("static", objects[qrand() % 5], {i, j});
+            field_->add("static", objects[qrand() % 5], {i, j});
         }
     }
 }
