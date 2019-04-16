@@ -4,7 +4,7 @@
 GameObjectRepositoryBase::GameObjectRepositoryBase(QObject *parent) : QObject(parent)
 {}
 
-GameObjectRepositoryBase::GameObjectInfo *GameObjectRepositoryBase::getInfo(const QString &type, const QString &name) const
+GameObjectInfo *GameObjectRepositoryBase::getInfo(const QString &type, const QString &name) const
 {
     QString full = fullName(type, name);
     Q_ASSERT(info_.contains(full));
@@ -12,7 +12,7 @@ GameObjectRepositoryBase::GameObjectInfo *GameObjectRepositoryBase::getInfo(cons
 }
 
 void GameObjectRepositoryBase::addObject(const QString &type, const QString &name,
-        const GameObjectRepositoryBase::GameObjectInfo &info)
+        const GameObjectInfo &info)
 {
     QString full = fullName(type, name);
     Q_ASSERT(!info_.contains(full));
@@ -100,6 +100,12 @@ GameObjectProperty *GameObjectProperty::castTo(const QMetaObject *meta)
     return nullptr;
 }
 
+GameObjectInfo *GameObjectProperty::objectInfo() const
+{
+    return gameObject()->objectInfo();
+}
+
+
 GameObjectRepositoryBase *GameObjectProperty::repository() const
 {
     return game_object_->repository();
@@ -170,6 +176,11 @@ GameObject::GameObject(const QString &name, GameObjectProperty *property, GameOb
     }
     select();
     startMoving();
+}
+
+GameObjectInfo *GameObject::objectInfo() const
+{
+    return repository_->getInfo(type(), name_);
 }
 
 SelectionState GameObject::getSelectionState() const

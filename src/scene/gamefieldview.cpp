@@ -85,10 +85,10 @@ void GameFieldView::putObject(GameObject *object)
     }
 }
 
-void GameFieldView::moveObject(const Coordinate &, const Coordinate &)
+void GameFieldView::moveObject(const Coordinate &old_pos, const Coordinate &)
 {
     GameObject *object = qobject_cast<GameObject *>(sender());
-    renderer_->moveObject(object, objects_.values(object));
+    renderer_->moveObject(object, old_pos, objects_.values(object));
 }
 
 void GameFieldView::placeObject(const Coordinate &)

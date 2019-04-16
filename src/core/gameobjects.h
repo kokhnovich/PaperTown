@@ -27,15 +27,15 @@ struct GameObjectKey {
     QString type, name;
 };
 
+struct GameObjectInfo {
+    QVector<Coordinate> cells;
+    QVariantMap keys;
+};
+
 class GameObjectRepositoryBase : public QObject
 {
     Q_OBJECT
-public:
-    struct GameObjectInfo {
-        QVector<Coordinate> cells;
-        QVariantMap keys;
-    };
-    
+public:    
     explicit GameObjectRepositoryBase(QObject *parent = nullptr);
     void addObject(const QString &type, const QString &name, const GameObjectInfo &info);
     GameObjectInfo *getInfo(const QString &type, const QString &name) const;
@@ -86,6 +86,8 @@ public:
         }
         return qobject_cast<T *>(property->castTo(&T::staticMetaObject));
     }
+
+    GameObjectInfo *objectInfo() const;
     
     GameObjectRepositoryBase *repository() const;
 protected:
@@ -137,6 +139,8 @@ public:
     bool canSetPosition(const Coordinate &pos) const;
     bool setPosition(const Coordinate &pos);
 
+    GameObjectInfo *objectInfo() const;
+    
     friend class GameFieldBase;
 protected:
     virtual bool internalCanSelect() const;

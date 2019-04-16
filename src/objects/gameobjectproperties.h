@@ -13,6 +13,8 @@ public:
     bool canSetPosition(bool last_value, const Coordinate &position) const override;
 
     void addProperty(GameObjectProperty *property);
+    
+    inline const QVector<GameObjectProperty *> &properties() { return properties_; }
 
     Q_INVOKABLE GameObjectPropertyContainer();
 protected:

@@ -8,12 +8,11 @@
 #include "gametextures.h"
 #include "gamescenegeometry.h"
 #include "gameobjectrenderrepository.h"
+#include "gamepropertyrenderer.h"
 
 const int DATA_KEY_GAMEOBJECT = 42;
-const int DATA_KEY_TEXTURE_NAME = 43;
-const int DATA_KEY_PRIORITY = 44;
 
-class GameTextureRenderer : public QObject
+class GameTextureRenderer : public GameTextureRendererBase
 {
     Q_OBJECT
 public:
@@ -22,7 +21,7 @@ public:
                         GameObjectRenderRepository *repository, QGraphicsScene *scene);
 
     QList<QGraphicsItem *> drawObject(GameObject *object);
-    void moveObject(GameObject *object, const QList<QGraphicsItem *> &items);
+    void moveObject(GameObject *object, const Coordinate &old_pos, const QList<QGraphicsItem *> &items);
     void changeObjectSelectionState(GameObject *object, const QList<QGraphicsItem *> &items,
                                     SelectionState old_state, SelectionState new_state);
     
@@ -30,18 +29,12 @@ public:
     QGraphicsWidget *drawSelectionControl(const GameObject *object);
 
     void setupScene();
-
-    QGraphicsScene *scene() const;
 protected:
     QGraphicsItem *drawSelectionRect(GameObject *object);
     QGraphicsItem *drawTexture(const QString &name, const Coordinate &c, qreal priority = 0.0);
-    void moveTexture(QGraphicsItem *item, const QString &name,
-                     const Coordinate &c, qreal priority = 0.0);
+    void moveTexture(QGraphicsItem *item, const Coordinate &old_pos, const Coordinate &new_pos);
 private:
-    GameSceneGeometry *geometry_;
-    GameTextureRepository *textures_;
-    GameObjectRenderRepository *repository_;
-    QGraphicsScene *scene_;
+    GamePropertyRenderer *prop_render_;
 };
 
 #endif // GAMETEXTURERENDERER_H

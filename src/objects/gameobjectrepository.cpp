@@ -59,7 +59,7 @@ QVector<GameObjectKey> GameObjectRepository::keys(bool show_hidden)
 void GameObjectRepository::doLoadObject(const QString &type, const QString &name, const QJsonObject &json)
 {
     auto cell_arr = json.value("cells").toArray();
-    GameObjectRepositoryBase::GameObjectInfo info;
+    GameObjectInfo info;
     info.cells.resize(cell_arr.size());
     for (int i = 0; i < cell_arr.size(); ++i) {
         info.cells[i].x = cell_arr.at(i).toArray().at(0).toInt();
