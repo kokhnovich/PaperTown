@@ -8,7 +8,7 @@ class GroundObject : public GameObject
 {
     Q_OBJECT
 public:
-    GroundObject(const QString &name, GameObjectProperty *property, GameObjectRepositoryBase *repository);
+    GroundObject(const QString &name, GameObjectRepositoryBase *repository);
     QString type() const override;
 protected:
     bool internalCanMove() const override;
@@ -18,7 +18,7 @@ class StaticObject : public GameObject
 {
     Q_OBJECT
 public:
-    StaticObject(const QString &name, GameObjectProperty *property, GameObjectRepositoryBase *repository);
+    StaticObject(const QString &name, GameObjectRepositoryBase *repository);
     QString type() const override;
 protected:
     bool internalCanMove() const override;
@@ -28,7 +28,7 @@ class MovingObject : public GameObject
 {
     Q_OBJECT
 public:
-    MovingObject(const QString &name, GameObjectProperty *property, GameObjectRepositoryBase *repository);
+    MovingObject(const QString &name, GameObjectRepositoryBase *repository);
     QString type() const override;
 };
 

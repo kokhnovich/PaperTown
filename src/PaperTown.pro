@@ -40,6 +40,7 @@ SOURCES += \
     core/eventscheduler.cpp \
     objects/gameobjectrepository.cpp \
     objects/gameobjectproperties.cpp \
+    objects/stdproperties.cpp \
     scene/gamescene.cpp \
     scene/gametextures.cpp \
     scene/gamefieldview.cpp \
@@ -47,6 +48,7 @@ SOURCES += \
     scene/gametexturerenderer.cpp \
     scene/gamepropertyrenderer.cpp \
     scene/gameobjectrenderrepository.cpp \
+    scene/stdpropertyrenderers.cpp \
     util/coordinates.cpp \
     util/misc.cpp
 
@@ -62,6 +64,7 @@ HEADERS += \
     core/eventscheduler.h \
     objects/gameobjectrepository.h \
     objects/gameobjectproperties.h \
+    objects/stdproperties.h \
     scene/gamescene.h \
     scene/gametextures.h \
     scene/gamefieldview.h \
@@ -69,6 +72,7 @@ HEADERS += \
     scene/gametexturerenderer.h \
     scene/gamepropertyrenderer.h \
     scene/gameobjectrenderrepository.h \
+    scene/stdpropertyrenderers.h \
     util/coordinates.h \
     util/misc.h
 

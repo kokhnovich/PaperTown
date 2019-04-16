@@ -69,7 +69,7 @@ void GameObjectRepository::doLoadObject(const QString &type, const QString &name
     if (keys_obj.isObject()) {
         info.keys = keys_obj.toVariant().toMap();
     }
-    auto props_arr = json.value("props").toArray();
+    auto props_arr = json.value("properties").toArray();
     for (int i = 0; i < props_arr.size(); ++i) {
         addPropertyByName(type, name, props_arr[i].toString());
     }

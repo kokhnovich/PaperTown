@@ -19,8 +19,7 @@ public:
     Q_INVOKABLE GameObjectPropertyContainer();
 protected:
     GameObjectProperty *castTo(const QMetaObject *meta) override;
-private slots:
-    void initializeChildren();
+    void doInitialize() override;
 private:
     QVector<GameObjectProperty *> properties_;
 };

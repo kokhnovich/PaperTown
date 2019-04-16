@@ -16,10 +16,15 @@ GameAbstractPropertyRenderer::GameAbstractPropertyRenderer(GameTextureRendererBa
     : QObject(parent), renderer_(renderer)
 {}
 
-QGraphicsItem *GameAbstractPropertyRenderer::drawProperty(GameObjectProperty *property)
+QList<QGraphicsItem *> GameAbstractPropertyRenderer::drawProperty(GameObjectProperty *property)
 {
     auto result = doDrawProperty(property);
     return result;
+}
+
+QList<QGraphicsItem *> GameAbstractPropertyRenderer::doDrawProperty(GameObjectProperty *)
+{
+    return {};
 }
 
 QWidget *GameAbstractPropertyRenderer::drawControlWidget(GameObjectProperty *)
@@ -58,30 +63,27 @@ QWidget *GamePropertyRenderer::drawControlWidget(GameObjectProperty *property)
     return widget;
 }
 
-QGraphicsItem *GamePropertyRenderer::doDrawProperty(GameObjectProperty *property)
+QList<QGraphicsItem *> GamePropertyRenderer::doDrawProperty(GameObjectProperty *property)
 {
     if (!property->inherits("GameObjectPropertyContainer")) {
         auto name = property->metaObject()->className();
         if (!renderers_.contains(name)) {
             qWarning() << "property type" << name << "has no renderer!";
-            return nullptr;
+            return {};
         }
         return renderers_.value(name)->drawProperty(property);
     }
 
     GameObjectPropertyContainer *container = qobject_cast<GameObjectPropertyContainer *>(property);
     QList<QGraphicsItem *> items;
-    for (auto item : container->properties()) {
-        auto item_property = drawProperty(item);
-        if (item_property == nullptr) {
-            continue;
-        }
-        items.push_back(item_property);
+    for (auto property : container->properties()) {
+        auto add_items = doDrawProperty(property);
+        items.append(add_items);
     }
-    return scene()->createItemGroup(items);
+    return items;
 }
 
-void GamePropertyRenderer::addRenderer(QString &property_class, GameAbstractPropertyRenderer *renderer)
+void GamePropertyRenderer::addRenderer(const QString &property_class, GameAbstractPropertyRenderer *renderer)
 {
     renderer->setParent(this);
     renderers_[property_class] = renderer;

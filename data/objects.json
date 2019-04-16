@@ -22,6 +22,10 @@
 			[2, 0], [2, 1], [2, 2], [2, 3],
 			[3, 0], [3, 1], [3, 2], [3, 3]
 		],
-		"caption": "Cinema"
+		"caption": "Cinema",
+		"properties": ["house"],
+		"keys": {
+			"population": [100, 200]
+		}
 	}
 } 

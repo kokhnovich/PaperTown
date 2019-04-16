@@ -31,7 +31,7 @@ class GameAbstractPropertyRenderer : public QObject
 {
     Q_OBJECT
 public:
-    virtual QGraphicsItem *drawProperty(GameObjectProperty *property);
+    virtual QList<QGraphicsItem *> drawProperty(GameObjectProperty *property);
     virtual QWidget *drawControlWidget(GameObjectProperty *property);
 
     inline GameSceneGeometry *geometry() const { return renderer_->geometry(); }
@@ -41,7 +41,7 @@ public:
 
     GameAbstractPropertyRenderer(GameTextureRendererBase *renderer, QObject *parent = nullptr);
 protected:
-    virtual QGraphicsItem *doDrawProperty(GameObjectProperty *property) = 0;
+    virtual QList<QGraphicsItem *> doDrawProperty(GameObjectProperty *property);
 private:
     GameTextureRendererBase *renderer_;
 };
@@ -50,13 +50,13 @@ class GamePropertyRenderer: public GameAbstractPropertyRenderer
 {
     Q_OBJECT
 public:
-    void addRenderer(QString &property_class, GameAbstractPropertyRenderer *renderer);
+    void addRenderer(const QString &property_class, GameAbstractPropertyRenderer *renderer);
 
     QWidget *drawControlWidget(GameObjectProperty *property) override;
     
     GamePropertyRenderer(GameTextureRendererBase *renderer, QObject *parent = nullptr);
 protected:
-    QGraphicsItem *doDrawProperty(GameObjectProperty *property) override;
+    QList<QGraphicsItem *> doDrawProperty(GameObjectProperty *property) override;
 private:
     QHash<QString, GameAbstractPropertyRenderer *> renderers_;
 };

@@ -94,6 +94,8 @@ public:
 protected:
     virtual Util::Bool3 canSelect() const;
     virtual Util::Bool3 canMove() const;
+    
+    virtual void doInitialize();
 signals:
     void updated();
     void initializing();
@@ -108,8 +110,9 @@ class GameObject : public QObject
 public:
     Q_PROPERTY(Coordinate position READ position WRITE setPosition)
 
-    GameObject(const QString &name, GameObjectProperty *property, GameObjectRepositoryBase *repository);
-
+    GameObject(const QString &name, GameObjectRepositoryBase *repository);
+    void initProperty(GameObjectProperty *property);
+    
     QString name() const;
     virtual QString type() const = 0;
     Coordinate position() const;

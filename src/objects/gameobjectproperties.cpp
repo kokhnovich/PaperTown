@@ -43,9 +43,7 @@ GameObjectProperty *GameObjectPropertyContainer::castTo(const QMetaObject *meta)
 
 GameObjectPropertyContainer::GameObjectPropertyContainer()
     : GameObjectProperty()
-{
-    connect(this, &GameObjectProperty::initializing, this, &GameObjectPropertyContainer::initializeChildren);
-}
+{}
 
 void GameObjectPropertyContainer::addProperty(GameObjectProperty* property)
 {
@@ -57,7 +55,7 @@ void GameObjectPropertyContainer::addProperty(GameObjectProperty* property)
     properties_.append(property);
 }
 
-void GameObjectPropertyContainer::initializeChildren()
+void GameObjectPropertyContainer::doInitialize()
 {
     for (auto property : qAsConst(properties_)) {
         property->initialize(gameObject());

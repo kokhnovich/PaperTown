@@ -2,6 +2,7 @@
 #include <QGraphicsProxyWidget>
 #include <QLayout>
 #include "gametexturerenderer.h"
+#include "stdpropertyrenderers.h"
 
 void GameTextureRenderer::setupScene()
 {
@@ -53,10 +54,8 @@ QList<QGraphicsItem *> GameTextureRenderer::drawObject(GameObject *object)
     }
     
     if (object->property() != nullptr) {
-        auto item = prop_render_->drawProperty(object->property());
-        if (item != nullptr) {
-            items.push_back(item);
-        }
+        auto add_items = prop_render_->drawProperty(object->property());
+        items.append(add_items);
     }
     
     return items;
@@ -148,6 +147,7 @@ QGraphicsWidget *GameTextureRenderer::drawSelectionControl(const GameObject *obj
 
     auto parent_widget = new QWidget();
     parent_widget->move({0, 0});
+    parent_widget->setFont(font);
     parent_widget->setWindowFlags(Qt::FramelessWindowHint);
     parent_widget->setAttribute(Qt::WA_NoSystemBackground);
     parent_widget->setAttribute(Qt::WA_TranslucentBackground);
@@ -188,24 +188,22 @@ QGraphicsWidget *GameTextureRenderer::drawSelectionControl(const GameObject *obj
 
     auto layout = new QVBoxLayout(parent_widget);
 
-    auto move_btn = new QPushButton("Move", parent_widget);
-    move_btn->setFont(font);
-    move_btn->setVisible(object->canMove());
-    layout->addWidget(move_btn);
-    connect(move_btn, &QPushButton::released, object, &GameObject::startMoving);
-
-    auto delete_btn = new QPushButton("Delete", parent_widget);
-    delete_btn->setFont(font);
-    delete_btn->setObjectName(QStringLiteral("delete-btn"));
-    layout->addWidget(delete_btn);
-    connect(delete_btn, &QPushButton::clicked, object, &GameObject::removeSelf);
-
     if (object->property() != nullptr) {
         auto prop_widget = prop_render_->drawControlWidget(object->property());
         if (prop_widget != nullptr) {
             layout->addWidget(prop_widget);
         }
     }
+    
+    auto move_btn = new QPushButton("Move", parent_widget);
+    move_btn->setVisible(object->canMove());
+    layout->addWidget(move_btn);
+    connect(move_btn, &QPushButton::released, object, &GameObject::startMoving);
+
+    auto delete_btn = new QPushButton("Delete", parent_widget);
+    delete_btn->setObjectName(QStringLiteral("delete-btn"));
+    layout->addWidget(delete_btn);
+    connect(delete_btn, &QPushButton::clicked, object, &GameObject::removeSelf);
     
     auto widget_proxy = scene()->addWidget(parent_widget);
 
@@ -224,4 +222,6 @@ GameTextureRenderer::GameTextureRenderer(QObject *parent, GameSceneGeometry *geo
         GameTextureRepository *textures, GameObjectRenderRepository *repository, QGraphicsScene *scene)
     : GameTextureRendererBase(parent, geometry, textures, repository, scene),
       prop_render_(new GamePropertyRenderer(this, this))
-{}
+{
+    prop_render_->addRenderer(QStringLiteral("GameProperty_house"), new GamePropertyRenderer_house(this));
+}
