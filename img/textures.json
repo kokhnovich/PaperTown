@@ -25,5 +25,23 @@
 		"offset": [-104, -230],
 		"z-offset": [-2, -2],
 		"layers": 4
+	},
+	
+	"angle-se": {
+		"offset": [0, -228],
+		"z-offset": [0, 0],
+		"layers": 4
+	},
+	
+	"angle-sw": {
+		"offset": [-96, -176],
+		"z-offset": [0, -2],
+		"layers": 4
+	},
+	
+	"house-1x2": {
+		"offset": [4, -221],
+		"z-offset": [0, 0],
+		"layers": 2
 	}
 }
