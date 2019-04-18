@@ -12,7 +12,7 @@ GamePropertyRenderer_house::GamePropertyRenderer_house(GameTextureRendererBase *
 {
     label_font_.setWeight(QFont::Bold);
     label_font_.setPixelSize(0.75 * image_.height());
-    label_palette_.setColor(QPalette::WindowText, QColor("#893014"));
+    label_palette_.setColor(QPalette::WindowText, QColor(137, 48, 20));
 }
 
 QWidget *GamePropertyRenderer_house::drawControlWidget(GameObjectProperty *a_property)
