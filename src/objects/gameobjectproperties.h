@@ -29,10 +29,12 @@ GameObjectProperty *createProperty(const QString &name);
 
 #define GAME_PROPERTY_REGISTER(name, type) \
     namespace type##__Registerer__ { \
-        static bool registered = []() { \
-            registerProperty(name, &type::staticMetaObject); \
-            return true; \
-        }(); \
+        struct Register \
+        { \
+            Register() { \
+                registerProperty(name, &type::staticMetaObject); \
+            } \
+        } reg; \
     }
 
 #endif // GAMEOBJECTPROPERTYCONTAINER_H

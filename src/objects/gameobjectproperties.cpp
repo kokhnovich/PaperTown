@@ -80,4 +80,4 @@ void registerProperty(const QString& name, const QMetaObject* meta)
     qDebug() << "registerProperty: property" << name << "with type" << meta->className() << "registered";
 }
 
-GAME_PROPERTY_REGISTER("empty", GameObjectProperty) // clazy:exclude=non-pod-global-static
+GAME_PROPERTY_REGISTER("empty", GameObjectProperty)
