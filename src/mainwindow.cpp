@@ -31,7 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->graphicsView->scale(0.5, 0.5);
     
     field_->scheduler()->addEvent(new CustomEvent(this), 1000, 10);
-    timer.setInterval(1000);
+    timer.setInterval(40);
     timer.start();
     
     GameObjectPickerModel *picker_model = new GameObjectPickerModel(repository_, textures_, this);

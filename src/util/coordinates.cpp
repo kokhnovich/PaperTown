@@ -1,6 +1,6 @@
 #include "coordinates.h"
 
-Rect boundingRect(const QVector<Coordinate>& points)
+Rect boundingRect(const QVector<Coordinate> &points)
 {
     Q_ASSERT(!points.empty());
     int top = points[0].x, bottom = points[0].x, left = points[0].y, right = points[0].y;
@@ -16,6 +16,33 @@ Rect boundingRect(const QVector<Coordinate>& points)
 Coordinate::Coordinate(int x, int y)
     : x(x), y(y)
 {
+}
+
+Coordinate Coordinate::applyDirection(Util::Direction dir)
+{
+    Coordinate res = *this;
+    switch (dir) {
+    case Util::Up: {
+        --res.x;
+        break;
+    }
+    case Util::Down: {
+        ++res.x;
+        break;
+    }
+    case Util::Left: {
+        --res.y;
+        break;
+    }
+    case Util::Right: {
+        ++res.y;
+        break;
+    }
+    default: {
+        Q_UNREACHABLE();
+    }
+    }
+    return res;
 }
 
 Coordinate &operator+=(Coordinate &a, const Coordinate &b)
@@ -50,7 +77,7 @@ Rect::Rect(int top, int bottom, int left, int right)
     : top(top), bottom(bottom), left(left), right(right)
 {}
 
-bool inBounds(int height, int width, const Coordinate& coord)
+bool inBounds(int height, int width, const Coordinate &coord)
 {
     return 0 <= coord.x && coord.x < height && 0 <= coord.y && coord.y < width;
 }

@@ -161,6 +161,7 @@ signals:
     void startedMoving();
     void endedMoving();
     void declined();
+    void attached();
 public slots:
     void removeSelf();
 

@@ -398,6 +398,7 @@ void GameObject::setField(GameFieldBase *field)
     Q_ASSERT(field_ == nullptr || field == nullptr);
     Q_ASSERT_X(field->repository() == repository_, "GameObject::setField", "field and object repository must be the same");
     field_ = field;
+    emit attached();
 }
 
 GameObjectRepositoryBase *GameObject::repository() const

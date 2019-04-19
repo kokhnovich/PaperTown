@@ -108,7 +108,8 @@
 	},
 	
 	"human": {
-		"textures": ["human-left"],
+		"textures": ["human"],
+		"properties": ["human"],
 		"type": "moving",
 		"cells": [0, 0]
 	}

@@ -68,6 +68,10 @@ Q_GLOBAL_STATIC(PropertiesHash, g_properties)
 
 GameObjectProperty *createProperty(const QString& name)
 {
+    if (!g_properties->contains(name)) {
+        qCritical() << "property" << name << "not found";
+        Q_ASSERT(false);
+    }
     const QMetaObject *meta = g_properties->value(name);
     Q_CHECK_PTR(meta);
     GameObjectProperty *result = qobject_cast<GameObjectProperty *>(meta->newInstance());

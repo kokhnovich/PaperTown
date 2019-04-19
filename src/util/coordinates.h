@@ -4,10 +4,25 @@
 #include <QObject>
 #include <QVector>
 
+namespace Util
+{
+    Q_NAMESPACE
+    
+    enum Direction {
+        Up,
+        Down,
+        Left,
+        Right
+    };
+    Q_ENUM_NS(Direction);
+}
+
 struct Coordinate {
     int x, y;
 
     Coordinate(int x = 0, int y = 0);
+
+    Coordinate applyDirection(Util::Direction dir);
 };
 
 struct Rect {
