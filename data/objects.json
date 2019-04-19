@@ -105,5 +105,11 @@
 		"keys": {
 			"population": [50, 75]
 		}
+	},
+	
+	"human": {
+		"textures": ["human-left"],
+		"type": "moving",
+		"cells": [0, 0]
 	}
 }

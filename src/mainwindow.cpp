@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
     
     ui->graphicsView->setScene(scene);
     ui->graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
-    ui->graphicsView->scale(0.5, 0.5);
+    //ui->graphicsView->scale(0.5, 0.5);
     
     scheduler.addEvent(new CustomEvent(this), 1000);
     timer.setInterval(40);
