@@ -31,7 +31,7 @@ public:
     void setupScene();
 protected:
     QGraphicsItem *drawSelectionRect(GameObject *object);
-    QGraphicsItem *drawTexture(const QString &name, const Coordinate &c, qreal priority = 0.0);
+    QGraphicsItem *drawTexture(const QString &name, const Coordinate &c);
     void moveTexture(QGraphicsItem *item, const Coordinate &old_pos, const Coordinate &new_pos);
 private:
     GamePropertyRenderer *prop_render_;

@@ -27,13 +27,13 @@ void GameTextureRenderer::setupScene()
     }
 }
 
-QGraphicsItem *GameTextureRenderer::drawTexture(const QString &name, const Coordinate &c, qreal priority)
+QGraphicsItem *GameTextureRenderer::drawTexture(const QString &name, const Coordinate &c)
 {
     const GameTexture *texture = textures()->getTexture(name);
     Q_CHECK_PTR(texture);
     QGraphicsPixmapItem *item = scene()->addPixmap(texture->pixmap);
     item->setPos(texture->offset + geometry()->coordinateToTopLeft(c));
-    item->setZValue(geometry()->zOrder(c + texture->z_offset, priority));
+    item->setZValue(geometry()->zOrder(texture->z_offset));
     return item;
 }
 
@@ -48,7 +48,7 @@ QList<QGraphicsItem *> GameTextureRenderer::drawObject(GameObject *object)
     auto info = repository()->getRenderInfo(object);
     QList<QGraphicsItem *> items;
     for (const QString &texture_name : info->textures) {
-        QGraphicsItem *item = drawTexture(texture_name, object->position(), info->priority);
+        QGraphicsItem *item = drawTexture(texture_name, object->position());
         item->setData(DATA_KEY_GAMEOBJECT, QVariant::fromValue(object));
         items.push_back(item);
     }
@@ -56,6 +56,10 @@ QList<QGraphicsItem *> GameTextureRenderer::drawObject(GameObject *object)
     if (object->property() != nullptr) {
         auto add_items = prop_render_->drawProperty(object->property());
         items.append(add_items);
+    }
+    
+    for (QGraphicsItem *item : qAsConst(items)) {
+        item->setZValue(item->zValue() + geometry()->zOrder(object->position(), info->priority));
     }
     
     return items;
