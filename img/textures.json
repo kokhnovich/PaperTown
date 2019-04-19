@@ -50,22 +50,22 @@
 		"z-offset": [0, 0]
 	},
 	
-	"human-anim-right": {
+	"human-anim-down": {
 		"offset": [20, -50],
 		"z-offset": [0, 0]
 	},
 	
-	"human-anim-left": {
+	"human-anim-up": {
 		"offset": [-5, -50],
 		"z-offset": [0, 0]
 	},
 	
-	"human-anim-up": {
+	"human-anim-right": {
 		"offset": [25, -50],
 		"z-offset": [0, 0]
 	},
 	
-	"human-anim-down": {
+	"human-anim-left": {
 		"offset": [10, -50],
 		"z-offset": [0, 0]
 	}
