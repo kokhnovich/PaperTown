@@ -34,7 +34,8 @@ GameObjectProperty *createProperty(const QString &name);
             Register() { \
                 registerProperty(name, &type::staticMetaObject); \
             } \
-        } reg; \
+        }; \
+        static Register reg_##type_; \
     }
 
 #endif // GAMEOBJECTPROPERTYCONTAINER_H

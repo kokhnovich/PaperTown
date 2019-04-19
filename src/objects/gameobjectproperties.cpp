@@ -62,11 +62,13 @@ void GameObjectPropertyContainer::doInitialize()
     }
 }
 
-static QHash<QString, const QMetaObject *> g_properties; // clazy:exclude=non-pod-global-static
+using PropertiesHash = QHash<QString, const QMetaObject *>;
+
+Q_GLOBAL_STATIC(PropertiesHash, g_properties)
 
 GameObjectProperty *createProperty(const QString& name)
 {
-    const QMetaObject *meta = g_properties.value(name);
+    const QMetaObject *meta = g_properties->value(name);
     Q_CHECK_PTR(meta);
     GameObjectProperty *result = qobject_cast<GameObjectProperty *>(meta->newInstance());
     Q_CHECK_PTR(result);
@@ -76,7 +78,7 @@ GameObjectProperty *createProperty(const QString& name)
 void registerProperty(const QString& name, const QMetaObject* meta)
 {
     Q_ASSERT(meta->inherits(&GameObjectProperty::staticMetaObject));
-    g_properties[name] = meta;
+    (*g_properties)[name] = meta;
     qDebug() << "registerProperty: property" << name << "with type" << meta->className() << "registered";
 }
 
