@@ -12,7 +12,6 @@ MainWindow::MainWindow(QWidget *parent) :
     field_(new GameField(this, repository_, 120, 280)),
     textures_(new GameTextureRepository(this)),
     scene(new GameScene(this, repository_, field_, textures_)),
-    scheduler(),
     timer()
 {
     textures_->loadFromFile(":/img/textures.json");
@@ -31,8 +30,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
     //ui->graphicsView->scale(0.5, 0.5);
     
-    scheduler.addEvent(new CustomEvent(this), 1000);
-    timer.setInterval(40);
+    field_->scheduler()->addEvent(new CustomEvent(this), 1000, 10);
+    timer.setInterval(1000);
     timer.start();
     
     GameObjectPickerModel *picker_model = new GameObjectPickerModel(repository_, textures_, this);
@@ -69,29 +68,29 @@ void MainWindow::newEvent()
     //scene->field()->remove(objects[qrand() % objects.size()]);
     
     ++event_count;
-    scheduler.addEvent(new CustomEvent(this), 1000);
+    //field_->scheduler()->addEvent(new CustomEvent(this), 10);
     //scheduler.addEvent(new CustomEvent(this), 1000); // devastating :)
 }
 
 void MainWindow::on_activateBtn_clicked()
 {
-    scheduler.start();
+    field_->scheduler()->start();
     update();
 }
 
 void MainWindow::on_deactivateBtn_clicked()
 {
-    scheduler.pause();
+    field_->scheduler()->pause();
     update();
 }
 
 void MainWindow::timerTimeout()
 {
-    scheduler.update();
+    field_->scheduler()->update();
     update();
 }
 
 void MainWindow::update()
 {
-    ui->label->setText(QString::asprintf("events caught: %d, active : %s", event_count, scheduler.active() ? "true" : "false"));
+    ui->label->setText(QString::asprintf("events caught: %d, active : %s", event_count, field_->scheduler()->active() ? "true" : "false"));
 }
