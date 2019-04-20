@@ -31,10 +31,12 @@ public:
     void moveMovingItem(GameObject *object, QGraphicsItem *item);
     
     QGraphicsWidget *drawSelectionControl(const GameObject *object);
+    void updateSelectionControl(const GameObject *object, QGraphicsWidget *widget);
     void moveSelectionControl(QGraphicsWidget *widget, const Coordinate &old_pos, const Coordinate &new_pos);
 
     void setupScene();
 protected:
+    QGraphicsWidget *createSelectionControl(const GameObject *object);
     QGraphicsItem *drawSelectionRect(GameObject *object);
     QGraphicsItem *drawTexture(const QString &name, const Coordinate &c);
     void moveTexture(QGraphicsItem *item, const Coordinate &old_pos, const Coordinate &new_pos);

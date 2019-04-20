@@ -12,7 +12,8 @@ class GamePropertyRenderer_house : public GameAbstractPropertyRenderer
     Q_OBJECT
 public:
     GamePropertyRenderer_house(GameTextureRendererBase *renderer);
-    QWidget *drawControlWidget(GameObjectProperty *property) override;
+    QWidget *createControlWidget(GameObjectProperty *property) override;
+    void updateControlWidget(GameObjectProperty *property, QWidget *widget) override;
 private:
     QPixmap image_;
     QFont label_font_;

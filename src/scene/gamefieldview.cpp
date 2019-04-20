@@ -99,9 +99,11 @@ void GameFieldView::placeObject(const Coordinate &)
 
 void GameFieldView::updateObject()
 {
-    // FIXME : also update the widget, if necessary
     GameObject *object = qobject_cast<GameObject *>(sender());
     renderer_->updateObject(object, objects_.values(object));
+    if (object->isSelected() && selection_control_ != nullptr) {
+        renderer_->updateSelectionControl(object, selection_control_);
+    }
 }
 
 GameFieldView::GameFieldView(QObject *parent, GameTextureRenderer *renderer)

@@ -51,18 +51,18 @@ QList<QGraphicsItem *> GameTextureRenderer::drawObject(GameObject *object)
     for (const QString &texture_name : info->textures) {
         items.push_back(drawTexture(texture_name, object->position()));
     }
-    
+
     if (object->property() != nullptr) {
         auto add_items = prop_render_->drawProperty(object->property());
         items.append(add_items);
     }
-    
+
     for (QGraphicsItem *item : qAsConst(items)) {
         item->setData(DATA_KEY_GAMEOBJECT, QVariant::fromValue(object));
         item->setData(DATA_KEY_BASE_Z_VALUE, QVariant::fromValue(item->zValue()));
         item->setZValue(item->zValue() + geometry()->zOrder(object->position(), info->priority));
     }
-    
+
     return items;
 }
 
@@ -73,7 +73,7 @@ void GameTextureRenderer::moveObject(GameObject *object, const Coordinate &old_p
     }
 }
 
-void GameTextureRenderer::moveSelectionControl(QGraphicsWidget* widget, const Coordinate& old_pos, const Coordinate& new_pos)
+void GameTextureRenderer::moveSelectionControl(QGraphicsWidget *widget, const Coordinate &old_pos, const Coordinate &new_pos)
 {
     widget->setPos(widget->pos() + geometry()->offset(new_pos - old_pos));
 }
@@ -142,7 +142,6 @@ public:
     QGraphicsSelectionRectItem(GameObject *object);
     ~QGraphicsSelectionRectItem() override;
 protected:
-    void timerTimeout();
     void updateBrushPen();
 private:
     GameObject *object_;
@@ -187,11 +186,11 @@ QGraphicsItem *GameTextureRenderer::drawSelectionRect(GameObject *object)
     for (Coordinate delta : object->cellsRelative()) {
         poly = poly.united(geometry()->selectionPolygon().translated(geometry()->offset(delta)));
     }
-    
+
     auto item = new QGraphicsSelectionRectItem(object);
     item->setPolygon(poly);
     scene()->addItem(item);
-    
+
     return item;
 }
 
@@ -214,12 +213,12 @@ QGraphicsItem *GameTextureRenderer::drawMovingItem(GameObject *object)
     return group;
 }
 
-void GameTextureRenderer::moveMovingItem(GameObject* object, QGraphicsItem* item)
+void GameTextureRenderer::moveMovingItem(GameObject *object, QGraphicsItem *item)
 {
     item->setPos(geometry()->coordinateToTopLeft(object->movingPosition()));
 }
 
-QGraphicsWidget *GameTextureRenderer::drawSelectionControl(const GameObject *object)
+QGraphicsWidget *GameTextureRenderer::createSelectionControl(const GameObject *object)
 {
     QFont font;
     font.setPixelSize(2 * geometry()->cellSize());
@@ -268,14 +267,15 @@ QGraphicsWidget *GameTextureRenderer::drawSelectionControl(const GameObject *obj
     auto layout = new QVBoxLayout(parent_widget);
 
     if (object->property() != nullptr) {
-        auto prop_widget = prop_render_->drawControlWidget(object->property());
+        auto prop_widget = prop_render_->createControlWidget(object->property());
         if (prop_widget != nullptr) {
+            prop_widget->setObjectName(QStringLiteral("property-widget"));
             layout->addWidget(prop_widget, 0, Qt::AlignCenter);
         }
     }
-    
+
     auto move_btn = new QPushButton("Move", parent_widget);
-    move_btn->setVisible(object->canMove());
+    move_btn->setObjectName(QStringLiteral("move-btn"));
     layout->addWidget(move_btn);
     connect(move_btn, &QPushButton::released, object, &GameObject::startMoving);
 
@@ -283,7 +283,7 @@ QGraphicsWidget *GameTextureRenderer::drawSelectionControl(const GameObject *obj
     delete_btn->setObjectName(QStringLiteral("delete-btn"));
     layout->addWidget(delete_btn);
     connect(delete_btn, &QPushButton::clicked, object, &GameObject::removeSelf);
-    
+
     auto widget_proxy = scene()->addWidget(parent_widget);
 
     Rect bound_rect = boundingRect(object->cells());
@@ -295,6 +295,25 @@ QGraphicsWidget *GameTextureRenderer::drawSelectionControl(const GameObject *obj
     widget_proxy->setPos((top_left + bottom_right) / 2 - widget_middle);
 
     return widget_proxy;
+}
+
+QGraphicsWidget *GameTextureRenderer::drawSelectionControl(const GameObject *object)
+{
+    auto widget = createSelectionControl(object);
+    updateSelectionControl(object, widget);
+    return widget;
+}
+
+void GameTextureRenderer::updateSelectionControl(const GameObject *object, QGraphicsWidget *a_widget)
+{
+    QWidget *widget = qobject_cast<QGraphicsProxyWidget *>(a_widget)->widget();
+    auto property_widget = widget->findChild<QWidget *>(QStringLiteral("property-widget"), Qt::FindDirectChildrenOnly);
+    auto move_btn = widget->findChild<QPushButton *>(QStringLiteral("move-btn"), Qt::FindDirectChildrenOnly);
+    Q_CHECK_PTR(move_btn);
+    move_btn->setVisible(object->canMove());
+    if (property_widget != nullptr) {
+        prop_render_->updateControlWidget(object->property(), property_widget);
+    }
 }
 
 GameTextureRenderer::GameTextureRenderer(QObject *parent, GameSceneGeometry *geometry,
