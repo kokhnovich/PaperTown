@@ -68,6 +68,11 @@
 	"human-anim-left": {
 		"offset": [10, -50],
 		"z-offset": [0, 0]
+	},
+	
+	"tallhouse": {
+		"offset": [0, 0],
+		"z-offset": [0, 0],
+		"layers": 2
 	}
-
 }

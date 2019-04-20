@@ -23,12 +23,12 @@ public:
     void newEvent();
     void update();
 private slots:
-    void on_activateBtn_clicked();
+    void on_startBtn_clicked();
 
-    void on_deactivateBtn_clicked();
+    void on_pauseBtn_clicked();
 
     void timerTimeout();
-    void on_spinBox_valueChanged(int arg1);
+    void on_doubleSpinBox_valueChanged(double arg1);
 
 private:
     void initObjects();
@@ -43,7 +43,7 @@ private:
     
     QTimer timer;
     int event_count = 0;
-    int scale_value = 5;
+    double old_scale_ = 0.5;
 };
 
 class CustomEvent : public GameEvent

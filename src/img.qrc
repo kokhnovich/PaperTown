@@ -1,5 +1,8 @@
 <RCC>
   <qresource prefix="/">
+    <file>../img/tallhouse.l1.png</file>
+    <file>../img/tallhouse.png</file>
+    <file>../img/tallhouse.l2.png</file>
     <file>../img/human-anim-down.png</file>
     <file>../img/human-anim-left.png</file>
     <file>../img/human.png</file>

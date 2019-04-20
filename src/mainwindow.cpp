@@ -21,14 +21,12 @@ MainWindow::MainWindow(QWidget *parent) :
     
     ui->setupUi(this);
 
-    game_view = new GameView(ui->groupBox);
-    ui->horizontalLayout->replaceWidget(ui->graphicsView, game_view);
-    delete ui->graphicsView;
-    ui->graphicsView = game_view;
+    game_view = ui->graphicsView;
     
     ui->graphicsView->setScene(scene);
     ui->graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
     ui->graphicsView->scale(0.5, 0.5);
+    old_scale_ = 0.5;
     
     field_->scheduler()->addEvent(new CustomEvent(this), 1000, 10);
     timer.setInterval(40);
@@ -74,13 +72,13 @@ void MainWindow::newEvent()
     //scheduler.addEvent(new CustomEvent(this), 1000); // devastating :)
 }
 
-void MainWindow::on_activateBtn_clicked()
+void MainWindow::on_startBtn_clicked()
 {
     field_->scheduler()->start();
     update();
 }
 
-void MainWindow::on_deactivateBtn_clicked()
+void MainWindow::on_pauseBtn_clicked()
 {
     field_->scheduler()->pause();
     update();
@@ -95,12 +93,13 @@ void MainWindow::timerTimeout()
 void MainWindow::update()
 {
     ui->label->setText(QString::asprintf("events caught: %d, active : %s", event_count, field_->scheduler()->active() ? "true" : "false"));
+    ui->startBtn->setEnabled(!field_->scheduler()->active());
+    ui->pauseBtn->setEnabled(field_->scheduler()->active());
 }
 
-void MainWindow::on_spinBox_valueChanged(int arg1)
+void MainWindow::on_doubleSpinBox_valueChanged(double arg1)
 {
-    double scale = (double)arg1 / scale_value;
-    ui->graphicsView->scale(scale, scale);
-
-    scale_value = arg1;
+    double scale = (double)arg1 / 100.0;
+    ui->graphicsView->scale(scale/old_scale_, scale/old_scale_);
+    old_scale_ = scale;
 }
