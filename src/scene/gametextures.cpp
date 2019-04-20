@@ -14,7 +14,7 @@ GameTextureRepository::GameTextureRepository(QObject* parent)
 const GameTexture *GameTextureRepository::getTexture(const QString &name) const
 {
     if (!textures_.contains(name)) {
-        qCritical() << "could not get texture with name = " << name;
+        qCritical() << "could not get texture with name =" << name;
         Q_ASSERT(textures_.contains(name));
     }
     return textures_.value(name).data();

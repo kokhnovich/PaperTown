@@ -25,6 +25,19 @@ class GamePropertyRenderer_human : public GameAbstractPropertyRenderer
 public:
     GamePropertyRenderer_human(GameTextureRendererBase *renderer);
     QList<QGraphicsItem *> drawProperty(GameObjectProperty *property) override;
+private:
+    struct AnimatedTexture
+    {
+        QList<QPixmap> frames;
+        QPointF offset;
+        Coordinate z_offset;
+    };
+    
+    QList<AnimatedTexture> textures_;
+    QMetaEnum direction_meta_;
+    bool textures_loaded_;
+    
+    void loadTextures();
 };
 
 #endif // STDPROPERTYRENDERERS_H

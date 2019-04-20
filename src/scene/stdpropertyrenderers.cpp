@@ -4,6 +4,8 @@
 #include "../scene/stdpropertyrenderers.h"
 #include "../objects/stdproperties.h"
 
+const int MAX_FRAME = 5;
+
 GamePropertyRenderer_house::GamePropertyRenderer_house(GameTextureRendererBase *renderer)
     : GameAbstractPropertyRenderer(renderer),
       image_(QStringLiteral(":/img/icon-population.png")),
@@ -35,40 +37,37 @@ QWidget *GamePropertyRenderer_house::drawControlWidget(GameObjectProperty *a_pro
 }
 
 GamePropertyRenderer_human::GamePropertyRenderer_human(GameTextureRendererBase* renderer)
-    : GameAbstractPropertyRenderer(renderer)
+    : GameAbstractPropertyRenderer(renderer),
+      direction_meta_(QMetaEnum::fromType<Util::Direction>()),
+      textures_loaded_(false)
 {}
 
 QList<QGraphicsItem *> GamePropertyRenderer_human::drawProperty(GameObjectProperty* a_property)
 {
-    // FIXME : rewrite it!!! (for more efficiency & better code)
+    loadTextures();
+    
     auto property = qobject_cast<GameProperty_human *>(a_property);
-    auto dir = property->direction();
-    QString dir_name = QString(QMetaEnum::fromType<Util::Direction>().key(dir)).toLower();
-    
+    Util::Direction dir = property->direction();
+    const AnimatedTexture &texture = textures_[dir];
     int stage = property->stage();
-    int cell_size = geometry()->cellSize();
     
-    auto delta = Coordinate(0, 0).applyDirection(dir);
+    Coordinate delta = Coordinate(0, 0).applyDirection(dir);
+    QPointF scene_delta = geometry()->offset(delta);
+    QPointF offs = texture.offset;
+    Coordinate z_offs = texture.z_offset;
     
-    auto texture = textures()->getTexture(QStringLiteral("human-anim-%1").arg(dir_name));
-    
-    auto offs = texture->offset;
-    auto z_offs = texture->z_offset;
-    
-    int texture_id = stage;
-    if (texture_id > 5) {
-        texture_id -= 5;
-        offs += geometry()->offset(delta) / 2;
+    int frame_id = stage;
+    if (frame_id > 5) {
+        frame_id -= 5;
+        offs += scene_delta / 2;
     }
-    
-    QPixmap pixmap = texture->pixmap.copy(QRect(cell_size * 3 * texture_id, 0, cell_size * 3, cell_size * 4));
     
     if (stage != 0) {
         z_offs -= delta;
-        offs -= geometry()->offset(delta);
+        offs -= scene_delta;
     }
     
-    auto item = scene()->addPixmap(pixmap);
+    auto item = scene()->addPixmap(texture.frames[frame_id]);
     item->setOffset(offs);
     item->setPos(geometry()->coordinateToTopLeft(property->gameObject()->position()));
     item->setZValue(geometry()->zOrder(z_offs));
@@ -76,4 +75,29 @@ QList<QGraphicsItem *> GamePropertyRenderer_human::drawProperty(GameObjectProper
     return {item};
 }
 
-
+void GamePropertyRenderer_human::loadTextures()
+{
+    if (textures_loaded_) {
+        return;
+    }
+    
+    int item_count = direction_meta_.keyCount();
+    for (int i = 0; i < item_count; ++i) {
+        QString dir_name = QString(direction_meta_.key(i)).toLower();
+        auto texture = textures()->getTexture(QStringLiteral("human-anim-%1").arg(dir_name));
+        
+        const int frame_count = MAX_FRAME + 1;
+        const int frame_h = texture->pixmap.height();
+        const int frame_w = texture->pixmap.width() / frame_count;
+        
+        AnimatedTexture anim_texture; 
+        anim_texture.offset = texture->offset;
+        anim_texture.z_offset = texture->z_offset;
+        for (int j = 0; j < frame_count; ++j) {
+            anim_texture.frames.append(texture->pixmap.copy(QRect(frame_w * j, 0, frame_w, frame_h)));
+        }
+        
+        textures_.append(anim_texture);
+    }
+    textures_loaded_ = true;
+}
