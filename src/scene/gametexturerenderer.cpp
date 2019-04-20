@@ -195,7 +195,7 @@ QGraphicsItem *GameTextureRenderer::drawSelectionRect(GameObject *object)
     return item;
 }
 
-QGraphicsItem *GameTextureRenderer::drawMoving(GameObject *object)
+QGraphicsItem *GameTextureRenderer::drawMovingItem(GameObject *object)
 {
     const GameTexture *texture = textures()->getTexture(object->name());
 
@@ -212,6 +212,11 @@ QGraphicsItem *GameTextureRenderer::drawMoving(GameObject *object)
     group->setZValue(geometry()->movingZDelta());
 
     return group;
+}
+
+void GameTextureRenderer::moveMovingItem(GameObject* object, QGraphicsItem* item)
+{
+    item->setPos(geometry()->coordinateToTopLeft(object->movingPosition()));
 }
 
 QGraphicsWidget *GameTextureRenderer::drawSelectionControl(const GameObject *object)

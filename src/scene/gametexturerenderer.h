@@ -27,7 +27,9 @@ public:
                                     SelectionState old_state, SelectionState new_state);
     void updateObject(GameObject *object, const QList<QGraphicsItem *> &items);
     
-    QGraphicsItem *drawMoving(GameObject *object);
+    QGraphicsItem *drawMovingItem(GameObject *object);
+    void moveMovingItem(GameObject *object, QGraphicsItem *item);
+    
     QGraphicsWidget *drawSelectionControl(const GameObject *object);
     void moveSelectionControl(QGraphicsWidget *widget, const Coordinate &old_pos, const Coordinate &new_pos);
 
