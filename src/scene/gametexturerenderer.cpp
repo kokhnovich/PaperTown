@@ -1,6 +1,7 @@
 #include <QPushButton>
 #include <QGraphicsProxyWidget>
 #include <QLayout>
+#include <QPointer>
 #include "gametexturerenderer.h"
 #include "stdpropertyrenderers.h"
 
@@ -125,26 +126,73 @@ void GameTextureRenderer::changeObjectSelectionState(GameObject *, const QList<Q
     }
 }
 
+const QColor SELECTION_BRUSH_COLORS[2] = {
+    QColor(255, 0, 0, 160), // false
+    QColor(0, 192, 0, 160)  // true
+};
+
+const QColor SELECTION_PEN_COLORS[2] = {
+    QColor(192, 0, 0, 160), // false
+    QColor(0, 128, 0, 160)  // true
+};
+
+class QGraphicsSelectionRectItem : public QGraphicsPolygonItem
+{
+public:
+    QGraphicsSelectionRectItem(GameObject *object);
+    ~QGraphicsSelectionRectItem() override;
+protected:
+    void timerTimeout();
+    void updateBrushPen();
+private:
+    GameObject *object_;
+    QPointer<QTimer> timer_;
+};
+
+QGraphicsSelectionRectItem::QGraphicsSelectionRectItem(GameObject *object)
+    : object_(object), timer_(new QTimer)
+{
+    updateBrushPen();
+    timer_->setInterval(40);
+    QObject::connect(timer_, &QTimer::timeout, timer_, [this]() {
+        if (!object_->isMoving()) {
+            timer_->deleteLater();
+            return;
+        }
+        updateBrushPen();
+    });
+    timer_->start();
+}
+
+QGraphicsSelectionRectItem::~QGraphicsSelectionRectItem()
+{
+    delete timer_;
+}
+
+void QGraphicsSelectionRectItem::updateBrushPen()
+{
+    QBrush brush(Qt::SolidPattern);
+    QPen pen;
+    pen.setWidth(2);
+    bool can_place = object_->canApplyMovingPosition();
+    brush.setColor(SELECTION_BRUSH_COLORS[can_place]);
+    pen.setColor(SELECTION_PEN_COLORS[can_place]);
+    setBrush(brush);
+    setPen(pen);
+}
+
 QGraphicsItem *GameTextureRenderer::drawSelectionRect(GameObject *object)
 {
-    QColor brush_color, pen_color;
-    if (object->canApplyMovingPosition()) {
-        brush_color = QColor(0, 192, 0, 160);
-        pen_color = QColor(0, 128, 0, 160);
-    } else {
-        brush_color = QColor(255, 0, 0, 160);
-        pen_color = QColor(192, 0, 0, 160);
-    }
-
-    QPen pen(pen_color);
-    pen.setWidth(2);
-
     QPolygonF poly;
     for (Coordinate delta : object->cellsRelative()) {
         poly = poly.united(geometry()->selectionPolygon().translated(geometry()->offset(delta)));
     }
-
-    return scene()->addPolygon(poly, pen, QBrush(brush_color));
+    
+    auto item = new QGraphicsSelectionRectItem(object);
+    item->setPolygon(poly);
+    scene()->addItem(item);
+    
+    return item;
 }
 
 QGraphicsItem *GameTextureRenderer::drawMoving(GameObject *object)
