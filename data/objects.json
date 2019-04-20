@@ -112,5 +112,14 @@
 		"properties": ["human"],
 		"type": "moving",
 		"cells": [0, 0]
+	},
+
+	"tallhouse": {
+		"textures": ["tallhouse.l1", "tallhouse.l2"],
+		"type": "static",
+		"cells": [
+			[0, 0], [0, 1], [1, 0], [1, 1]
+		],
+		"caption": "Tall house"
 	}
 }

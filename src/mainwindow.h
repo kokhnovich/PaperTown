@@ -28,6 +28,8 @@ private slots:
     void on_deactivateBtn_clicked();
 
     void timerTimeout();
+    void on_spinBox_valueChanged(int arg1);
+
 private:
     void initObjects();
     
@@ -41,6 +43,7 @@ private:
     
     QTimer timer;
     int event_count = 0;
+    int scale_value = 5;
 };
 
 class CustomEvent : public GameEvent

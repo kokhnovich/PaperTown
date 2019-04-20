@@ -96,3 +96,11 @@ void MainWindow::update()
 {
     ui->label->setText(QString::asprintf("events caught: %d, active : %s", event_count, field_->scheduler()->active() ? "true" : "false"));
 }
+
+void MainWindow::on_spinBox_valueChanged(int arg1)
+{
+    double scale = (double)arg1 / scale_value;
+    ui->graphicsView->scale(scale, scale);
+
+    scale_value = arg1;
+}
