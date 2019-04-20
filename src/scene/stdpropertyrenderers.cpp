@@ -26,7 +26,7 @@ QWidget *GamePropertyRenderer_house::createControlWidget(GameObjectProperty *)
     icon_label->setPixmap(image_);
     layout->addWidget(icon_label);
 
-    auto text_label = new QLabel("??");
+    auto text_label = new QLabel;
     text_label->setObjectName(QStringLiteral("population-label"));
     text_label->setFont(label_font_);
     text_label->setPalette(label_palette_);

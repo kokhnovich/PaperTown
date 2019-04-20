@@ -29,17 +29,16 @@ public:
 protected:
     QList<QGraphicsItem *> doDrawProperty(GameObjectProperty *property) override;
 private:
-    struct AnimatedTexture
-    {
+    struct AnimatedTexture {
         QList<QPixmap> frames;
         QPointF offset;
         Coordinate z_offset;
     };
-    
+
     QList<AnimatedTexture> textures_;
     QMetaEnum direction_meta_;
     bool textures_loaded_;
-    
+
     void loadTextures();
 };
 
