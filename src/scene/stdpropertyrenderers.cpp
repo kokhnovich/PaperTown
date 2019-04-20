@@ -85,6 +85,7 @@ void GamePropertyRenderer_human::updatePropertyItem(QGraphicsItem *a_item, GameO
     item->setOffset(offs);
     item->setPos(pos);
     item->setZValue(geometry()->zOrder(z_offs));
+    item->setShapeMode(QGraphicsPixmapItem::BoundingRectShape);
 }
 
 void GamePropertyRenderer_human::loadTextures()

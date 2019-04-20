@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QElapsedTimer>
+#include <QPointer>
 #include <queue>
 
 class GameEvent : public QObject
@@ -20,19 +21,20 @@ public:
     qint64 interval() const;
     void setInterval(qint64 interval);
     
+    void attach(QObject *object);
+    
     friend class GameEventScheduler;
 private:
     qint64 time_point_;
     qint64 interval_ = -1;
-    
-    struct Compare {
-        inline bool operator()(GameEvent *a, GameEvent *b) {
-            return a->time_point_ > b->time_point_;
-        }
-    };
-    
-    friend struct Compare;
 };
+
+struct GameEventContainer {
+    qint64 time_point;
+    QPointer<GameEvent> event;
+};
+
+bool operator<(const GameEventContainer &a, const GameEventContainer &b);
 
 class GameEventScheduler : public QObject
 {
@@ -52,7 +54,7 @@ private:
     qint64 realTimePoint() const;
     
     QElapsedTimer timer_;
-    std::priority_queue<GameEvent *, std::vector<GameEvent *>, GameEvent::Compare> events_; 
+    std::priority_queue<GameEventContainer> events_;
     bool active_;
     qint64 delta_;
     qint64 pause_start_;

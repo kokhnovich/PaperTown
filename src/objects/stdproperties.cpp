@@ -34,6 +34,7 @@ HumanEvent::HumanEvent(GameProperty_human *property)
     : property_(property)
 {
     property_->setEvent(this);
+    this->attach(property_);
 }
 
 GameEvent::EventState HumanEvent::activate()
@@ -166,7 +167,8 @@ void GameProperty_human::step()
 
 Util::Bool3 GameProperty_human::canMove() const
 {
-    return Util::False;
+    //return Util::False;
+    return Util::Dont_Care;
 }
 
 GameProperty_human::GameProperty_human()
