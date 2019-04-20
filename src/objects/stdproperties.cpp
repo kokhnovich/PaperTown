@@ -2,7 +2,7 @@
 #include <QDateTime>
 #include <random>
 
-const int HUMAN_MAX_STAGE = 5;
+const int HUMAN_MAX_STAGE = 10;
 const int HUMAN_ANIMATION_STEP = 80;
 
 // FIXME : use better random generator!
@@ -123,6 +123,7 @@ void GameProperty_human::stop()
 void GameProperty_human::doInitialize()
 {
     GameObjectProperty::doInitialize();
+    direction_ = Util::Direction(rnd() % 4);
     connect(gameObject(), &GameObject::attached, this, &GameProperty_human::ensureEvent);
     connect(gameObject(), &GameObject::placed, this, &GameProperty_human::ensureEvent);
     go();

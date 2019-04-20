@@ -108,7 +108,7 @@
 	},
 	
 	"human": {
-		"textures": ["human"],
+		"textures": [],
 		"properties": ["human"],
 		"type": "moving",
 		"cells": [0, 0]

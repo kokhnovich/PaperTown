@@ -188,7 +188,7 @@ void GameObject::initProperty(GameObjectProperty* property)
     Q_ASSERT(property_ == nullptr);
     property_ = property;
     if (property_) {
-        connect(this, &GameObject::updated, property_, &GameObjectProperty::updated);
+        connect(property_, &GameObjectProperty::updated, this, &GameObject::updated);
         property_->setParent(this);
         property_->initialize(this);
     }

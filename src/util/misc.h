@@ -13,6 +13,14 @@ namespace Util
         Dont_Care
     };
     Q_ENUM_NS(Bool3);
+    
+    enum Direction {
+        Up,
+        Down,
+        Left,
+        Right
+    };
+    Q_ENUM_NS(Direction);
 }
 
 bool mergeBooleans(bool a, Util::Bool3 b);

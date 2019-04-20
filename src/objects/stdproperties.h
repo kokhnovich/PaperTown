@@ -84,6 +84,7 @@ protected slots:
 private:
     friend class HumanEvent;
     
+    // TODO : allow changing direction_ only when setting the positon (or idle)
     Util::Direction direction_;
     int stage_;
     bool is_active_;

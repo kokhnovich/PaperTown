@@ -48,9 +48,7 @@ QList<QGraphicsItem *> GameTextureRenderer::drawObject(GameObject *object)
     auto info = repository()->getRenderInfo(object);
     QList<QGraphicsItem *> items;
     for (const QString &texture_name : info->textures) {
-        QGraphicsItem *item = drawTexture(texture_name, object->position());
-        item->setData(DATA_KEY_GAMEOBJECT, QVariant::fromValue(object));
-        items.push_back(item);
+        items.push_back(drawTexture(texture_name, object->position()));
     }
     
     if (object->property() != nullptr) {
@@ -59,6 +57,7 @@ QList<QGraphicsItem *> GameTextureRenderer::drawObject(GameObject *object)
     }
     
     for (QGraphicsItem *item : qAsConst(items)) {
+        item->setData(DATA_KEY_GAMEOBJECT, QVariant::fromValue(object));
         item->setZValue(item->zValue() + geometry()->zOrder(object->position(), info->priority));
     }
     
@@ -228,4 +227,5 @@ GameTextureRenderer::GameTextureRenderer(QObject *parent, GameSceneGeometry *geo
       prop_render_(new GamePropertyRenderer(this, this))
 {
     prop_render_->addRenderer(QStringLiteral("GameProperty_house"), new GamePropertyRenderer_house(this));
+    prop_render_->addRenderer(QStringLiteral("GameProperty_human"), new GamePropertyRenderer_human(this));
 }

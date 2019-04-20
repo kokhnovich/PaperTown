@@ -3,19 +3,7 @@
 
 #include <QObject>
 #include <QVector>
-
-namespace Util
-{
-    Q_NAMESPACE
-    
-    enum Direction {
-        Up,
-        Down,
-        Left,
-        Right
-    };
-    Q_ENUM_NS(Direction);
-}
+#include "misc.h"
 
 struct Coordinate {
     int x, y;

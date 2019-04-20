@@ -33,3 +33,47 @@ QWidget *GamePropertyRenderer_house::drawControlWidget(GameObjectProperty *a_pro
     
     return widget;
 }
+
+GamePropertyRenderer_human::GamePropertyRenderer_human(GameTextureRendererBase* renderer)
+    : GameAbstractPropertyRenderer(renderer)
+{}
+
+QList<QGraphicsItem *> GamePropertyRenderer_human::drawProperty(GameObjectProperty* a_property)
+{
+    // FIXME : rewrite it!!! (for more efficiency & better code)
+    auto property = qobject_cast<GameProperty_human *>(a_property);
+    auto dir = property->direction();
+    QString dir_name = QString(QMetaEnum::fromType<Util::Direction>().key(dir)).toLower();
+    
+    int stage = property->stage();
+    int cell_size = geometry()->cellSize();
+    
+    auto delta = Coordinate(0, 0).applyDirection(dir);
+    
+    auto texture = textures()->getTexture(QStringLiteral("human-anim-%1").arg(dir_name));
+    
+    auto offs = texture->offset;
+    auto z_offs = texture->z_offset;
+    
+    int texture_id = stage;
+    if (texture_id > 5) {
+        texture_id -= 5;
+        offs += geometry()->offset(delta) / 2;
+    }
+    
+    QPixmap pixmap = texture->pixmap.copy(QRect(cell_size * 3 * texture_id, 0, cell_size * 3, cell_size * 4));
+    
+    if (stage != 0) {
+        z_offs -= delta;
+        offs -= geometry()->offset(delta);
+    }
+    
+    auto item = scene()->addPixmap(pixmap);
+    item->setOffset(offs);
+    item->setPos(geometry()->coordinateToTopLeft(property->gameObject()->position()));
+    item->setZValue(geometry()->zOrder(z_offs));
+    
+    return {item};
+}
+
+

@@ -19,4 +19,12 @@ private:
     QPalette label_palette_;
 };
 
+class GamePropertyRenderer_human : public GameAbstractPropertyRenderer
+{
+    Q_OBJECT
+public:
+    GamePropertyRenderer_human(GameTextureRendererBase *renderer);
+    QList<QGraphicsItem *> drawProperty(GameObjectProperty *property) override;
+};
+
 #endif // STDPROPERTYRENDERERS_H
