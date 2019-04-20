@@ -72,6 +72,11 @@ void GameTextureRenderer::moveObject(GameObject *object, const Coordinate &old_p
     }
 }
 
+void GameTextureRenderer::moveSelectionControl(QGraphicsWidget* widget, const Coordinate& old_pos, const Coordinate& new_pos)
+{
+    widget->setPos(widget->pos() + geometry()->offset(new_pos - old_pos));
+}
+
 void GameTextureRenderer::updateObject(GameObject *, const QList<QGraphicsItem *> &items)
 {
     for (QGraphicsItem *item : qAsConst(items)) {

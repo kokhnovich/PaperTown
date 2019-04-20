@@ -85,10 +85,13 @@ void GameFieldView::putObject(GameObject *object)
     }
 }
 
-void GameFieldView::moveObject(const Coordinate &old_pos, const Coordinate &)
+void GameFieldView::moveObject(const Coordinate &old_pos, const Coordinate &pos)
 {
     GameObject *object = qobject_cast<GameObject *>(sender());
     renderer_->moveObject(object, old_pos, objects_.values(object));
+    if (object->isSelected() && selection_control_ != nullptr) {
+        renderer_->moveSelectionControl(selection_control_, old_pos, pos);
+    }
 }
 
 void GameFieldView::placeObject(const Coordinate &)

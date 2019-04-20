@@ -143,6 +143,8 @@ public:
 
     bool canSetPosition(const Coordinate &pos) const;
     bool setPosition(const Coordinate &pos);
+    
+    bool activate(const Coordinate &pos);
 
     GameObjectInfo *objectInfo() const;
     

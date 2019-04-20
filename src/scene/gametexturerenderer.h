@@ -29,6 +29,7 @@ public:
     
     QGraphicsItem *drawMoving(GameObject *object);
     QGraphicsWidget *drawSelectionControl(const GameObject *object);
+    void moveSelectionControl(QGraphicsWidget *widget, const Coordinate &old_pos, const Coordinate &new_pos);
 
     void setupScene();
 protected:

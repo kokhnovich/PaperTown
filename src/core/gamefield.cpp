@@ -32,7 +32,7 @@ GameObject *GameField::add(const QString& type, const QString& name, const Coord
         delete object;
         return nullptr;
     }
-    object->setPosition(pos);
+    object->activate(pos);
     add(object);
     return object;
 }
