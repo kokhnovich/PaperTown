@@ -9,7 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     repository_(new GameObjectRenderRepository(this)),
-    field_(new GameField(this, repository_, 80, 80)),
+    field_(new GameField(this, repository_, 60, 60)),
     textures_(new GameTextureRepository(this)),
     scene(new GameScene(this, repository_, field_, textures_)),
     timer()
@@ -28,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     
     ui->graphicsView->setScene(scene);
     ui->graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
-    //ui->graphicsView->scale(0.5, 0.5);
+    ui->graphicsView->scale(0.5, 0.5);
     
     field_->scheduler()->addEvent(new CustomEvent(this), 1000, 10);
     timer.setInterval(40);
@@ -48,11 +48,12 @@ void MainWindow::initObjects()
     const char *objects[5] = {"tree1", "tree2", "cinema", "angle-ne", "angle-nw"};
     for (int i = 0; i < field_->height(); ++i) {
         for (int j = 0; j < field_->width(); ++j) {
-            if (qrand() % 25 != 0) {
-                continue;
+            if (qrand() % 25 == 0) {
+                field_->add("static", objects[qrand() % 5], {i, j});
             }
-            field_->add("moving", "human", {i, j});
-            //field_->add("static", objects[qrand() % 5], {i, j});
+            if (qrand() % 10 == 0) {
+                field_->add("moving", "human", {i, j});
+            }
         }
     }
 }

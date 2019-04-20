@@ -141,7 +141,16 @@ void GameProperty_human::step()
         if (gameObject()->canSetPosition(new_pos)) {
             gameObject()->setPosition(new_pos);
         } else {
-            stop();
+            // TODO : remove this code
+            direction_ = Util::Direction((direction_ + 2) % 4);
+            Coordinate new_pos = gameObject()->position().applyDirection(direction_);
+            if (gameObject()->canSetPosition(new_pos)) {
+            gameObject()->setPosition(new_pos);
+            } else {
+                stop();
+            }
+            // TODO : remove this code
+            //stop();
         }
     }
     if (!is_active_) {

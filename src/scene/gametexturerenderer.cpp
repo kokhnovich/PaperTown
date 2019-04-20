@@ -58,6 +58,7 @@ QList<QGraphicsItem *> GameTextureRenderer::drawObject(GameObject *object)
     
     for (QGraphicsItem *item : qAsConst(items)) {
         item->setData(DATA_KEY_GAMEOBJECT, QVariant::fromValue(object));
+        item->setData(DATA_KEY_BASE_Z_VALUE, QVariant::fromValue(item->zValue()));
         item->setZValue(item->zValue() + geometry()->zOrder(object->position(), info->priority));
     }
     
@@ -68,6 +69,23 @@ void GameTextureRenderer::moveObject(GameObject *object, const Coordinate &old_p
 {
     for (auto item : items) {
         moveTexture(item, old_pos, object->position());
+    }
+}
+
+void GameTextureRenderer::updateObject(GameObject *, const QList<QGraphicsItem *> &items)
+{
+    for (QGraphicsItem *item : qAsConst(items)) {
+        auto property = qvariant_cast<GameObjectProperty *>(item->data(DATA_KEY_PROPERTY));
+        if (property == nullptr) {
+            continue;
+        }
+        double old_z = qvariant_cast<double>(item->data(DATA_KEY_BASE_Z_VALUE));
+        double cur_z = item->zValue();
+        item->setZValue(old_z);
+        prop_render_->updatePropertyItem(item, property);
+        double new_z = item->zValue();
+        item->setData(DATA_KEY_BASE_Z_VALUE, QVariant::fromValue(new_z));
+        item->setZValue(cur_z - old_z + new_z);
     }
 }
 

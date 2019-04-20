@@ -19,8 +19,14 @@ GameAbstractPropertyRenderer::GameAbstractPropertyRenderer(GameTextureRendererBa
 QList<QGraphicsItem *> GameAbstractPropertyRenderer::drawProperty(GameObjectProperty *property)
 {
     auto result = doDrawProperty(property);
+    for (QGraphicsItem *item : qAsConst(result)) {
+        item->setData(DATA_KEY_PROPERTY, QVariant::fromValue(property));
+    }
     return result;
 }
+
+void GameAbstractPropertyRenderer::updatePropertyItem(QGraphicsItem *, GameObjectProperty *)
+{}
 
 QList<QGraphicsItem *> GameAbstractPropertyRenderer::doDrawProperty(GameObjectProperty *)
 {
@@ -63,7 +69,7 @@ QWidget *GamePropertyRenderer::drawControlWidget(GameObjectProperty *property)
     return widget;
 }
 
-QList<QGraphicsItem *> GamePropertyRenderer::doDrawProperty(GameObjectProperty *property)
+QList<QGraphicsItem *> GamePropertyRenderer::drawProperty(GameObjectProperty *property)
 {
     if (!property->inherits("GameObjectPropertyContainer")) {
         auto name = property->metaObject()->className();
@@ -77,10 +83,17 @@ QList<QGraphicsItem *> GamePropertyRenderer::doDrawProperty(GameObjectProperty *
     GameObjectPropertyContainer *container = qobject_cast<GameObjectPropertyContainer *>(property);
     QList<QGraphicsItem *> items;
     for (auto property : container->properties()) {
-        auto add_items = doDrawProperty(property);
+        auto add_items = drawProperty(property);
         items.append(add_items);
     }
     return items;
+}
+
+void GamePropertyRenderer::updatePropertyItem(QGraphicsItem *item, GameObjectProperty *property)
+{
+    auto name = property->metaObject()->className();
+    Q_ASSERT(renderers_.contains(name));
+    renderers_.value(name)->updatePropertyItem(item, property);
 }
 
 void GamePropertyRenderer::addRenderer(const QString &property_class, GameAbstractPropertyRenderer *renderer)

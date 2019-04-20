@@ -16,8 +16,8 @@ namespace Util
     
     enum Direction {
         Up,
-        Down,
         Left,
+        Down,
         Right
     };
     Q_ENUM_NS(Direction);

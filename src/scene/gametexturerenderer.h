@@ -11,6 +11,7 @@
 #include "gamepropertyrenderer.h"
 
 const int DATA_KEY_GAMEOBJECT = 42;
+const int DATA_KEY_BASE_Z_VALUE = 43;
 
 class GameTextureRenderer : public GameTextureRendererBase
 {
@@ -24,6 +25,7 @@ public:
     void moveObject(GameObject *object, const Coordinate &old_pos, const QList<QGraphicsItem *> &items);
     void changeObjectSelectionState(GameObject *object, const QList<QGraphicsItem *> &items,
                                     SelectionState old_state, SelectionState new_state);
+    void updateObject(GameObject *object, const QList<QGraphicsItem *> &items);
     
     QGraphicsItem *drawMoving(GameObject *object);
     QGraphicsWidget *drawSelectionControl(const GameObject *object);

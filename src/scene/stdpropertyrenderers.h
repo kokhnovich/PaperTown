@@ -24,7 +24,9 @@ class GamePropertyRenderer_human : public GameAbstractPropertyRenderer
     Q_OBJECT
 public:
     GamePropertyRenderer_human(GameTextureRendererBase *renderer);
-    QList<QGraphicsItem *> drawProperty(GameObjectProperty *property) override;
+    void updatePropertyItem(QGraphicsItem *item, GameObjectProperty *property) override;
+protected:
+    QList<QGraphicsItem *> doDrawProperty(GameObjectProperty *property) override;
 private:
     struct AnimatedTexture
     {

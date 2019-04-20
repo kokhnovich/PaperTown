@@ -42,15 +42,29 @@ GamePropertyRenderer_human::GamePropertyRenderer_human(GameTextureRendererBase* 
       textures_loaded_(false)
 {}
 
-QList<QGraphicsItem *> GamePropertyRenderer_human::drawProperty(GameObjectProperty* a_property)
+QList<QGraphicsItem *> GamePropertyRenderer_human::doDrawProperty(GameObjectProperty* a_property)
+{
+    auto item = new QGraphicsPixmapItem();
+    scene()->addItem(item);
+    updatePropertyItem(item, a_property);
+    return {item};
+}
+
+void GamePropertyRenderer_human::updatePropertyItem(QGraphicsItem *a_item, GameObjectProperty *a_property)
 {
     loadTextures();
     
+    auto item = qgraphicsitem_cast<QGraphicsPixmapItem *>(a_item);
     auto property = qobject_cast<GameProperty_human *>(a_property);
+    
+    Q_CHECK_PTR(item);
+    Q_CHECK_PTR(property);
+    
     Util::Direction dir = property->direction();
     const AnimatedTexture &texture = textures_[dir];
     int stage = property->stage();
     
+    QPointF pos = geometry()->coordinateToTopLeft(property->gameObject()->position());
     Coordinate delta = Coordinate(0, 0).applyDirection(dir);
     QPointF scene_delta = geometry()->offset(delta);
     QPointF offs = texture.offset;
@@ -67,12 +81,10 @@ QList<QGraphicsItem *> GamePropertyRenderer_human::drawProperty(GameObjectProper
         offs -= scene_delta;
     }
     
-    auto item = scene()->addPixmap(texture.frames[frame_id]);
+    item->setPixmap(texture.frames[frame_id]);
     item->setOffset(offs);
-    item->setPos(geometry()->coordinateToTopLeft(property->gameObject()->position()));
+    item->setPos(pos);
     item->setZValue(geometry()->zOrder(z_offs));
-    
-    return {item};
 }
 
 void GamePropertyRenderer_human::loadTextures()

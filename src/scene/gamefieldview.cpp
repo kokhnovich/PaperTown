@@ -98,12 +98,9 @@ void GameFieldView::placeObject(const Coordinate &)
 
 void GameFieldView::updateObject()
 {
-    // FIXME : do not recreate control widget, just update it!
+    // FIXME : also update the widget, if necessary
     GameObject *object = qobject_cast<GameObject *>(sender());
-    if (objects_.contains(object)) {
-        unputObject(object);
-        putObject(object);
-    }
+    renderer_->updateObject(object, objects_.values(object));
 }
 
 GameFieldView::GameFieldView(QObject *parent, GameTextureRenderer *renderer)
