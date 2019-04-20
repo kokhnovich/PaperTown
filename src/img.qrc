@@ -1,5 +1,10 @@
 <RCC>
   <qresource prefix="/">
+    <file>../img/human-anim-down.png</file>
+    <file>../img/human-anim-left.png</file>
+    <file>../img/human.png</file>
+    <file>../img/human-anim-right.png</file>
+    <file>../img/human-anim-up.png</file>
     <file>../img/house-1x2.png</file>
     <file>../img/house-1x2.l2.png</file>
     <file>../img/house-1x2.l1.png</file>

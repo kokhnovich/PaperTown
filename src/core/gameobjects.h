@@ -143,6 +143,8 @@ public:
 
     bool canSetPosition(const Coordinate &pos) const;
     bool setPosition(const Coordinate &pos);
+    
+    bool activate(const Coordinate &pos);
 
     GameObjectInfo *objectInfo() const;
     
@@ -161,6 +163,7 @@ signals:
     void startedMoving();
     void endedMoving();
     void declined();
+    void attached();
 public slots:
     void removeSelf();
 

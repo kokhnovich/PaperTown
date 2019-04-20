@@ -9,10 +9,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     repository_(new GameObjectRenderRepository(this)),
-    field_(new GameField(this, repository_, 120, 280)),
+    field_(new GameField(this, repository_, 60, 60)),
     textures_(new GameTextureRepository(this)),
     scene(new GameScene(this, repository_, field_, textures_)),
-    scheduler(),
     timer()
 {
     textures_->loadFromFile(":/img/textures.json");
@@ -31,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
     ui->graphicsView->scale(0.5, 0.5);
     
-    scheduler.addEvent(new CustomEvent(this), 1000);
+    field_->scheduler()->addEvent(new CustomEvent(this), 1000, 10);
     timer.setInterval(40);
     timer.start();
     
@@ -49,10 +48,12 @@ void MainWindow::initObjects()
     const char *objects[5] = {"tree1", "tree2", "cinema", "angle-ne", "angle-nw"};
     for (int i = 0; i < field_->height(); ++i) {
         for (int j = 0; j < field_->width(); ++j) {
-            if (qrand() % 25 != 0) {
-                continue;
+            if (qrand() % 25 == 0) {
+                field_->add("static", objects[qrand() % 5], {i, j});
             }
-            field_->add("static", objects[qrand() % 5], {i, j});
+            if (qrand() % 10 == 0) {
+                field_->add("moving", "human", {i, j});
+            }
         }
     }
 }
@@ -69,29 +70,29 @@ void MainWindow::newEvent()
     //scene->field()->remove(objects[qrand() % objects.size()]);
     
     ++event_count;
-    scheduler.addEvent(new CustomEvent(this), 1000);
+    //field_->scheduler()->addEvent(new CustomEvent(this), 10);
     //scheduler.addEvent(new CustomEvent(this), 1000); // devastating :)
 }
 
 void MainWindow::on_activateBtn_clicked()
 {
-    scheduler.start();
+    field_->scheduler()->start();
     update();
 }
 
 void MainWindow::on_deactivateBtn_clicked()
 {
-    scheduler.pause();
+    field_->scheduler()->pause();
     update();
 }
 
 void MainWindow::timerTimeout()
 {
-    scheduler.update();
+    field_->scheduler()->update();
     update();
 }
 
 void MainWindow::update()
 {
-    ui->label->setText(QString::asprintf("events caught: %d, active : %s", event_count, scheduler.active() ? "true" : "false"));
+    ui->label->setText(QString::asprintf("events caught: %d, active : %s", event_count, field_->scheduler()->active() ? "true" : "false"));
 }

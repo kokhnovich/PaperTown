@@ -15,7 +15,7 @@ void GameFieldView::changeObjectSelectionState(GameObject *object, SelectionStat
     }
 
     if (state == SelectionState::Moving) {
-        moving_item_ = renderer_->drawMoving(object);
+        moving_item_ = renderer_->drawMovingItem(object);
     } else if (moving_item_ != nullptr) {
         scene_->removeItem(moving_item_);
         delete moving_item_;
@@ -29,9 +29,7 @@ void GameFieldView::movingPositionChanged(const Coordinate &, const Coordinate &
 {
     GameObject *object = qobject_cast<GameObject *>(sender());
     Q_CHECK_PTR(moving_item_);
-    scene_->removeItem(moving_item_);
-    delete moving_item_;
-    moving_item_ = renderer_->drawMoving(object);
+    renderer_->moveMovingItem(object, moving_item_);
 }
 
 void GameFieldView::selectObject()
@@ -85,10 +83,13 @@ void GameFieldView::putObject(GameObject *object)
     }
 }
 
-void GameFieldView::moveObject(const Coordinate &old_pos, const Coordinate &)
+void GameFieldView::moveObject(const Coordinate &old_pos, const Coordinate &pos)
 {
     GameObject *object = qobject_cast<GameObject *>(sender());
     renderer_->moveObject(object, old_pos, objects_.values(object));
+    if (object->isSelected() && selection_control_ != nullptr) {
+        renderer_->moveSelectionControl(selection_control_, old_pos, pos);
+    }
 }
 
 void GameFieldView::placeObject(const Coordinate &)
@@ -99,9 +100,9 @@ void GameFieldView::placeObject(const Coordinate &)
 void GameFieldView::updateObject()
 {
     GameObject *object = qobject_cast<GameObject *>(sender());
-    if (objects_.contains(object)) {
-        unputObject(object);
-        putObject(object);
+    renderer_->updateObject(object, objects_.values(object));
+    if (object->isSelected() && selection_control_ != nullptr) {
+        renderer_->updateSelectionControl(object, selection_control_);
     }
 }
 

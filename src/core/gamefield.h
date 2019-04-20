@@ -5,6 +5,7 @@
 #include "gamemap.h"
 #include "gamelist.h"
 #include "gameobjectfactory.h"
+#include "eventscheduler.h"
 
 class GameField : public GameFieldBase
 {
@@ -23,6 +24,7 @@ public:
     int height() const;
     int width() const;
     GameObjectFactory *factory() const;
+    GameEventScheduler *scheduler() const;
 signals:
     void added(GameObject *object);
     void removed(GameObject *object);
@@ -47,6 +49,8 @@ private:
     GameList *moving_list_;
     
     GameObject *selection_;
+    
+    GameEventScheduler *scheduler_;
 };
 
 #endif // GAMEFIELD_H

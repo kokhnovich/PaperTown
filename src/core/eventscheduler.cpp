@@ -1,8 +1,31 @@
 #include <QDebug>
 #include "eventscheduler.h"
 
-void GameAbstractEvent::activate()
+GameEvent::EventState GameEvent::activate()
 {
+    return GameEvent::Finish;
+}
+
+qint64 GameEvent::interval() const
+{
+    return interval_;
+}
+
+void GameEvent::setInterval(qint64 interval)
+{
+    interval_ = interval;
+}
+
+void GameEvent::attach(QObject* object)
+{
+    connect(object, &QObject::destroyed, this, [ = ]() {
+        delete this;
+    });
+}
+
+bool operator<(const GameEventContainer &a, const GameEventContainer &b)
+{
+    return a.time_point > b.time_point;
 }
 
 bool GameEventScheduler::active() const
@@ -10,14 +33,15 @@ bool GameEventScheduler::active() const
     return active_;
 }
 
-void GameEventScheduler::addEvent(GameAbstractEvent* event, qint64 delay)
+void GameEventScheduler::addEvent(GameEvent *event, qint64 delay, qint64 interval)
 {
     event->setParent(this);
+    event->setInterval(interval);
     event->time_point_ = realTimePoint() + delay;
-    events_.push(event);
+    events_.push({event->time_point_, event});
 }
 
-GameEventScheduler::GameEventScheduler(QObject* parent, bool active)
+GameEventScheduler::GameEventScheduler(QObject *parent, bool active)
     : QObject(parent), timer_(), events_(), active_(true), delta_(0)
 {
     timer_.start();
@@ -55,16 +79,35 @@ void GameEventScheduler::start()
 void GameEventScheduler::update()
 {
     qint64 cur_time = realTimePoint();
-    while (!events_.empty() && events_.top()->time_point_ <= cur_time) {
-        GameAbstractEvent *passed_event = events_.top();
+    while (!events_.empty() && events_.top().time_point <= cur_time) {
+        GameEvent *passed_event = events_.top().event;
         events_.pop();
-        passed_event->activate();
-        emit eventActivated(passed_event);
-        delete passed_event;
+        if (passed_event != nullptr) {
+            activateEvent(passed_event);
+        }
     }
 }
 
-void GameEventScheduler::activateEvent(GameAbstractEvent* event)
+void GameEventScheduler::activateEvent(GameEvent *event)
 {
-    event->activate();
+    auto state = event->activate();
+    emit eventActivated(event);
+    if (event->interval() < 0) {
+        state = GameEvent::Finish;
+    }
+    switch (state) {
+    case GameEvent::Finish: {
+        delete event;
+        break;
+    }
+    case GameEvent::Replay: {
+        event->time_point_ += event->interval_;
+        events_.push({event->time_point_, event});
+        break;
+    }
+    default: {
+        Q_UNREACHABLE();
+    }
+    }
 }
+

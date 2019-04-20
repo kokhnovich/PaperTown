@@ -43,5 +43,30 @@
 		"offset": [4, -221],
 		"z-offset": [0, 0],
 		"layers": 2
+	},
+	
+	"human": {
+		"offset": [20, -50],
+		"z-offset": [0, 0]
+	},
+	
+	"human-anim-down": {
+		"offset": [20, -50],
+		"z-offset": [0, 0]
+	},
+	
+	"human-anim-up": {
+		"offset": [-5, -50],
+		"z-offset": [0, 0]
+	},
+	
+	"human-anim-right": {
+		"offset": [25, -50],
+		"z-offset": [0, 0]
+	},
+	
+	"human-anim-left": {
+		"offset": [10, -50],
+		"z-offset": [0, 0]
 	}
 }

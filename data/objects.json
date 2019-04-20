@@ -105,5 +105,12 @@
 		"keys": {
 			"population": [50, 75]
 		}
+	},
+	
+	"human": {
+		"textures": [],
+		"properties": ["human"],
+		"type": "moving",
+		"cells": [0, 0]
 	}
 }

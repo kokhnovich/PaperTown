@@ -8,6 +8,8 @@
 #include "gameobjectrenderrepository.h"
 #include "../objects/gameobjectproperties.h"
 
+const int DATA_KEY_PROPERTY = 128;
+
 class GameTextureRendererBase : public QObject
 {
     Q_OBJECT
@@ -32,7 +34,9 @@ class GameAbstractPropertyRenderer : public QObject
     Q_OBJECT
 public:
     virtual QList<QGraphicsItem *> drawProperty(GameObjectProperty *property);
-    virtual QWidget *drawControlWidget(GameObjectProperty *property);
+    virtual QWidget *createControlWidget(GameObjectProperty *property);
+    virtual void updateControlWidget(GameObjectProperty *property, QWidget *widget);
+    virtual void updatePropertyItem(QGraphicsItem *item, GameObjectProperty *property);
 
     inline GameSceneGeometry *geometry() const { return renderer_->geometry(); }
     inline GameTextureRepository *textures() const { return renderer_->textures(); }
@@ -52,12 +56,15 @@ class GamePropertyRenderer: public GameAbstractPropertyRenderer
 public:
     void addRenderer(const QString &property_class, GameAbstractPropertyRenderer *renderer);
 
-    QWidget *drawControlWidget(GameObjectProperty *property) override;
-    
+    QList<QGraphicsItem *> drawProperty(GameObjectProperty *property) override;
+    QWidget *createControlWidget(GameObjectProperty *property) override;
+    void updateControlWidget(GameObjectProperty *property, QWidget *widget) override;
+    void updatePropertyItem(QGraphicsItem *item, GameObjectProperty *property) override;
+
     GamePropertyRenderer(GameTextureRendererBase *renderer, QObject *parent = nullptr);
-protected:
-    QList<QGraphicsItem *> doDrawProperty(GameObjectProperty *property) override;
 private:
+    QString mangleWidgetName(GameObjectProperty *property);
+    
     QHash<QString, GameAbstractPropertyRenderer *> renderers_;
 };
 

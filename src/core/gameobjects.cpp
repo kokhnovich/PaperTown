@@ -188,7 +188,7 @@ void GameObject::initProperty(GameObjectProperty* property)
     Q_ASSERT(property_ == nullptr);
     property_ = property;
     if (property_) {
-        connect(this, &GameObject::updated, property_, &GameObjectProperty::updated);
+        connect(property_, &GameObjectProperty::updated, this, &GameObject::updated);
         property_->setParent(this);
         property_->initialize(this);
     }
@@ -224,7 +224,32 @@ void GameObject::decline()
 bool GameObject::applyMovingPosition()
 {
     Q_ASSERT(is_moving_);
-    return setPosition(moving_position_);
+    Coordinate pos = moving_position_;
+    if (!canSetPosition(pos)) {
+        if (is_selected_) {
+            unselect();
+        }
+        return false;
+    }
+    activating_ = true;
+    if (is_selected_) {
+        unselect();
+    }
+    activating_ = false;
+    setPosition(pos);
+    if (!active_) {
+        active_ = true;
+        emit placed(position_);
+    }
+    return true;
+}
+
+bool GameObject::activate(const Coordinate &pos)
+{
+    Q_ASSERT(!active_);
+    Q_ASSERT(is_selected_ && is_moving_);
+    setMovingPosition(pos);
+    return applyMovingPosition();
 }
 
 bool GameObject::canApplyMovingPosition() const
@@ -351,24 +376,12 @@ Coordinate GameObject::position() const
 bool GameObject::setPosition(const Coordinate &pos)
 {
     if (!canSetPosition(pos)) {
-        if (is_selected_) {
-            unselect();
-        }
         return false;
     }
-    activating_ = true;
-    if (is_selected_) {
-        unselect();
-    }
-    bool wasActive = active_;
     Coordinate oldPosition = position_;
-    active_ = true;
     position_ = pos;
-    activating_ = false;
-    if (wasActive) {
+    if (active_) {
         emit moved(oldPosition, position_);
-    } else {
-        emit placed(position_);
     }
     return true;
 }
@@ -398,6 +411,7 @@ void GameObject::setField(GameFieldBase *field)
     Q_ASSERT(field_ == nullptr || field == nullptr);
     Q_ASSERT_X(field->repository() == repository_, "GameObject::setField", "field and object repository must be the same");
     field_ = field;
+    emit attached();
 }
 
 GameObjectRepositoryBase *GameObject::repository() const

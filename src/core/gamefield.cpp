@@ -11,8 +11,14 @@ GameField::GameField(QObject *parent, GameObjectRepositoryBase *repository, int 
     ground_list_(new GameList(this)),
     static_list_(new GameList(this)),
     moving_list_(new GameList(this)),
-    selection_(nullptr)
+    selection_(nullptr),
+    scheduler_(new GameEventScheduler(this))
 {}
+
+GameEventScheduler *GameField::scheduler() const
+{
+    return scheduler_;
+}
 
 GameObject *GameField::add(const QString &type, const QString &name)
 {
@@ -26,7 +32,7 @@ GameObject *GameField::add(const QString& type, const QString& name, const Coord
         delete object;
         return nullptr;
     }
-    object->setPosition(pos);
+    object->activate(pos);
     add(object);
     return object;
 }

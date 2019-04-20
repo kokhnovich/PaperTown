@@ -3,11 +3,14 @@
 
 #include <QObject>
 #include <QVector>
+#include "misc.h"
 
 struct Coordinate {
     int x, y;
 
     Coordinate(int x = 0, int y = 0);
+
+    Coordinate applyDirection(Util::Direction dir);
 };
 
 struct Rect {

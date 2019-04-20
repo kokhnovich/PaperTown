@@ -39,18 +39,19 @@ private:
     GameScene *scene;
     GameView *game_view;
     
-    GameEventScheduler scheduler;
     QTimer timer;
     int event_count = 0;
 };
 
-class CustomEvent : public GameAbstractEvent {
+class CustomEvent : public GameEvent
+ {
     Q_OBJECT
 public:
-    CustomEvent(MainWindow *window) : GameAbstractEvent(), window_(window) {}
+    CustomEvent(MainWindow *window) : GameEvent(), window_(window) {}
 
-    void activate() override {
+    GameEvent::EventState activate() override {
         window_->newEvent();
+        return GameEvent::Replay;
     }
 private:
     MainWindow *window_;
