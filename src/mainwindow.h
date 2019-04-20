@@ -39,10 +39,9 @@ private:
     GameField *field_;
     GameTextureRepository *textures_;
     GameScene *scene;
-    GameView *game_view;
     
     QTimer timer;
-    int event_count = 0;
+    int event_count_ = 0;
     double old_scale_ = 0.5;
 };
 

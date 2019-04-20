@@ -69,12 +69,13 @@ void GameObjectSelectionModel::changeSelection(const QItemSelection &selected, c
         GameObjectKey key = picker_model->indexToObjectKey(index);
         auto object = field_->add(key.type, key.name);
         
-        auto object_unselect = [this, index]() {
+        connect(object, &GameObject::placed, this, [this, index]() {
             this->select(index, SelectionFlag::Deselect);
-        };
-        
-        connect(object, &GameObject::placed, this, object_unselect);
-        connect(object, &GameObject::declined, this, object_unselect);
+            this->select(index, SelectionFlag::Select);
+        });
+        connect(object, &GameObject::declined, this, [this, index]() {
+            this->select(index, SelectionFlag::Deselect);
+        });
     }
 }
 

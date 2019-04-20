@@ -48,7 +48,11 @@ void GameScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
     if (field_->selection() == nullptr || !field_->selection()->isMoving()) {
         return;
     }
-    field_->selection()->applyMovingPosition();
+    if (event->buttons() & Qt::RightButton) {
+        field_->selection()->unselect();
+    } else {
+        field_->selection()->applyMovingPosition();
+    }
 }
 
 void GameScene::mouseHovered(const QPointF &position)
@@ -75,10 +79,23 @@ GameView::GameView(QWidget *parent)
     setMouseTracking(true);
 }
 
+void GameView::triggerMouseMoved()
+{
+    QPoint pos = mapFromGlobal(QCursor::pos());
+    GameScene *scene = qobject_cast<GameScene *>(this->scene());
+    Q_CHECK_PTR(scene);
+    scene->mouseHovered(mapToScene(pos));
+}
+
 void GameView::mouseMoveEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseMoveEvent(event);
-    GameScene *scene = qobject_cast<GameScene *>(this->scene());
-    Q_CHECK_PTR(scene);
-    scene->mouseHovered(mapToScene(event->pos()));
+    triggerMouseMoved();
 }
+
+void GameView::mousePressEvent(QMouseEvent* event)
+{
+    QGraphicsView::mousePressEvent(event);
+    triggerMouseMoved();
+}
+

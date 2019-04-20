@@ -17,12 +17,10 @@ MainWindow::MainWindow(QWidget *parent) :
     textures_->loadFromFile(":/img/textures.json");
     repository_->loadFromFile(":/data/objects.json");
     
-    initObjects();
+    //initObjects();
     
     ui->setupUi(this);
 
-    game_view = ui->graphicsView;
-    
     ui->graphicsView->setScene(scene);
     ui->graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
     ui->graphicsView->scale(0.5, 0.5);
@@ -56,7 +54,6 @@ void MainWindow::initObjects()
     }
 }
 
-
 MainWindow::~MainWindow()
 {
     delete ui;
@@ -64,12 +61,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::newEvent()
 {
-    //auto objects = scene->field()->getByType("static")->get();
-    //scene->field()->remove(objects[qrand() % objects.size()]);
-    
-    ++event_count;
-    //field_->scheduler()->addEvent(new CustomEvent(this), 10);
-    //scheduler.addEvent(new CustomEvent(this), 1000); // devastating :)
+    ++event_count_;
 }
 
 void MainWindow::on_startBtn_clicked()
@@ -92,14 +84,14 @@ void MainWindow::timerTimeout()
 
 void MainWindow::update()
 {
-    ui->label->setText(QString::asprintf("events caught: %d, active : %s", event_count, field_->scheduler()->active() ? "true" : "false"));
+    ui->label->setText(QString::asprintf("events caught: %d, active : %s", event_count_, field_->scheduler()->active() ? "true" : "false"));
     ui->startBtn->setEnabled(!field_->scheduler()->active());
     ui->pauseBtn->setEnabled(field_->scheduler()->active());
 }
 
 void MainWindow::on_doubleSpinBox_valueChanged(double arg1)
 {
-    double scale = (double)arg1 / 100.0;
+    double scale = arg1 / 100.0;
     ui->graphicsView->scale(scale/old_scale_, scale/old_scale_);
     old_scale_ = scale;
 }

@@ -25,7 +25,7 @@ protected:
 
     GameFieldView *fieldView() const;
     GameField *field() const;
-    
+
     friend class GameView;
 private:
     GameObjectRenderRepository *repository_;
@@ -37,12 +37,14 @@ private:
     GameFieldView *view_;
 };
 
-class GameView : public QGraphicsView {
+class GameView : public QGraphicsView
+{
 public:
     GameView(QWidget *parent);
-    void startAddingObject(GameObject *object);
+    void triggerMouseMoved();
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
 };
 
 #endif // GAMESCENE_H

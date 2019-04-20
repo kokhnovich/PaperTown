@@ -71,7 +71,7 @@
 	},
 	
 	"tallhouse": {
-		"offset": [0, 0],
+		"offset": [-1, -290],
 		"z-offset": [0, 0],
 		"layers": 2
 	}
