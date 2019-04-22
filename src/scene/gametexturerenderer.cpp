@@ -126,16 +126,6 @@ void GameTextureRenderer::changeObjectSelectionState(GameObject *, const QList<Q
     }
 }
 
-const QColor SELECTION_BRUSH_COLORS[2] = {
-    QColor(255, 0, 0, 160), // false
-    QColor(0, 192, 0, 160)  // true
-};
-
-const QColor SELECTION_PEN_COLORS[2] = {
-    QColor(192, 0, 0, 160), // false
-    QColor(0, 128, 0, 160)  // true
-};
-
 class QGraphicsSelectionRectItem : public QGraphicsPolygonItem
 {
 public:
@@ -146,6 +136,16 @@ protected:
 private:
     GameObject *object_;
     QPointer<QTimer> timer_;
+
+    const QColor SELECTION_BRUSH_COLORS[2] = {
+        QColor(255, 0, 0, 160), // false
+        QColor(0, 192, 0, 160)  // true
+    };
+
+    const QColor SELECTION_PEN_COLORS[2] = {
+        QColor(192, 0, 0, 160), // false
+        QColor(0, 128, 0, 160)  // true
+    };
 };
 
 QGraphicsSelectionRectItem::QGraphicsSelectionRectItem(GameObject *object)

@@ -83,7 +83,7 @@ public:
     
     template<typename T>
     inline friend T *gameProperty_cast(GameObjectProperty *property) {
-        if (!property) {
+        if (property == nullptr) {
             return nullptr;
         }
         return qobject_cast<T *>(property->castTo(&T::staticMetaObject));

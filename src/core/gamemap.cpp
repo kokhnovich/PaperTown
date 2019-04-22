@@ -23,7 +23,8 @@ bool GameAbstractMap::canPlace(const GameObject *object, const Coordinate &posit
 bool GameAbstractMap::conflictsWith(const GameObject *object, const Coordinate &position) const
 {
     for (const Coordinate &delta : object->cellsRelative()) {
-        for (const GameObject *map_object : atPos(position + delta)) {
+        const QVector<GameObject *> objects = atPos(position + delta);
+        for (const GameObject *map_object : objects) {
             if (objectsConflict(map_object, object)) {
                 return true;
             }
