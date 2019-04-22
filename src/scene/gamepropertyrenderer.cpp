@@ -54,6 +54,9 @@ QWidget *GamePropertyRenderer::createControlWidget(GameObjectProperty *property)
             return nullptr;
         }
         GameAbstractPropertyRenderer *renderer = renderers_.value(name);
+        if (renderer == nullptr) {
+            return nullptr;
+        }
         QWidget *widget = renderer->createControlWidget(property);
         if (widget != nullptr) {
             widget->setProperty("__GPR__renderer", QVariant::fromValue(renderer));
@@ -113,7 +116,11 @@ QList<QGraphicsItem *> GamePropertyRenderer::drawProperty(GameObjectProperty *pr
             qWarning() << "property type" << name << "has no renderer!";
             return {};
         }
-        return renderers_.value(name)->drawProperty(property);
+        GameAbstractPropertyRenderer *renderer = renderers_.value(name);
+        if (renderer == nullptr) {
+            return {};
+        }
+        return renderer->drawProperty(property);
     }
 
     GameObjectPropertyContainer *container = qobject_cast<GameObjectPropertyContainer *>(property);
@@ -129,11 +136,15 @@ void GamePropertyRenderer::updatePropertyItem(QGraphicsItem *item, GameObjectPro
 {
     auto name = property->metaObject()->className();
     Q_ASSERT(renderers_.contains(name));
-    renderers_.value(name)->updatePropertyItem(item, property);
+    GameAbstractPropertyRenderer *renderer = renderers_.value(name);
+    Q_CHECK_PTR(renderer);
+    renderer->updatePropertyItem(item, property);
 }
 
 void GamePropertyRenderer::addRenderer(const QString &property_class, GameAbstractPropertyRenderer *renderer)
 {
-    renderer->setParent(this);
+    if (renderer != nullptr) {
+        renderer->setParent(this);
+    }
     renderers_[property_class] = renderer;
 }

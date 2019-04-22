@@ -91,4 +91,13 @@ private:
     HumanEvent *event_;
 };
 
+class GameProperty_passable : public GameObjectProperty
+{
+    Q_OBJECT
+public:
+    Q_INVOKABLE GameProperty_passable();
+protected:
+    Util::Bool3 conflitsWith(const GameObject *object) const override;
+};
+
 #endif // STDPROPERTIES_H

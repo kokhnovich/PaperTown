@@ -184,5 +184,17 @@ GameProperty_human::GameProperty_human()
     : direction_(Util::Down), stage_(0), is_active_(false), event_(nullptr)
 {}
 
+GameProperty_passable::GameProperty_passable()
+{}
+
+Util::Bool3 GameProperty_passable::conflitsWith(const GameObject *object) const
+{
+    if (object->type() == "moving") {
+        return Util::False;
+    }
+    return Util::Dont_Care;
+}
+
 GAME_PROPERTY_REGISTER("house", GameProperty_house)
 GAME_PROPERTY_REGISTER("human", GameProperty_human)
+GAME_PROPERTY_REGISTER("passable", GameProperty_passable)

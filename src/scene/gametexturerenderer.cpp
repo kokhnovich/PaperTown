@@ -323,4 +323,5 @@ GameTextureRenderer::GameTextureRenderer(QObject *parent, GameSceneGeometry *geo
 {
     prop_render_->addRenderer(QStringLiteral("GameProperty_house"), new GamePropertyRenderer_house(this));
     prop_render_->addRenderer(QStringLiteral("GameProperty_human"), new GamePropertyRenderer_human(this));
+    prop_render_->addRenderer(QStringLiteral("GameProperty_passable"), nullptr);
 }

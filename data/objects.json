@@ -1,6 +1,7 @@
 {
 	"tree1": {
 		"textures": ["tree1"],
+		"properties": ["passable"],
 		"type": "static",
 		"cells": [[0, 0], [0, 1], [1, 0], [1, 1]],
 		"caption": "Tree (variant 1)"
@@ -15,6 +16,7 @@
 	
 	"cinema": {
 		"textures": ["cinema.l*"],
+		"properties": ["passable"],
 		"type": "static",
 		"cells": [
 			[0, 0], [0, 1], [0, 2], [0, 3],
