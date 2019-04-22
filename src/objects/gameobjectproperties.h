@@ -11,9 +11,10 @@ public:
     bool canSelect(bool last_value) const override;
     bool canMove(bool last_value) const override;
     bool canSetPosition(bool last_value, const Coordinate &position) const override;
+    bool conflitsWith(bool last_value, const GameObject *object) const override;
 
     void addProperty(GameObjectProperty *property);
-    
+
     inline const QVector<GameObjectProperty *> &properties() { return properties_; }
 
     Q_INVOKABLE GameObjectPropertyContainer();

@@ -26,6 +26,14 @@ bool GameObjectPropertyContainer::canSetPosition(bool last_value, const Coordina
     return last_value;
 }
 
+bool GameObjectPropertyContainer::conflitsWith(bool last_value, const GameObject *object) const
+{
+    for (auto property : qAsConst(properties_)) {
+        last_value = property->conflitsWith(last_value, object);
+    }
+    return last_value;
+}
+
 GameObjectProperty *GameObjectPropertyContainer::castTo(const QMetaObject *meta)
 {
     GameObjectProperty *result = GameObjectProperty::castTo(meta);
@@ -45,7 +53,7 @@ GameObjectPropertyContainer::GameObjectPropertyContainer()
     : GameObjectProperty()
 {}
 
-void GameObjectPropertyContainer::addProperty(GameObjectProperty* property)
+void GameObjectPropertyContainer::addProperty(GameObjectProperty *property)
 {
     if (isInitialized()) {
         property->initialize(gameObject());
@@ -66,7 +74,7 @@ using PropertiesHash = QHash<QString, const QMetaObject *>;
 
 Q_GLOBAL_STATIC(PropertiesHash, g_properties)
 
-GameObjectProperty *createProperty(const QString& name)
+GameObjectProperty *createProperty(const QString &name)
 {
     if (!g_properties->contains(name)) {
         qCritical() << "property" << name << "not found";
@@ -79,7 +87,7 @@ GameObjectProperty *createProperty(const QString& name)
     return result;
 }
 
-void registerProperty(const QString& name, const QMetaObject* meta)
+void registerProperty(const QString &name, const QMetaObject *meta)
 {
     Q_ASSERT(meta->inherits(&GameObjectProperty::staticMetaObject));
     (*g_properties)[name] = meta;

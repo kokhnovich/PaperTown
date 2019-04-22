@@ -20,14 +20,16 @@ bool GameAbstractMap::canPlace(const GameObject *object, const Coordinate &posit
     return true;
 }
 
-bool GameAbstractMap::freePlace(const GameObject *object, const Coordinate &position)
+bool GameAbstractMap::conflictsWith(const GameObject *object, const Coordinate &position) const
 {
     for (const Coordinate &delta : object->cellsRelative()) {
-        if (!freeCell(position + delta)) {
-            return false;
+        for (const GameObject *map_object : atPos(position + delta)) {
+            if (objectsConflict(map_object, object)) {
+                return true;
+            }
         }
     }
-    return true;
+    return false;
 }
 
 GameAbstractMap::GameAbstractMap(QObject *parent, int height, int width)
@@ -104,12 +106,12 @@ void GameMap::internalRemove(GameObject *object, const Coordinate &position)
     }
 }
 
-bool GameMap::freeCell(const Coordinate &position)
+bool GameMap::freeCell(const Coordinate &position) const
 {
     return map_[position.x][position.y] == nullptr;
 }
 
-QVector<GameObject *> GameMap::atPos(const Coordinate &position)
+QVector<GameObject *> GameMap::atPos(const Coordinate &position) const
 {
     if (map_[position.x][position.y] == nullptr) {
         return {};
@@ -118,7 +120,7 @@ QVector<GameObject *> GameMap::atPos(const Coordinate &position)
     }
 }
 
-QVector<GameObject *> GameMultimap::atPos(const Coordinate &position)
+QVector<GameObject *> GameMultimap::atPos(const Coordinate &position) const
 {
     return map_[position.x][position.y]->get();
 }
@@ -148,7 +150,7 @@ void GameMultimap::internalRemove(GameObject *object, const Coordinate &position
     }
 }
 
-bool GameMultimap::freeCell(const Coordinate &position)
+bool GameMultimap::freeCell(const Coordinate &position) const
 {
     return map_[position.x][position.y]->empty();
 }

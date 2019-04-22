@@ -70,6 +70,7 @@ public:
     virtual bool canSelect(bool last_value) const;
     virtual bool canMove(bool last_value) const;
     virtual bool canSetPosition(bool last_value, const Coordinate &position) const;
+    virtual bool conflitsWith(bool last_value, const GameObject *object) const;
     
     QString objectName() const;
     GameObject *gameObject() const;
@@ -94,6 +95,7 @@ public:
 protected:
     virtual Util::Bool3 canSelect() const;
     virtual Util::Bool3 canMove() const;
+    virtual Util::Bool3 conflitsWith(const GameObject *object) const;
     
     virtual void doInitialize();
 signals:
@@ -145,7 +147,9 @@ public:
     bool setPosition(const Coordinate &pos);
     
     bool activate(const Coordinate &pos);
-
+    
+    virtual bool conflitsWith(const GameObject *object) const;
+    
     GameObjectInfo *objectInfo() const;
     
     friend class GameFieldBase;
@@ -189,5 +193,7 @@ private:
     GameObjectProperty *property_;
     GameObjectRepositoryBase *repository_;
 };
+
+bool objectsConflict(const GameObject *a, const GameObject *b);
 
 #endif // GAMEOBJECT_H

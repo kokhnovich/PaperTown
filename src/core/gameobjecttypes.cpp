@@ -36,3 +36,13 @@ QString StaticObject::type() const
 {
     return "static";
 }
+
+bool StaticObject::conflitsWith(const GameObject *object) const
+{
+    bool res = object->type() == "moving";
+    if (property() != nullptr) {
+        res = property()->conflitsWith(res, object);
+    }
+    return res;
+}
+

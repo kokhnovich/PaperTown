@@ -127,20 +127,30 @@ void GameField::remove(GameObject *object)
 
 bool GameField::canPlace(const GameObject *object, const Coordinate &pos) const
 {
-    /* TODO : invent something better to check compatibility between object */
+    bool res = false;
+    
     if (object->type() == "ground") {
-        return ground_map_->canPlace(object, pos);
+        res = ground_map_->canPlace(object, pos);
+    } else if (object->type() == "static") {
+        res = static_map_->canPlace(object, pos);
+    } else if (object->type() == "moving") {
+        res = moving_map_->canPlace(object, pos);
+    } else {
+        Q_UNREACHABLE();
     }
-    if (object->type() == "static") {
-        return static_map_->canPlace(object, pos) &&
-               moving_map_->freePlace(object, pos);
+    if (!res) {
+        return false;
     }
-    if (object->type() == "moving") {
-        return moving_map_->canPlace(object, pos) &&
-               static_map_->freePlace(object, pos);
+    
+    if (
+        ground_map_->conflictsWith(object, pos) ||
+        static_map_->conflictsWith(object, pos) ||
+        moving_map_->conflictsWith(object, pos)
+    ) {
+        return false;
     }
-    Q_ASSERT(0);
-    return false;
+    
+    return true;
 }
 
 GameObject *GameField::selection() const
