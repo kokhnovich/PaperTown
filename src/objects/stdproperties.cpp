@@ -138,20 +138,29 @@ void GameProperty_human::step()
         return;
     }
     if (is_active_) {
+        // TODO : remove this code
+        Util::Direction dirs[4] = {
+            direction_,
+            Util::Direction((direction_ + 1) % 4),
+            Util::Direction((direction_ + 2) % 4),
+            Util::Direction((direction_ + 3) % 4),
+        };
+        if (rnd() % 20 == 0) {
+            std::shuffle(dirs, dirs + 4, rnd);
+        }
+        for (int i = 0; i < 4; ++i) {
+            Coordinate new_pos = gameObject()->position().applyDirection(dirs[i]);
+            if (gameObject()->canSetPosition(new_pos)) {
+                direction_ = dirs[i];
+                break;
+            }
+        }
+        // TODO : remove this code (end)
         Coordinate new_pos = gameObject()->position().applyDirection(direction_);
         if (gameObject()->canSetPosition(new_pos)) {
             gameObject()->setPosition(new_pos);
         } else {
-            // TODO : remove this code
-            direction_ = Util::Direction((direction_ + 2) % 4);
-            Coordinate new_pos = gameObject()->position().applyDirection(direction_);
-            if (gameObject()->canSetPosition(new_pos)) {
-            gameObject()->setPosition(new_pos);
-            } else {
-                stop();
-            }
-            // TODO : remove this code
-            //stop();
+            stop();
         }
     }
     if (!is_active_) {
