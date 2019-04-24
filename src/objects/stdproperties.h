@@ -61,6 +61,7 @@ public:
     void go();
     void stop();
     Util::Direction direction() const;
+    Util::Direction queuedDirection() const;
     void setDirection(Util::Direction direction);
     
     /*
@@ -81,11 +82,13 @@ protected:
     Util::Bool3 canMove() const override;
 protected slots:
     void ensureEvent();
+protected:
+    void updateDirection();
 private:
     friend class HumanEvent;
     
-    // TODO : allow changing direction_ only when setting the positon (or idle)
     Util::Direction direction_;
+    Util::Direction queued_direction_;
     int stage_;
     bool is_active_;
     HumanEvent *event_;

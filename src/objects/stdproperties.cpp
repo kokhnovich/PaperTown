@@ -61,9 +61,23 @@ Util::Direction GameProperty_human::direction() const
     return direction_;
 }
 
+Util::Direction GameProperty_human::queuedDirection() const
+{
+    return queued_direction_;
+}
+
 void GameProperty_human::setDirection(Util::Direction direction)
 {
-    direction_ = direction;
+    queued_direction_ = direction;
+    if (stage_ == 0) {
+        updateDirection();
+        emit updated();
+    }
+}
+
+void GameProperty_human::updateDirection()
+{
+    direction_ = queued_direction_;
 }
 
 void GameProperty_human::ensureEvent()
@@ -124,7 +138,7 @@ void GameProperty_human::stop()
 void GameProperty_human::doInitialize()
 {
     GameObjectProperty::doInitialize();
-    direction_ = Util::Direction(rnd() % 4);
+    setDirection(Util::Direction(rnd() % 4));
     connect(gameObject(), &GameObject::attached, this, &GameProperty_human::ensureEvent);
     connect(gameObject(), &GameObject::placed, this, &GameProperty_human::ensureEvent);
     go();
@@ -138,6 +152,7 @@ void GameProperty_human::step()
         return;
     }
     if (is_active_) {
+        updateDirection();
         // TODO : remove this code
         Util::Direction dirs[4] = {
             direction_,
@@ -155,6 +170,7 @@ void GameProperty_human::step()
                 break;
             }
         }
+        queued_direction_ = direction_;
         // TODO : remove this code (end)
         Coordinate new_pos = gameObject()->position().applyDirection(direction_);
         if (gameObject()->canSetPosition(new_pos)) {
@@ -166,6 +182,7 @@ void GameProperty_human::step()
     if (!is_active_) {
         if (stage_ != 0) {
             stage_ = 0;
+            updateDirection();
             emit updated();
         }
         return;
@@ -181,7 +198,7 @@ Util::Bool3 GameProperty_human::canMove() const
 }
 
 GameProperty_human::GameProperty_human()
-    : direction_(Util::Down), stage_(0), is_active_(false), event_(nullptr)
+    : direction_(Util::Down), queued_direction_(Util::Down), stage_(0), is_active_(false), event_(nullptr)
 {}
 
 GameProperty_passable::GameProperty_passable()
