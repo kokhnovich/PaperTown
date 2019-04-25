@@ -12,12 +12,15 @@ MainWindow::MainWindow(QWidget *parent) :
     field_(new GameField(this, repository_, 60, 60)),
     textures_(new GameTextureRepository(this)),
     scene(new GameScene(this, repository_, field_, textures_)),
+    player_(nullptr),
     timer()
 {
     textures_->loadFromFile(":/img/textures.json");
     repository_->loadFromFile(":/data/objects.json");
     
-    //initObjects();
+    //auto human = field_->add("moving", "human", {field_->height() / 2, field_->width() / 2});
+    //player_ = gameProperty_cast<GameProperty_human>(human->property());
+    initObjects();
     
     ui->setupUi(this);
 
@@ -36,7 +39,36 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->listView->setModel(picker_model);
     ui->listView->setSelectionModel(selection_model);
     
+    //this->grabKeyboard();
+    
     connect(&timer, SIGNAL(timeout()), this, SLOT(timerTimeout()));
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    QMainWindow::keyPressEvent(event);
+    if (player_ == nullptr) {
+        return;
+    }
+    if (event->key() == Qt::Key_Up) {
+        player_->setDirection(Util::Up);
+    }
+    if (event->key() == Qt::Key_Down) {
+        player_->setDirection(Util::Down);
+    }
+    if (event->key() == Qt::Key_Left) {
+        player_->setDirection(Util::Left);
+    }
+    if (event->key() == Qt::Key_Right) {
+        player_->setDirection(Util::Right);
+    }
+    if (event->key() == Qt::Key_Space) {
+        if (player_->isActive()) {
+            player_->stop();
+        } else {
+            player_->go();
+        }
+    }
 }
 
 void MainWindow::initObjects()

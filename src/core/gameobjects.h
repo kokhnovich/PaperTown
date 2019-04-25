@@ -80,17 +80,8 @@ public:
     Q_INVOKABLE GameObjectProperty();
 
     virtual GameObjectProperty *castTo(const QMetaObject *meta);
-    
-    template<typename T>
-    inline friend T *gameProperty_cast(GameObjectProperty *property) {
-        if (property == nullptr) {
-            return nullptr;
-        }
-        return qobject_cast<T *>(property->castTo(&T::staticMetaObject));
-    }
 
     GameObjectInfo *objectInfo() const;
-    
     GameObjectRepositoryBase *repository() const;
 protected:
     virtual Util::Bool3 canSelect() const;
@@ -105,6 +96,14 @@ private:
     GameObject *game_object_;
     bool initialized_;
 };
+
+template<typename T>
+inline T *gameProperty_cast(GameObjectProperty *property) {
+    if (property == nullptr) {
+        return nullptr;
+    }
+    return qobject_cast<T *>(property->castTo(&T::staticMetaObject));
+}
 
 class GameObject : public QObject
 {
