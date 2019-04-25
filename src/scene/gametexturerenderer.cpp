@@ -46,10 +46,18 @@ void GameTextureRenderer::moveTexture(QGraphicsItem *item, const Coordinate &old
 
 QList<QGraphicsItem *> GameTextureRenderer::drawObject(GameObject *object)
 {
+    bool show_items = true;
+    if (object->property() != nullptr) {
+        show_items = mergeBooleans(show_items, prop_render_->canShowMainObject(object->property()));
+    }
+    
     auto info = repository()->getRenderInfo(object);
     QList<QGraphicsItem *> items;
     for (const QString &texture_name : info->textures) {
-        items.push_back(drawTexture(texture_name, object->position()));
+        QGraphicsItem *item = drawTexture(texture_name, object->position());
+        items.push_back(item);
+        item->setVisible(show_items);
+        item->setData(DATA_KEY_IS_OBJECT_ITEM, QVariant::fromValue(true));
     }
 
     if (object->property() != nullptr) {
@@ -78,20 +86,29 @@ void GameTextureRenderer::moveSelectionControl(QGraphicsWidget *widget, const Co
     widget->setPos(widget->pos() + geometry()->offset(new_pos - old_pos));
 }
 
-void GameTextureRenderer::updateObject(GameObject *, const QList<QGraphicsItem *> &items)
+void GameTextureRenderer::updateObject(GameObject *object, const QList<QGraphicsItem *> &items)
 {
+    bool show_items = true;
+    if (object->property() != nullptr) {
+        show_items = mergeBooleans(show_items, prop_render_->canShowMainObject(object->property()));
+    }
+    
     for (QGraphicsItem *item : qAsConst(items)) {
         auto property = qvariant_cast<GameObjectProperty *>(item->data(DATA_KEY_PROPERTY));
-        if (property == nullptr) {
-            continue;
+        if (property != nullptr) {
+            double old_z = qvariant_cast<double>(item->data(DATA_KEY_BASE_Z_VALUE));
+            double cur_z = item->zValue();
+            item->setZValue(old_z);
+            prop_render_->updatePropertyItem(item, property);
+            double new_z = item->zValue();
+            item->setData(DATA_KEY_BASE_Z_VALUE, QVariant::fromValue(new_z));
+            item->setZValue(cur_z - old_z + new_z);
+        } else if (item->data(DATA_KEY_IS_OBJECT_ITEM).toBool()) {
+            item->setVisible(show_items);
+        } else {
+            qCritical() << "could not detect the origin of the specified QGraphicsItem!";
+            Q_UNREACHABLE();
         }
-        double old_z = qvariant_cast<double>(item->data(DATA_KEY_BASE_Z_VALUE));
-        double cur_z = item->zValue();
-        item->setZValue(old_z);
-        prop_render_->updatePropertyItem(item, property);
-        double new_z = item->zValue();
-        item->setData(DATA_KEY_BASE_Z_VALUE, QVariant::fromValue(new_z));
-        item->setZValue(cur_z - old_z + new_z);
     }
 }
 

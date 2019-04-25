@@ -12,6 +12,7 @@
 
 const int DATA_KEY_GAMEOBJECT = 42;
 const int DATA_KEY_BASE_Z_VALUE = 43;
+const int DATA_KEY_IS_OBJECT_ITEM = 44;
 
 class GameTextureRenderer : public GameTextureRendererBase
 {
