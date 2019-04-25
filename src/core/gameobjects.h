@@ -124,7 +124,7 @@ public:
     int x() const;
     int y() const;
 
-    bool active() const;
+    bool isPlaced() const;
     bool isSelected() const;
     bool isMoving() const;
     bool isRemoving() const;
@@ -145,7 +145,7 @@ public:
     bool canSetPosition(const Coordinate &pos) const;
     bool setPosition(const Coordinate &pos);
     
-    bool activate(const Coordinate &pos);
+    bool place(const Coordinate &pos);
     
     virtual bool conflitsWith(const GameObject *object) const;
     
@@ -181,8 +181,8 @@ private:
     void setField(GameFieldBase *field);
 
     QString name_;
-    bool active_;
-    bool activating_;
+    bool is_placed_;
+    bool is_placing_;
     bool is_selected_;
     bool is_moving_;
     bool is_removing_;

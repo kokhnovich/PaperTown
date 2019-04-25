@@ -82,7 +82,7 @@ void GameProperty_human::updateDirection()
 
 void GameProperty_human::ensureEvent()
 {
-    if (field() == nullptr || !gameObject()->active() || !isActive()) {
+    if (field() == nullptr || !gameObject()->isPlaced() || !isActive()) {
         return;
     }
     if (event_ == nullptr) {

@@ -7,7 +7,7 @@ void GameFieldView::changeObjectSelectionState(GameObject *object, SelectionStat
 {
     renderer_->changeObjectSelectionState(object, objects_.values(object), last_state_, state);
 
-    if (state == SelectionState::Selected && object->active()) {
+    if (state == SelectionState::Selected && object->isPlaced()) {
         selection_control_ = renderer_->drawSelectionControl(object);
     } else if (selection_control_ != nullptr) {
         selection_control_->deleteLater();
@@ -72,7 +72,7 @@ void GameFieldView::addObject(GameObject *object)
 
 void GameFieldView::putObject(GameObject *object)
 {
-    if (object->active()) {
+    if (object->isPlaced()) {
         auto items = renderer_->drawObject(object);
         for (QGraphicsItem *item : items) {
             objects_.insert(object, item);

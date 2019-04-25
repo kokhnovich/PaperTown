@@ -178,8 +178,8 @@ bool GameObject::canSetPosition(const Coordinate &pos) const
 GameObject::GameObject(const QString &name, GameObjectRepositoryBase *repository)
     : QObject(nullptr),
       name_(name),
-      active_(false),
-      activating_(false),
+      is_placed_(false),
+      is_placing_(false),
       is_selected_(false),
       is_moving_(false),
       is_removing_(false),
@@ -250,22 +250,22 @@ bool GameObject::applyMovingPosition()
         }
         return false;
     }
-    activating_ = true;
+    is_placing_ = true;
     if (is_selected_) {
         unselect();
     }
-    activating_ = false;
+    is_placing_ = false;
     setPosition(pos);
-    if (!active_) {
-        active_ = true;
+    if (!is_placed_) {
+        is_placed_ = true;
         emit placed(position_);
     }
     return true;
 }
 
-bool GameObject::activate(const Coordinate &pos)
+bool GameObject::place(const Coordinate &pos)
 {
-    Q_ASSERT(!active_);
+    Q_ASSERT(!is_placed_);
     Q_ASSERT(is_selected_ && is_moving_);
     setMovingPosition(pos);
     return applyMovingPosition();
@@ -294,7 +294,7 @@ bool GameObject::internalCanMove() const
 void GameObject::startMoving()
 {
     Q_ASSERT(is_selected_ && !is_moving_);
-    if (active() && !canMove()) {
+    if (isPlaced() && !canMove()) {
         return;
     }
     is_moving_ = true;
@@ -336,7 +336,7 @@ bool GameObject::internalCanSelect() const
 void GameObject::select()
 {
     Q_ASSERT(!is_selected_);
-    if (active() && !canSelect()) {
+    if (isPlaced() && !canSelect()) {
         return;
     }
     emit selecting();
@@ -371,7 +371,7 @@ void GameObject::unselect()
     }
     is_selected_ = false;
     emit unselected();
-    if (!active() && !activating_) {
+    if (!isPlaced() && !is_placing_) {
         decline();
     }
 }
@@ -388,7 +388,7 @@ QString GameObject::name() const
 
 Coordinate GameObject::position() const
 {
-    Q_ASSERT(active_);
+    Q_ASSERT(is_placed_);
     return position_;
 }
 
@@ -399,15 +399,15 @@ bool GameObject::setPosition(const Coordinate &pos)
     }
     Coordinate oldPosition = position_;
     position_ = pos;
-    if (active_) {
+    if (is_placed_) {
         emit moved(oldPosition, position_);
     }
     return true;
 }
 
-bool GameObject::active() const
+bool GameObject::isPlaced() const
 {
-    return active_;
+    return is_placed_;
 }
 
 int GameObject::x() const

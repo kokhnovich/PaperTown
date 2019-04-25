@@ -5,7 +5,7 @@ void GameAbstractMap::add(GameObject *object)
 {
     connect(object, SIGNAL(moved(Coordinate, Coordinate)), this, SLOT(moveObject(Coordinate, Coordinate)));
     connect(object, SIGNAL(placed(Coordinate)), this, SLOT(placeObject(Coordinate)));
-    if (object->active()) {
+    if (object->isPlaced()) {
         internalAdd(object);
     }
 }
@@ -64,7 +64,7 @@ void GameAbstractMap::remove(GameObject *object)
 {
     disconnect(object, SIGNAL(moved(Coordinate, Coordinate)), this, SLOT(moveObject(Coordinate, Coordinate)));
     disconnect(object, SIGNAL(placed(Coordinate)), this, SLOT(placeObject(Coordinate)));
-    if (object->active()) {
+    if (object->isPlaced()) {
         internalRemove(object, object->position());
     }
 }
