@@ -84,12 +84,12 @@ Util::Bool3 GameObjectProperty::canSelect() const
     return Util::Dont_Care;
 }
 
-bool GameObjectProperty::canSetPosition(bool last_value, const Coordinate &) const
+bool GameObjectProperty::canSetPosition(bool last_value, const Coordinate &position) const
 {
-    return last_value;
+    return mergeBooleans(last_value, canSetPosition(position));
 }
 
-Util::Bool3 GameObjectProperty::conflitsWith(const GameObject *) const
+Util::Bool3 GameObjectProperty::canSetPosition(const Coordinate &) const
 {
     return Util::Dont_Care;
 }
@@ -97,6 +97,33 @@ Util::Bool3 GameObjectProperty::conflitsWith(const GameObject *) const
 bool GameObjectProperty::conflitsWith(bool last_value, const GameObject* object) const
 {
     return mergeBooleans(last_value, conflitsWith(object));
+}
+
+Util::Bool3 GameObjectProperty::conflitsWith(const GameObject *) const
+{
+    return Util::Dont_Care;
+}
+
+bool GameObjectProperty::canAutoEnable(bool last_value) const
+{
+    return mergeBooleans(last_value, canAutoEnable());
+}
+
+Util::Bool3 GameObjectProperty::canAutoEnable() const
+{
+    return Util::Dont_Care;
+}
+
+void GameObjectProperty::enableObject()
+{
+    Q_CHECK_PTR(game_object_);
+    game_object_->enable();
+}
+
+void GameObjectProperty::disableObject()
+{
+    Q_CHECK_PTR(game_object_);
+    game_object_->disable();
 }
 
 GameObjectProperty::GameObjectProperty()
@@ -163,6 +190,34 @@ const QVector<Coordinate> GameObject::cellsRelative() const
     return repository_->getInfo(type(), name())->cells;
 }
 
+bool GameObject::canAutoEnable() const
+{
+    bool res = true;
+    if (property_ != nullptr) {
+        res = property_->canAutoEnable(res);
+    }
+    return res;
+}
+
+void GameObject::disable()
+{
+    Q_ASSERT(is_enabled_);
+    is_enabled_ = false;
+    emit disabled();
+}
+
+void GameObject::enable()
+{
+    Q_ASSERT(!is_enabled_);
+    is_enabled_ = true;
+    emit enabled();
+}
+
+bool GameObject::isEnabled() const
+{
+    return is_enabled_;
+}
+
 bool GameObject::canSetPosition(const Coordinate &pos) const
 {
     bool res = true;
@@ -183,6 +238,7 @@ GameObject::GameObject(const QString &name, GameObjectRepositoryBase *repository
       is_selected_(false),
       is_moving_(false),
       is_removing_(false),
+      is_enabled_(false),
       position_(-65536, -65536),
       moving_position_(),
       field_(nullptr),
