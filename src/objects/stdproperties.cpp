@@ -204,7 +204,7 @@ GameProperty_human::GameProperty_human()
 GameProperty_passable::GameProperty_passable()
 {}
 
-Util::Bool3 GameProperty_passable::conflitsWith(const GameObject *object) const
+Util::Bool3 GameProperty_passable::conflictsWith(const GameObject *object) const
 {
     if (object->type() == "moving") {
         return Util::False;

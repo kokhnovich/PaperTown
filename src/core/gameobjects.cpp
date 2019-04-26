@@ -94,12 +94,12 @@ Util::Bool3 GameObjectProperty::canSetPosition(const Coordinate &) const
     return Util::Dont_Care;
 }
 
-bool GameObjectProperty::conflitsWith(bool last_value, const GameObject* object) const
+bool GameObjectProperty::conflictsWith(bool last_value, const GameObject* object) const
 {
-    return mergeBooleans(last_value, conflitsWith(object));
+    return mergeBooleans(last_value, conflictsWith(object));
 }
 
-Util::Bool3 GameObjectProperty::conflitsWith(const GameObject *) const
+Util::Bool3 GameObjectProperty::conflictsWith(const GameObject *) const
 {
     return Util::Dont_Care;
 }
@@ -249,11 +249,11 @@ GameObject::GameObject(const QString &name, GameObjectRepositoryBase *repository
     startMoving();
 }
 
-bool GameObject::conflitsWith(const GameObject* object) const
+bool GameObject::conflictsWith(const GameObject* object) const
 {
     bool res = false;
     if (property_ != nullptr) {
-        res = property_->conflitsWith(res, object);
+        res = property_->conflictsWith(res, object);
     }
     return res;
 }
@@ -501,7 +501,7 @@ bool objectsConflict(const GameObject *a, const GameObject *b)
     if (a == b) {
         return false;
     } else {
-        return a->conflitsWith(b) || b->conflitsWith(a);
+        return a->conflictsWith(b) || b->conflictsWith(a);
     }
 }
 

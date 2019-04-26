@@ -100,7 +100,7 @@ class GameProperty_passable : public GameObjectProperty
 public:
     Q_INVOKABLE GameProperty_passable();
 protected:
-    Util::Bool3 conflitsWith(const GameObject *object) const override;
+    Util::Bool3 conflictsWith(const GameObject *object) const override;
 };
 
 #endif // STDPROPERTIES_H

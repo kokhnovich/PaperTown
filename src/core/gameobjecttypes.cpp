@@ -37,11 +37,11 @@ QString StaticObject::type() const
     return "static";
 }
 
-bool StaticObject::conflitsWith(const GameObject *object) const
+bool StaticObject::conflictsWith(const GameObject *object) const
 {
     bool res = object->type() == "moving";
     if (property() != nullptr) {
-        res = property()->conflitsWith(res, object);
+        res = property()->conflictsWith(res, object);
     }
     return res;
 }
