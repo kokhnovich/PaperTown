@@ -212,6 +212,102 @@ Util::Bool3 GameProperty_passable::conflictsWith(const GameObject *object) const
     return Util::Dont_Care;
 }
 
+GameEvent::EventState BuildEvent::activate()
+{
+    emit buildFinished();
+    return GameEvent::Finish;
+}
+
+BuildEvent::BuildEvent(GameProperty_building* property)
+{
+    this->attach(property);
+}
+
+void GameProperty_building::buildFinished()
+{
+    const auto cells = gameObject()->cells();
+    for (const Coordinate &cell : cells) {
+        const auto cell_objects = field()->getCell(cell);
+        for (GameObject *object : cell_objects) {
+            if (object->type() == "moving") {
+                Q_ASSERT(object != gameObject());
+                field()->remove(object);
+            }
+        }
+    }
+    is_under_construction_ = false;
+    this->enableObject();
+}
+
+double GameProperty_building::buildProgress() const
+{
+    return 1.0 * elapsedBuildTime() / totalBuildTime();
+}
+
+Util::Bool3 GameProperty_building::canAutoEnable() const
+{
+    return Util::False;
+}
+
+Util::Bool3 GameProperty_building::conflictsWith(const GameObject *object) const
+{
+    if (object->type() == "moving" && is_under_construction_) {
+        return Util::False;
+    }
+    return Util::Dont_Care;
+}
+
+void GameProperty_building::tryPlace()
+{
+    if (is_placed_ || field() == nullptr) {
+        return;
+    }
+    build_event_ = new BuildEvent(this);
+    connect(build_event_, &BuildEvent::buildFinished, this, &GameProperty_building::buildFinished);
+    field()->scheduler()->addEvent(build_event_, total_build_time_);
+    is_placed_ = true;
+}
+
+void GameProperty_building::doInitialize()
+{
+    Q_ASSERT(gameObject()->type() == "static");
+    total_build_time_ = qMax(500, objectInfo()->keys["build-time"].toInt() * 1000);
+    connect(gameObject(), &GameObject::placed, this, &GameProperty_building::tryPlace);
+    connect(gameObject(), &GameObject::attached, this, &GameProperty_building::tryPlace);
+}
+
+GameProperty_building::GameProperty_building()
+    : GameObjectProperty(), is_placed_(false), is_under_construction_(true), build_event_(nullptr)
+{}
+
+bool GameProperty_building::isUnderConstruction() const
+{
+    return is_under_construction_;
+}
+
+qint64 GameProperty_building::remainingBuildTime() const
+{
+    Q_ASSERT(is_under_construction_);
+    Q_CHECK_PTR(build_event_);
+    return build_event_->timeBeforeActivate();
+}
+
+qint64 GameProperty_building::elapsedBuildTime() const
+{
+    return totalBuildTime() - remainingBuildTime();
+}
+
+qint64 GameProperty_building::totalBuildTime() const
+{
+    return total_build_time_;
+}
+
+GameField *GameProperty_building::field() const
+{
+    return qobject_cast<GameField *>(gameObject()->field());
+}
+
 GAME_PROPERTY_REGISTER("house", GameProperty_house)
 GAME_PROPERTY_REGISTER("human", GameProperty_human)
 GAME_PROPERTY_REGISTER("passable", GameProperty_passable)
+GAME_PROPERTY_REGISTER("building", GameProperty_building)

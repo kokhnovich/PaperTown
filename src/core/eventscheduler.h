@@ -6,6 +6,12 @@
 #include <QPointer>
 #include <queue>
 
+/*
+ * Important note: all the times here are measured in milliseconds!
+ */
+
+class GameEventScheduler;
+
 class GameEvent : public QObject
 {
     Q_OBJECT
@@ -21,12 +27,17 @@ public:
     qint64 interval() const;
     void setInterval(qint64 interval);
     
+    qint64 timeBeforeActivate() const;
+    
     void attach(QObject *object);
     
     friend class GameEventScheduler;
 private:
+    void setParent(GameEventScheduler *parent);
+    
     qint64 time_point_;
     qint64 interval_ = -1;
+    GameEventScheduler *scheduler_ = nullptr;
 };
 
 struct GameEventContainer {
@@ -46,6 +57,8 @@ public:
     void start();
     void pause();
     void update();
+    
+    qint64 timeBeforeActivate(const GameEvent *event) const;
 signals:
     void eventActivated(GameEvent *event);
 protected:

@@ -103,4 +103,48 @@ protected:
     Util::Bool3 conflictsWith(const GameObject *object) const override;
 };
 
+class GameProperty_building;
+
+class BuildEvent : public GameEvent
+{
+    Q_OBJECT
+private:
+    GameEvent::EventState activate() override;
+public:
+    BuildEvent(GameProperty_building *property);
+signals:
+    void buildFinished();
+};
+
+/*
+ * Important note: all the times in this class are measured in milliseconds!
+ */
+class GameProperty_building : public GameObjectProperty
+{
+    Q_OBJECT
+public:
+    GameField *field() const;
+    
+    void doInitialize() override;
+    
+    bool isUnderConstruction() const;
+    qint64 totalBuildTime() const;
+    qint64 remainingBuildTime() const;
+    qint64 elapsedBuildTime() const;
+    double buildProgress() const;
+    
+    Q_INVOKABLE GameProperty_building();
+protected slots:
+    void buildFinished();
+    void tryPlace();
+protected:
+    Util::Bool3 canAutoEnable() const override;
+    Util::Bool3 conflictsWith(const GameObject *object) const override;
+    
+    bool is_placed_;
+    bool is_under_construction_;
+    qint64 total_build_time_;
+    BuildEvent *build_event_;
+};
+
 #endif // STDPROPERTIES_H

@@ -16,11 +16,23 @@ void GameEvent::setInterval(qint64 interval)
     interval_ = interval;
 }
 
-void GameEvent::attach(QObject* object)
+void GameEvent::attach(QObject *object)
 {
     connect(object, &QObject::destroyed, this, [ = ]() {
         delete this;
     });
+}
+
+qint64 GameEvent::timeBeforeActivate() const
+{
+    Q_CHECK_PTR(scheduler_);
+    return scheduler_->timeBeforeActivate(this);
+}
+
+void GameEvent::setParent(GameEventScheduler *parent)
+{
+    QObject::setParent(parent);
+    scheduler_ = parent;
 }
 
 bool operator<(const GameEventContainer &a, const GameEventContainer &b)
@@ -74,6 +86,11 @@ void GameEventScheduler::start()
     }
     delta_ += timer_.elapsed() - pause_start_;
     active_ = true;
+}
+
+qint64 GameEventScheduler::timeBeforeActivate(const GameEvent *event) const
+{
+    return qMax(Q_INT64_C(0), event->time_point_ - realTimePoint());
 }
 
 void GameEventScheduler::update()
