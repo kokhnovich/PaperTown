@@ -140,6 +140,7 @@ protected slots:
 protected:
     Util::Bool3 canAutoEnable() const override;
     Util::Bool3 conflictsWith(const GameObject *object) const override;
+    Util::Bool3 canMove() const override;
     
     bool is_placed_;
     bool is_under_construction_;

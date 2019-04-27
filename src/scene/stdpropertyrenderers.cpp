@@ -8,9 +8,7 @@ const int MAX_FRAME = 5;
 
 GamePropertyRenderer_house::GamePropertyRenderer_house(GameTextureRendererBase *renderer)
     : GameAbstractPropertyRenderer(renderer),
-      image_(QStringLiteral(":/img/icon-population.png")),
-      label_font_(),
-      label_palette_()
+      image_(QStringLiteral(":/img/icon-population.png"))
 {
     label_font_.setWeight(QFont::Bold);
     label_font_.setPixelSize(0.75 * image_.height());
@@ -120,4 +118,105 @@ void GamePropertyRenderer_human::loadTextures()
         textures_.append(anim_texture);
     }
     textures_loaded_ = true;
+}
+
+QWidget *GamePropertyRenderer_building::createControlWidget(GameObjectProperty *property)
+{
+    auto widget = new QWidget;
+    auto layout = new QHBoxLayout(widget);
+
+    widget->setProperty("__last_stage", QVariant(-1));
+
+    auto icon_label = new QLabel;
+    icon_label->setObjectName(QStringLiteral("clock-image"));
+    layout->addWidget(icon_label);
+
+    auto text_label = new QLabel;
+    text_label->setObjectName(QStringLiteral("clock-label"));
+    text_label->setFont(label_font_);
+    layout->addWidget(text_label);
+
+    QTimer *timer = new QTimer(widget);
+    timer->setInterval(100);
+    connect(timer, &QTimer::timeout, this, [ = ]() {
+        updateControlWidget(property, widget);
+    });
+    timer->setObjectName("clock-updater");
+
+    return widget;
+}
+
+int GamePropertyRenderer_building::getTextureIndex(double stage) const
+{
+    return qBound(0, static_cast<int>(qFloor(stage * 12)), 11);
+}
+
+void GamePropertyRenderer_building::updateControlWidget(GameObjectProperty *a_property, QWidget *widget)
+{
+    auto property = qobject_cast<GameProperty_building *>(a_property);
+
+    auto timer = widget->findChild<QTimer *>(QStringLiteral("clock-updater"));
+
+    if (property->gameObject()->isEnabled()) {
+        if (timer->isActive()) {
+            timer->stop();
+        }
+        widget->setVisible(false);
+        return;
+    }
+
+    if (!timer->isActive()) {
+        timer->start();
+    }
+    widget->setVisible(true);
+    
+    int last_stage = widget->property("__last_stage").toInt();
+    int next_stage = getTextureIndex(property->buildProgress());
+    auto icon_label = widget->findChild<QLabel *>(QStringLiteral("clock-image"));
+    auto text_label = widget->findChild<QLabel *>(QStringLiteral("clock-label"));
+
+    if (last_stage != next_stage) {
+        icon_label->setPixmap(small_textures_[next_stage]);
+        widget->setProperty("__last_stage", QVariant::fromValue(next_stage));
+    }
+
+    text_label->setText(QTime::fromMSecsSinceStartOfDay(property->remainingBuildTime()).toString("HH:mm:ss"));
+}
+
+QList<QGraphicsItem *> GamePropertyRenderer_building::doDrawProperty(GameObjectProperty *property)
+{
+    return {};
+}
+
+void GamePropertyRenderer_building::updatePropertyItem(QGraphicsItem *item, GameObjectProperty *property)
+{
+}
+
+Util::Bool3 GamePropertyRenderer_building::canShowMainObject(GameObjectProperty *property)
+{
+    return Util::Dont_Care;
+    //return property->gameObject()->isEnabled();
+}
+
+void GamePropertyRenderer_building::loadTextures()
+{
+    const int GRID_HEIGHT = 3, GRID_WIDTH = 4;
+    QPixmap pixmap(":/img/clock.png");
+    Q_ASSERT(!pixmap.isNull());
+    const int texture_height = pixmap.height() / GRID_HEIGHT;
+    const int texture_width = pixmap.width() / GRID_WIDTH;
+    for (int i = 0; i < GRID_HEIGHT; ++i) {
+        for (int j = 0; j < GRID_WIDTH; ++j) {
+            textures_.append(pixmap.copy(j * texture_width, i * texture_height, texture_width, texture_height));
+            small_textures_.append(textures_.back().scaled(texture_height / 2, texture_width / 2));
+        }
+    }
+}
+
+GamePropertyRenderer_building::GamePropertyRenderer_building(GameTextureRendererBase *renderer)
+    : GameAbstractPropertyRenderer(renderer)
+{
+    loadTextures();
+    label_font_.setWeight(QFont::Bold);
+    label_font_.setPixelSize(0.75 * small_textures_[0].height());
 }

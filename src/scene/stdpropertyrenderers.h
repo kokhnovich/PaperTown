@@ -42,4 +42,28 @@ private:
     void loadTextures();
 };
 
+class GamePropertyRenderer_building : public GameAbstractPropertyRenderer
+{
+    Q_OBJECT
+public:
+    QWidget *createControlWidget(GameObjectProperty *property) override;
+    void updateControlWidget(GameObjectProperty *property, QWidget *widget) override;
+    void updatePropertyItem(QGraphicsItem *item, GameObjectProperty *property) override;
+    Util::Bool3 canShowMainObject(GameObjectProperty *property) override;
+    
+    GamePropertyRenderer_building(GameTextureRendererBase *renderer);
+protected:
+    QList<QGraphicsItem *> doDrawProperty(GameObjectProperty *property) override;
+private:
+    QVector<QPixmap> textures_;
+    QVector<QPixmap> small_textures_;
+    QFont label_font_;
+    
+    int getTextureIndex(double stage) const;
+
+    void loadTextures();
+    
+    friend class BuildingTimerItem;
+};
+
 #endif // STDPROPERTYRENDERERS_H

@@ -307,6 +307,11 @@ GameField *GameProperty_building::field() const
     return qobject_cast<GameField *>(gameObject()->field());
 }
 
+Util::Bool3 GameProperty_building::canMove() const
+{
+    return Util::False;
+}
+
 GAME_PROPERTY_REGISTER("house", GameProperty_house)
 GAME_PROPERTY_REGISTER("human", GameProperty_human)
 GAME_PROPERTY_REGISTER("passable", GameProperty_passable)

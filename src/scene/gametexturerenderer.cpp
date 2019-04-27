@@ -2,6 +2,7 @@
 #include <QGraphicsProxyWidget>
 #include <QLayout>
 #include <QPointer>
+#include <QGraphicsGridLayout>
 #include "gametexturerenderer.h"
 #include "stdpropertyrenderers.h"
 
@@ -239,13 +240,24 @@ QGraphicsWidget *GameTextureRenderer::createSelectionControl(const GameObject *o
 {
     QFont font;
     font.setPixelSize(2 * geometry()->cellSize());
-
+    
+    auto outer_widget = new QWidget();
+    auto outer_layout = new QVBoxLayout(outer_widget);
+    outer_layout->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
+    outer_widget->setMinimumWidth(1000);
+    outer_widget->setWindowFlags(Qt::FramelessWindowHint);
+    outer_widget->setAttribute(Qt::WA_NoSystemBackground);
+    outer_widget->setAttribute(Qt::WA_TranslucentBackground);
+    
     auto parent_widget = new QWidget();
+    outer_layout->addWidget(parent_widget);
+    parent_widget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     parent_widget->move({0, 0});
     parent_widget->setFont(font);
     parent_widget->setWindowFlags(Qt::FramelessWindowHint);
     parent_widget->setAttribute(Qt::WA_NoSystemBackground);
     parent_widget->setAttribute(Qt::WA_TranslucentBackground);
+    parent_widget->setObjectName("inner-widget");
     parent_widget->setStyleSheet(QStringLiteral(R"CSS(
         QPushButton {
             border: 5px groove #878AB5;
@@ -282,7 +294,8 @@ QGraphicsWidget *GameTextureRenderer::createSelectionControl(const GameObject *o
     )CSS"));
 
     auto layout = new QVBoxLayout(parent_widget);
-
+    layout->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
+    
     if (object->property() != nullptr) {
         auto prop_widget = prop_render_->createControlWidget(object->property());
         if (prop_widget != nullptr) {
@@ -301,16 +314,16 @@ QGraphicsWidget *GameTextureRenderer::createSelectionControl(const GameObject *o
     layout->addWidget(delete_btn);
     connect(delete_btn, &QPushButton::clicked, object, &GameObject::removeSelf);
 
-    auto widget_proxy = scene()->addWidget(parent_widget);
-
+    auto widget_proxy = scene()->addWidget(outer_widget);
+    
     Rect bound_rect = boundingRect(object->cells());
     QPointF top_left = geometry()->coordinateToRect({bound_rect.top, bound_rect.left}).topLeft();
     QPointF bottom_right = geometry()->coordinateToRect({bound_rect.bottom, bound_rect.right}).bottomRight();
-    QPointF widget_middle(parent_widget->size().width() / 2, parent_widget->size().height());
-
+    QPointF widget_middle(outer_widget->size().width() / 2, outer_widget->size().height());
+    
     widget_proxy->setZValue(geometry()->controlZDelta());
     widget_proxy->setPos((top_left + bottom_right) / 2 - widget_middle);
-
+    
     return widget_proxy;
 }
 
@@ -323,7 +336,8 @@ QGraphicsWidget *GameTextureRenderer::drawSelectionControl(const GameObject *obj
 
 void GameTextureRenderer::updateSelectionControl(const GameObject *object, QGraphicsWidget *a_widget)
 {
-    QWidget *widget = qobject_cast<QGraphicsProxyWidget *>(a_widget)->widget();
+    QWidget *outer_widget = qobject_cast<QGraphicsProxyWidget *>(a_widget)->widget();
+    auto widget = outer_widget->findChild<QWidget *>(QStringLiteral("inner-widget"), Qt::FindDirectChildrenOnly);
     auto property_widget = widget->findChild<QWidget *>(QStringLiteral("property-widget"), Qt::FindDirectChildrenOnly);
     auto move_btn = widget->findChild<QPushButton *>(QStringLiteral("move-btn"), Qt::FindDirectChildrenOnly);
     Q_CHECK_PTR(move_btn);
@@ -341,4 +355,5 @@ GameTextureRenderer::GameTextureRenderer(QObject *parent, GameSceneGeometry *geo
     prop_render_->addRenderer(QStringLiteral("GameProperty_house"), new GamePropertyRenderer_house(this));
     prop_render_->addRenderer(QStringLiteral("GameProperty_human"), new GamePropertyRenderer_human(this));
     prop_render_->addRenderer(QStringLiteral("GameProperty_passable"), nullptr);
+    prop_render_->addRenderer(QStringLiteral("GameProperty_building"), new GamePropertyRenderer_building(this));
 }

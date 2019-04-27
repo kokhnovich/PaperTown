@@ -110,7 +110,7 @@
 		"caption": "Small house",
 		"keys": {
 			"population": [50, 75],
-			"build-time": 20
+			"build-time": 10
 		}
 	},
 	
