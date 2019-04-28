@@ -196,6 +196,8 @@ void GamePropertyRenderer_building::updateControlWidget(GameObjectProperty *a_pr
 class BuildingTimerItem : public QGraphicsPixmapItem
 {
 public:
+    enum { Type = UserType + 1 };
+    
     BuildingTimerItem(GamePropertyRenderer_building *renderer, GameProperty_building *property)
         : timer_(new QTimer), property_(property), renderer_(renderer) {
         timer_->setInterval(100);
@@ -219,6 +221,10 @@ public:
             timer_->start();
         }
         setVisible(needs_active);
+    }
+    
+    int type() const override {
+        return Type;
     }
     
     ~BuildingTimerItem() override {
@@ -291,7 +297,7 @@ void GamePropertyRenderer_building::updatePropertyItem(QGraphicsItem *a_item, Ga
 {
     auto property = qobject_cast<GameProperty_building *>(a_property);
     a_item->setVisible(property->isUnderConstruction());
-    auto item = dynamic_cast<BuildingTimerItem *>(a_item);
+    auto item = qgraphicsitem_cast<BuildingTimerItem *>(a_item);
     if (item != nullptr) {
         item->updateState();
     }
