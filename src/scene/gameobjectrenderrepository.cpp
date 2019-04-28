@@ -42,7 +42,8 @@ void GameObjectRenderRepository::doLoadObject(const QString &type, const QString
     addRenderInfo(type, name, info);
 }
 
-const GameObjectRenderRepository::RenderInfo *GameObjectRenderRepository::getRenderInfo(const QString &type, const QString &name) const
+const GameObjectRenderRepository::RenderInfo *GameObjectRenderRepository::getRenderInfo(
+    const QString &type, const QString &name) const
 {
     return render_info_[fullName(type, name)].data();
 }

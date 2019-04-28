@@ -193,6 +193,52 @@ void GamePropertyRenderer_building::updateControlWidget(GameObjectProperty *a_pr
     text_label->setText(QTime::fromMSecsSinceStartOfDay(property->remainingBuildTime()).toString("HH:mm:ss"));
 }
 
+class BuildingTimerItem : public QGraphicsPixmapItem
+{
+public:
+    BuildingTimerItem(GamePropertyRenderer_building *renderer, GameProperty_building *property)
+        : timer_(new QTimer), property_(property), renderer_(renderer) {
+        timer_->setInterval(100);
+        QObject::connect(timer_, &QTimer::timeout, timer_, [ = ]() {
+            updateTexture();
+        });
+        updateState();
+        updateTexture();
+    
+        QSize img_size = renderer_->images_[0].size();
+        setOffset(-img_size.width() / 2, -img_size.height() / 2 - renderer_->geometry()->cellSize());
+    }
+    
+    void updateState() {
+        bool is_active = timer_->isActive();
+        bool needs_active = property_->isUnderConstruction();
+        if (is_active && !needs_active) {
+            timer_->stop();
+        }
+        if (!is_active && needs_active) {
+            timer_->start();
+        }
+        setVisible(needs_active);
+    }
+    
+    ~BuildingTimerItem() override {
+        delete timer_;
+    }
+protected:
+    void updateTexture() {
+        int new_index = renderer_->getTextureIndex(property_->buildProgress());
+        if (texture_index_ != new_index) {
+            texture_index_ = new_index;
+            setPixmap(renderer_->images_[new_index]);
+        }
+    }
+private:
+    int texture_index_ = -1;
+    QTimer *timer_;
+    GameProperty_building *property_;
+    GamePropertyRenderer_building *renderer_;
+};
+
 QList<QGraphicsItem *> GamePropertyRenderer_building::doDrawProperty(GameObjectProperty *a_property)
 {
     auto property = qobject_cast<GameProperty_building *>(a_property);
@@ -222,14 +268,33 @@ QList<QGraphicsItem *> GamePropertyRenderer_building::doDrawProperty(GameObjectP
     
         items.append(item);
     }
-
+    
+    {
+        Rect bound_rect = boundingRect(property->gameObject()->cells());
+        QPointF top_left = geometry()->coordinateToRect(bound_rect.topLeft()).topLeft();
+        QPointF bottom_right = geometry()->coordinateToRect(bound_rect.bottomRight()).bottomRight();
+        
+        qreal z_value = geometry()->zOrder(bound_rect.bottomLeft());
+        z_value -= geometry()->zOrder(property->gameObject()->position());
+        
+        auto timer_item = new BuildingTimerItem(this, property);
+        timer_item->setPos((top_left + bottom_right) / 2);
+        timer_item->setZValue(z_value);
+        scene()->addItem(timer_item);
+        items.append(timer_item);
+    }
+        
     return items;
 }
 
-void GamePropertyRenderer_building::updatePropertyItem(QGraphicsItem *item, GameObjectProperty *a_property)
+void GamePropertyRenderer_building::updatePropertyItem(QGraphicsItem *a_item, GameObjectProperty *a_property)
 {
     auto property = qobject_cast<GameProperty_building *>(a_property);
-    item->setVisible(property->isUnderConstruction());
+    a_item->setVisible(property->isUnderConstruction());
+    auto item = dynamic_cast<BuildingTimerItem *>(a_item);
+    if (item != nullptr) {
+        item->updateState();
+    }
 }
 
 Util::Bool3 GamePropertyRenderer_building::canShowMainObject(GameObjectProperty *a_property)

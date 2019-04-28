@@ -31,7 +31,8 @@ public:
     qreal borderZOrder(const Border &b) const;
     qreal selectionStateZDelta(SelectionState state) const;
     
-    inline qreal movingZDelta() const { return 1e8; }
+    inline qreal overObjectZDelta() const { return 6e8; }
+    inline qreal movingZDelta() const { return 8e8; }
     inline qreal controlZDelta() const { return 1e9; }
     
     inline int fieldHeight() const { return field_->height(); }
