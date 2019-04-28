@@ -28,6 +28,7 @@ public:
     Coordinate scenePosToCoord(const QPointF &point) const;
     
     qreal zOrder(const Coordinate &c, qreal priority = 0.0) const;
+    qreal borderZOrder(const Border &b) const;
     qreal selectionStateZDelta(SelectionState state) const;
     
     inline qreal movingZDelta() const { return 1e8; }

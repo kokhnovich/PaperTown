@@ -55,9 +55,7 @@ const GameObjectRenderRepository::RenderInfo *GameObjectRenderRepository::getRen
 GameObjectRenderRepository::GameObjectRenderRepository(QObject *parent)
     : GameObjectRepository(parent)
 {
-    type_priorities_["x-backward"] = 0.0;
-    type_priorities_["ground"] = 0.2;
-    type_priorities_["static"] = 0.4;
-    type_priorities_["moving"] = 0.6;
-    type_priorities_["x-forward"] = 0.8;
+    type_priorities_["ground"] = 0;
+    type_priorities_["static"] = 0.33;
+    type_priorities_["moving"] = 0.67;
 }

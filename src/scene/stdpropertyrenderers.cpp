@@ -197,7 +197,7 @@ QList<QGraphicsItem *> GamePropertyRenderer_building::doDrawProperty(GameObjectP
 {
     auto property = qobject_cast<GameProperty_building *>(a_property);
 
-    const QVector<Border> borders = calcBorders(property->gameObject()->cells());
+    const QVector<Border> borders = calcBorders(property->gameObject()->cellsRelative());
 
     const GameTexture *horz_border = textures()->getTexture(QStringLiteral("construction-horz"));
     const GameTexture *vert_border = textures()->getTexture(QStringLiteral("construction-vert"));
@@ -205,12 +205,7 @@ QList<QGraphicsItem *> GamePropertyRenderer_building::doDrawProperty(GameObjectP
     QList<QGraphicsItem *> items;
     
     for (const Border &border : borders) {
-        const GameTexture *border_texture = (border.side == Util::Up || border.side == Util::Down)
-                                      ? horz_border
-                                      : vert_border;
-        QString type_priority = (border.side == Util::Up || border.side == Util::Right)
-                                ? QStringLiteral("x-backward")
-                                : QStringLiteral("x-forward");
+        const GameTexture *border_texture = (border.side == Util::Up || border.side == Util::Down) ? horz_border : vert_border;
         
         QPointF offset = border_texture->offset;
         if (border.side == Util::Up) {
@@ -219,12 +214,10 @@ QList<QGraphicsItem *> GamePropertyRenderer_building::doDrawProperty(GameObjectP
             offset += geometry()->offset({0, 1});
         }
         
-        Coordinate z_offs = border.cell - property->gameObject()->position() + border_texture->z_offset;
-        
         auto item = scene()->addPixmap(border_texture->pixmap);
         item->setOffset(offset);
-        item->setPos(geometry()->coordinateToTopLeft(border.cell));
-        item->setZValue(geometry()->zOrder(z_offs, repository()->getTypePriority(type_priority)));
+        item->setPos(geometry()->coordinateToTopLeft(border.cell + property->gameObject()->position()));
+        item->setZValue(geometry()->borderZOrder({border.cell + border_texture->z_offset, border.side}));
         item->setVisible(property->isUnderConstruction());
     
         items.append(item);
@@ -271,5 +264,3 @@ GamePropertyRenderer_building::GamePropertyRenderer_building(GameTextureRenderer
     label_font_.setWeight(QFont::Bold);
     label_font_.setPixelSize(0.75 * small_textures_[0].height());
 }
-
-
