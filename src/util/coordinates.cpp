@@ -105,14 +105,14 @@ QVector<Border> calcBorders(const QVector<Coordinate> &points)
             Util::Direction dir = static_cast<Util::Direction>(dir_number);
             Coordinate neighbor_point = point.applyDirection(dir);
             if (!has_point[neighbor_point.x][neighbor_point.y]) {
-                borders.append({point, dir});
+                borders.append({point - offset, dir});
             }
         }
     }
     
     for (Coordinate point : points) {
         point += offset;
-        has_point[point.x][point.y] = true;
+        has_point[point.x][point.y] = false;
     }
 
     return borders;

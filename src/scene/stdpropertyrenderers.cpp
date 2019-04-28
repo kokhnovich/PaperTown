@@ -151,6 +151,11 @@ int GamePropertyRenderer_building::getTextureIndex(double stage) const
     return qBound(0, static_cast<int>(qFloor(stage * 12)), 11);
 }
 
+QColor GamePropertyRenderer_building::getTextColor(double stage) const
+{
+    return QColor::fromHsvF(stage / 3.75, 0.8, 0.5);
+}
+
 void GamePropertyRenderer_building::updateControlWidget(GameObjectProperty *a_property, QWidget *widget)
 {
     auto property = qobject_cast<GameProperty_building *>(a_property);
@@ -169,11 +174,16 @@ void GamePropertyRenderer_building::updateControlWidget(GameObjectProperty *a_pr
         timer->start();
     }
     widget->setVisible(true);
-    
+
+    double progress = property->buildProgress();
     int last_stage = widget->property("__last_stage").toInt();
-    int next_stage = getTextureIndex(property->buildProgress());
+    int next_stage = getTextureIndex(progress);
     auto icon_label = widget->findChild<QLabel *>(QStringLiteral("clock-image"));
     auto text_label = widget->findChild<QLabel *>(QStringLiteral("clock-label"));
+
+    QPalette palette = text_label->palette();
+    palette.setColor(QPalette::WindowText, getTextColor(progress));
+    text_label->setPalette(palette);
 
     if (last_stage != next_stage) {
         icon_label->setPixmap(small_textures_[next_stage]);
@@ -183,19 +193,60 @@ void GamePropertyRenderer_building::updateControlWidget(GameObjectProperty *a_pr
     text_label->setText(QTime::fromMSecsSinceStartOfDay(property->remainingBuildTime()).toString("HH:mm:ss"));
 }
 
-QList<QGraphicsItem *> GamePropertyRenderer_building::doDrawProperty(GameObjectProperty *property)
+QList<QGraphicsItem *> GamePropertyRenderer_building::doDrawProperty(GameObjectProperty *a_property)
 {
-    return {};
+    auto property = qobject_cast<GameProperty_building *>(a_property);
+
+    const QVector<Border> borders = calcBorders(property->gameObject()->cells());
+
+    const GameTexture *horz_border = textures()->getTexture(QStringLiteral("construction-horz"));
+    const GameTexture *vert_border = textures()->getTexture(QStringLiteral("construction-vert"));
+
+    QList<QGraphicsItem *> items;
+    
+    for (const Border &border : borders) {
+        const GameTexture *border_texture = (border.side == Util::Up || border.side == Util::Down)
+                                      ? horz_border
+                                      : vert_border;
+        QString type_priority = (border.side == Util::Up || border.side == Util::Right)
+                                ? QStringLiteral("x-backward")
+                                : QStringLiteral("x-forward");
+        
+        QPointF offset = border_texture->offset;
+        if (border.side == Util::Up) {
+            offset += geometry()->offset({-1, 0});
+        } else if (border.side == Util::Right) {
+            offset += geometry()->offset({0, 1});
+        }
+        
+        Coordinate z_offs = border.cell - property->gameObject()->position() + border_texture->z_offset;
+        
+        auto item = scene()->addPixmap(border_texture->pixmap);
+        item->setOffset(offset);
+        item->setPos(geometry()->coordinateToTopLeft(border.cell));
+        item->setZValue(geometry()->zOrder(z_offs, repository()->getTypePriority(type_priority)));
+        item->setVisible(property->isUnderConstruction());
+    
+        items.append(item);
+    }
+
+    return items;
 }
 
-void GamePropertyRenderer_building::updatePropertyItem(QGraphicsItem *item, GameObjectProperty *property)
+void GamePropertyRenderer_building::updatePropertyItem(QGraphicsItem *item, GameObjectProperty *a_property)
 {
+    auto property = qobject_cast<GameProperty_building *>(a_property);
+    item->setVisible(property->isUnderConstruction());
 }
 
-Util::Bool3 GamePropertyRenderer_building::canShowMainObject(GameObjectProperty *property)
+Util::Bool3 GamePropertyRenderer_building::canShowMainObject(GameObjectProperty *a_property)
 {
+    auto property = qobject_cast<GameProperty_building *>(a_property);
+
+    if (property->isUnderConstruction()) {
+        return Util::False;
+    }
     return Util::Dont_Care;
-    //return property->gameObject()->isEnabled();
 }
 
 void GamePropertyRenderer_building::loadTextures()
@@ -207,8 +258,8 @@ void GamePropertyRenderer_building::loadTextures()
     const int texture_width = pixmap.width() / GRID_WIDTH;
     for (int i = 0; i < GRID_HEIGHT; ++i) {
         for (int j = 0; j < GRID_WIDTH; ++j) {
-            textures_.append(pixmap.copy(j * texture_width, i * texture_height, texture_width, texture_height));
-            small_textures_.append(textures_.back().scaled(texture_height / 2, texture_width / 2));
+            images_.append(pixmap.copy(j * texture_width, i * texture_height, texture_width, texture_height));
+            small_textures_.append(images_.back().scaled(texture_height / 2, texture_width / 2));
         }
     }
 }
@@ -220,3 +271,5 @@ GamePropertyRenderer_building::GamePropertyRenderer_building(GameTextureRenderer
     label_font_.setWeight(QFont::Bold);
     label_font_.setPixelSize(0.75 * small_textures_[0].height());
 }
+
+

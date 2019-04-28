@@ -55,11 +55,12 @@ public:
 protected:
     QList<QGraphicsItem *> doDrawProperty(GameObjectProperty *property) override;
 private:
-    QVector<QPixmap> textures_;
+    QVector<QPixmap> images_;
     QVector<QPixmap> small_textures_;
     QFont label_font_;
     
     int getTextureIndex(double stage) const;
+    QColor getTextColor(double stage) const;
 
     void loadTextures();
     

@@ -74,5 +74,15 @@
 		"offset": [-1, -290],
 		"z-offset": [0, 0],
 		"layers": 2
+	},
+	
+	"construction-horz": {
+		"offset": [50, 0],
+		"z-offset": [0, 0]
+	},
+	
+	"construction-vert": {
+		"offset": [0, 0],
+		"z-offset": [0, 0]
 	}
 }
