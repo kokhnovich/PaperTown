@@ -53,6 +53,7 @@ QList<QGraphicsItem *> GamePropertyRenderer_human::doDrawProperty(GameObjectProp
 {
     auto item = new QGraphicsPixmapItem();
     scene()->addItem(item);
+    item->setPos({0, 0});
     updatePropertyItem(item, a_property);
     return {item};
 }
@@ -71,7 +72,6 @@ void GamePropertyRenderer_human::updatePropertyItem(QGraphicsItem *a_item, GameO
     const AnimatedTexture &texture = textures_[dir];
     int stage = property->stage();
 
-    QPointF pos = geometry()->coordinateToTopLeft(property->gameObject()->position());
     Coordinate delta = Coordinate(0, 0).applyDirection(dir);
     QPointF scene_delta = geometry()->offset(delta);
     QPointF offs = texture.offset;
@@ -90,7 +90,6 @@ void GamePropertyRenderer_human::updatePropertyItem(QGraphicsItem *a_item, GameO
 
     item->setPixmap(texture.frames[frame_id]);
     item->setOffset(offs);
-    item->setPos(pos);
     item->setZValue(geometry()->zOrder(z_offs));
     item->setShapeMode(QGraphicsPixmapItem::BoundingRectShape);
 }
@@ -296,7 +295,7 @@ QList<QGraphicsItem *> GamePropertyRenderer_building::doDrawProperty(GameObjectP
         
         auto item = scene()->addPixmap(border_texture->pixmap);
         item->setOffset(offset);
-        item->setPos(geometry()->coordinateToTopLeft(border.cell + property->gameObject()->position()));
+        item->setPos(geometry()->offset(border.cell));
         item->setZValue(geometry()->borderZOrder({border.cell + border_texture->z_offset, border.side}));
         item->setVisible(property->isBuildInProgress());
         item->setData(DATA_KEY_PROP_FLAGS, QVariant::fromValue(PROP_FLAG_BORDER));
@@ -305,12 +304,11 @@ QList<QGraphicsItem *> GamePropertyRenderer_building::doDrawProperty(GameObjectP
     }
     
     {
-        Rect bound_rect = boundingRect(property->gameObject()->cells());
+        Rect bound_rect = boundingRect(property->gameObject()->cellsRelative());
         QPointF top_left = geometry()->coordinateToRect(bound_rect.topLeft()).topLeft();
         QPointF bottom_right = geometry()->coordinateToRect(bound_rect.bottomRight()).bottomRight();
         
         qreal z_value = geometry()->borderZOrder({bound_rect.bottomLeft(), Util::Down}) + 0.1;
-        z_value -= geometry()->zOrderOffset(property->gameObject()->position());
         
         auto timer_item = new BuildingTimerItem(this, property);
         timer_item->setPos((top_left + bottom_right) / 2);

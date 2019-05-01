@@ -39,7 +39,7 @@ public:
 protected:
     QGraphicsWidget *createSelectionControl(const GameObject *object);
     QGraphicsItem *drawSelectionRect(GameObject *object);
-    QGraphicsItem *drawTexture(const QString &name, const Coordinate &c);
+    QGraphicsItem *drawTexture(const QString &name);
     void moveTexture(QGraphicsItem *item, const Coordinate &old_pos, const Coordinate &new_pos);
 private:
     GamePropertyRenderer *prop_render_;
