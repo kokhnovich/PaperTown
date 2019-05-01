@@ -4,6 +4,8 @@
 #include <QVBoxLayout>
 #include "../scene/stdpropertyrenderers.h"
 #include "../objects/stdproperties.h"
+#include "../scene/progressbargraphicsitem.h"
+#include "iconizedlabel.h"
 
 const int MAX_FRAME = 5;
 
@@ -12,33 +14,23 @@ GamePropertyRenderer_house::GamePropertyRenderer_house(GameTextureRendererBase *
       image_(QStringLiteral(":/img/icon-population.png"))
 {
     label_font_.setWeight(QFont::Bold);
-    label_font_.setPixelSize(static_cast<int>(0.75 * image_.height()));
+    label_font_.setPixelSize(qRound(0.75 * image_.height()));
     label_palette_.setColor(QPalette::WindowText, QColor(137, 48, 20));
 }
 
 QWidget *GamePropertyRenderer_house::createControlWidget(GameObjectProperty *)
 {
-    auto widget = new QWidget;
-    auto layout = new QHBoxLayout(widget);
-
-    auto icon_label = new QLabel;
-    icon_label->setPixmap(image_);
-    layout->addWidget(icon_label);
-
-    auto text_label = new QLabel;
-    text_label->setObjectName(QStringLiteral("population-label"));
-    text_label->setFont(label_font_);
-    text_label->setPalette(label_palette_);
-    layout->addWidget(text_label);
-    
+    auto widget = new IconizedLabel;
+    widget->setPixmap(image_);
+    widget->setFont(label_font_);
+    widget->setPalette(label_palette_);
     return widget;
 }
 
 void GamePropertyRenderer_house::updateControlWidget(GameObjectProperty *a_property, QWidget *widget)
 {
     auto property = qobject_cast<GameProperty_house *>(a_property);
-    
-    auto label = widget->findChild<QLabel *>(QStringLiteral("population-label"));
+    auto label = qobject_cast<IconizedLabel *>(widget);
     Q_CHECK_PTR(label);
     label->setText(QString::number(property->population()));    
 }
@@ -129,41 +121,54 @@ QWidget *GamePropertyRenderer_building::createControlWidget(GameObjectProperty *
     auto layout = new QVBoxLayout(widget);
     layout->setContentsMargins(0, 0, 0, 0);
     
-    auto inner_widget = new QWidget;
-    auto inner_layout = new QHBoxLayout(inner_widget);
-    inner_widget->setObjectName("clock-inner-widget");
-    layout->addWidget(inner_widget);
+    auto timer_widget = new QWidget;
+    auto timer_layout = new QHBoxLayout(timer_widget);
+    timer_widget->setObjectName("timer-widget");
+    layout->addWidget(timer_widget);
     
-    inner_widget->setProperty("__last_stage", QVariant(-1));
+    timer_widget->setProperty("__last_stage", QVariant(-1));
 
     auto icon_label = new QLabel;
     icon_label->setObjectName(QStringLiteral("clock-image"));
-    inner_layout->addWidget(icon_label);
+    timer_layout->addWidget(icon_label);
 
     auto text_label = new QLabel;
     text_label->setObjectName(QStringLiteral("clock-label"));
     text_label->setFont(label_font_);
-    inner_layout->addWidget(text_label);
+    timer_layout->addWidget(text_label);
 
     QTimer *timer = new QTimer(widget);
     timer->setInterval(100);
     connect(timer, &QTimer::timeout, this, [ = ]() {
         updateTimerWidget(property, widget);
+        updateHealthWidget(property, widget);
     });
-    timer->setObjectName("clock-updater");
+    timer->start();
 
+    QFont health_font;
+    health_font.setPixelSize(qRound(0.75 * health_icon_.height()));
+    health_font.setWeight(QFont::Bold);
+    
+    auto health_widget = new IconizedLabel;
+    layout->addWidget(health_widget);
+    health_widget->setObjectName("health-widget");
+    health_widget->setPixmap(health_icon_);
+    health_widget->setFont(health_font);
+    health_widget->setText("?? %");
+    
     auto repair_btn = new QPushButton(tr("Repair"));
     repair_btn->setObjectName(QStringLiteral("repair-btn"));
     layout->addWidget(repair_btn);
     repair_btn->setProperty("btn_style", "green");
     connect(repair_btn, &QPushButton::clicked, property, &GameProperty_building::startRepairing);
+    connect(repair_btn, &QPushButton::clicked, property->gameObject(), &GameObject::unselect);
     
     return widget;
 }
 
 int GamePropertyRenderer_building::getTextureIndex(double stage) const
 {
-    return qBound(0, static_cast<int>(qFloor(stage * 12)), 11);
+    return qBound(0, qFloor(stage * 12), 11);
 }
 
 QColor GamePropertyRenderer_building::getTextColor(double stage) const
@@ -171,31 +176,22 @@ QColor GamePropertyRenderer_building::getTextColor(double stage) const
     return QColor::fromHsvF(stage / 3.75, 0.8, 0.5);
 }
 
-void GamePropertyRenderer_building::updateTimerWidget(GameObjectProperty *a_property, QWidget *widget)
+void GamePropertyRenderer_building::updateTimerWidget(GameProperty_building *property, QWidget *widget)
 {
-    auto property = qobject_cast<GameProperty_building *>(a_property);
-    
-    auto timer = widget->findChild<QTimer *>(QStringLiteral("clock-updater"));
-    auto inner_widget = widget->findChild<QWidget *>(QStringLiteral("clock-inner-widget"));
+    auto timer_widget = widget->findChild<QWidget *>(QStringLiteral("timer-widget"));
     
     if (!property->isBuildInProgress()) {
-        if (timer->isActive()) {
-            timer->stop();
-        }
-        inner_widget->setVisible(false);
+        timer_widget->setVisible(false);
         return;
     }
-
-    if (!timer->isActive()) {
-        timer->start();
-    }
-    inner_widget->setVisible(true);
+    
+    timer_widget->setVisible(true);
 
     double progress = property->buildProgress();
-    int last_stage = inner_widget->property("__last_stage").toInt();
+    int last_stage = timer_widget->property("__last_stage").toInt();
     int next_stage = getTextureIndex(progress);
-    auto icon_label = inner_widget->findChild<QLabel *>(QStringLiteral("clock-image"));
-    auto text_label = inner_widget->findChild<QLabel *>(QStringLiteral("clock-label"));
+    auto icon_label = timer_widget->findChild<QLabel *>(QStringLiteral("clock-image"));
+    auto text_label = timer_widget->findChild<QLabel *>(QStringLiteral("clock-label"));
 
     QPalette palette = text_label->palette();
     palette.setColor(QPalette::WindowText, getTextColor(progress));
@@ -203,17 +199,31 @@ void GamePropertyRenderer_building::updateTimerWidget(GameObjectProperty *a_prop
 
     if (last_stage != next_stage) {
         icon_label->setPixmap(small_textures_[next_stage]);
-        inner_widget->setProperty("__last_stage", QVariant::fromValue(next_stage));
+        timer_widget->setProperty("__last_stage", QVariant::fromValue(next_stage));
     }
 
     text_label->setText(QTime::fromMSecsSinceStartOfDay(static_cast<int>(property->remainingBuildTime())).toString("HH:mm:ss"));
 }
 
+void GamePropertyRenderer_building::updateHealthWidget(GameProperty_building *property, QWidget *widget)
+{
+    IconizedLabel *health_display = widget->findChild<IconizedLabel *>(QStringLiteral("health-widget"));
+    Q_CHECK_PTR(health_display);
+    
+    QPalette palette = health_display->palette();
+    palette.setColor(QPalette::WindowText, QColor::fromHsvF(property->health() / 3, 0.9, 0.5));
+    health_display->setPalette(palette);
+    health_display->setText(QStringLiteral("%1%").arg(property->health() * 100.0, 0, 'f', 0));
+    health_display->setVisible(property->state() != GameProperty_building::UnderConstruction);
+}
+
+
 void GamePropertyRenderer_building::updateControlWidget(GameObjectProperty *a_property, QWidget *widget)
 {
     auto property = qobject_cast<GameProperty_building *>(a_property);
 
-    updateTimerWidget(a_property, widget);
+    updateTimerWidget(property, widget);
+    updateHealthWidget(property, widget);    
     
     auto repair_btn = widget->findChild<QPushButton *>(QStringLiteral("repair-btn"));
     Q_CHECK_PTR(repair_btn);
@@ -272,6 +282,27 @@ private:
     GamePropertyRenderer_building *renderer_;
 };
 
+class HealthBarItem : public ProgressBarGraphicsItem
+{
+public:
+    HealthBarItem(const QPixmap &pm, GameProperty_building *property)
+        : ProgressBarGraphicsItem(pm), property_(property) {
+        timer_.setInterval(400);
+        
+        auto on_timer = [ = ]() {
+            this->setProgress(property_->health());
+        };
+        
+        QObject::connect(&timer_, &QTimer::timeout, &timer_, on_timer);
+        on_timer();
+        
+        timer_.start();
+    }
+private:
+    QTimer timer_;
+    GameProperty_building *property_;
+};
+
 QList<QGraphicsItem *> GamePropertyRenderer_building::doDrawProperty(GameObjectProperty *a_property)
 {
     auto property = qobject_cast<GameProperty_building *>(a_property);
@@ -297,7 +328,6 @@ QList<QGraphicsItem *> GamePropertyRenderer_building::doDrawProperty(GameObjectP
         item->setOffset(offset);
         item->setPos(geometry()->offset(border.cell));
         item->setZValue(geometry()->borderZOrder({border.cell + border_texture->z_offset, border.side}));
-        item->setVisible(property->isBuildInProgress());
         item->setData(DATA_KEY_PROP_FLAGS, QVariant::fromValue(PROP_FLAG_BORDER));
         
         items.append(item);
@@ -322,8 +352,24 @@ QList<QGraphicsItem *> GamePropertyRenderer_building::doDrawProperty(GameObjectP
         wrecked_indicator->setOffset(-wrecked_icon_.width() / 2, -geometry()->cellSize() - wrecked_icon_.height() / 2);
         wrecked_indicator->setZValue(z_value);
         wrecked_indicator->setData(DATA_KEY_PROP_FLAGS, QVariant::fromValue(PROP_FLAG_WRECKED));
-        wrecked_indicator->setVisible(property->state() == GameProperty_building::Wrecked);
         items.append(wrecked_indicator);
+        
+        const GameTexture *cur_object_texture = textures()->getTexture(property->objectName());
+        QPointF health_bar_offs(cur_object_texture->pixmap.width() / 2, 0);
+        health_bar_offs += geometry()->coordinateToTopLeft({0, 0});
+        health_bar_offs += cur_object_texture->offset;
+        health_bar_offs -= QPointF(progress_bar_image_.width() / 2, progress_bar_image_.height() / 4);
+        
+        auto health_bar = new HealthBarItem(progress_bar_image_, property);
+        health_bar->setZValue(z_value);
+        health_bar->setPos(health_bar_offs);
+        health_bar->setData(DATA_KEY_PROP_FLAGS, QVariant::fromValue(PROP_FLAG_HEALTH));
+        scene()->addItem(health_bar);
+        items.append(health_bar);
+    }
+    
+    for (auto item : qAsConst(items)) {
+        updatePropertyItem(item, a_property);
     }
         
     return items;
@@ -348,9 +394,13 @@ void GamePropertyRenderer_building::updatePropertyItem(QGraphicsItem *item, Game
             item->setVisible(property->state() == GameProperty_building::Wrecked);
             break;
         }
+        case PROP_FLAG_HEALTH: {
+            item->setVisible(property->state() != GameProperty_building::UnderConstruction);
+            break;
+        }
         default: {
             // unknown item
-            Q_UNREACHABLE();
+            //Q_UNREACHABLE();
         }
     }
 }
@@ -378,6 +428,11 @@ void GamePropertyRenderer_building::loadTextures()
         }
     }
     wrecked_icon_ = QPixmap(":/img/icon-repair.png");
+    Q_ASSERT(!wrecked_icon_.isNull());
+    progress_bar_image_ = QPixmap(":/img/progress-bars.png");
+    Q_ASSERT(!progress_bar_image_.isNull());
+    health_icon_ = QPixmap(":/img/icon-health.png");
+    Q_ASSERT(!health_icon_.isNull());
 }
 
 GamePropertyRenderer_building::GamePropertyRenderer_building(GameTextureRendererBase *renderer)
@@ -385,5 +440,5 @@ GamePropertyRenderer_building::GamePropertyRenderer_building(GameTextureRenderer
 {
     loadTextures();
     label_font_.setWeight(QFont::Bold);
-    label_font_.setPixelSize(static_cast<int>(0.75 * small_textures_[0].height()));
+    label_font_.setPixelSize(qRound(0.75 * small_textures_[0].height()));
 }

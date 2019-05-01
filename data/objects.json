@@ -138,7 +138,8 @@
 		"caption": "Tall house",
 		"keys": {
 			"build-time": 20,
-			"repair-time": 10
+			"repair-time": 10,
+			"health-loss": 0.01
 		}
 	}
 }

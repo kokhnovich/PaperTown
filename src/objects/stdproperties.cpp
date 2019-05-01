@@ -296,7 +296,7 @@ void GameProperty_building::handleLoop()
     }
     bool can_start_repairing = canStartRepairing();
     health_ -= health_loss_;
-    if (health_ < 0.0) {
+    if (health_ <= 1e-9) {
         health_ = 0.0;
         setState(Wrecked);
     } else {
