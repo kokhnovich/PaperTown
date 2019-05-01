@@ -213,7 +213,7 @@ public:
     
     void updateState() {
         bool is_active = timer_->isActive();
-        bool needs_active = property_->isUnderConstruction();
+        bool needs_active = property_->isBuildInProgress();
         if (is_active && !needs_active) {
             timer_->stop();
         }
@@ -270,7 +270,7 @@ QList<QGraphicsItem *> GamePropertyRenderer_building::doDrawProperty(GameObjectP
         item->setOffset(offset);
         item->setPos(geometry()->coordinateToTopLeft(border.cell + property->gameObject()->position()));
         item->setZValue(geometry()->borderZOrder({border.cell + border_texture->z_offset, border.side}));
-        item->setVisible(property->isUnderConstruction());
+        item->setVisible(property->isBuildInProgress());
     
         items.append(item);
     }
@@ -296,7 +296,7 @@ QList<QGraphicsItem *> GamePropertyRenderer_building::doDrawProperty(GameObjectP
 void GamePropertyRenderer_building::updatePropertyItem(QGraphicsItem *a_item, GameObjectProperty *a_property)
 {
     auto property = qobject_cast<GameProperty_building *>(a_property);
-    a_item->setVisible(property->isUnderConstruction());
+    a_item->setVisible(property->isBuildInProgress());
     auto item = qgraphicsitem_cast<BuildingTimerItem *>(a_item);
     if (item != nullptr) {
         item->updateState();
@@ -306,8 +306,7 @@ void GamePropertyRenderer_building::updatePropertyItem(QGraphicsItem *a_item, Ga
 Util::Bool3 GamePropertyRenderer_building::canShowMainObject(GameObjectProperty *a_property)
 {
     auto property = qobject_cast<GameProperty_building *>(a_property);
-
-    if (property->isUnderConstruction()) {
+    if (property->state() == GameProperty_building::UnderConstruction) {
         return Util::False;
     }
     return Util::Dont_Care;

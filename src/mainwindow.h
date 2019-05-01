@@ -55,7 +55,7 @@ class CustomEvent : public GameEvent
 public:
     CustomEvent(MainWindow *window) : GameEvent(), window_(window) {}
 
-    GameEvent::EventState activate() override {
+    GameEvent::State activate() override {
         window_->newEvent();
         return GameEvent::Replay;
     }

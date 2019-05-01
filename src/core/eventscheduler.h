@@ -16,13 +16,13 @@ class GameEvent : public QObject
 {
     Q_OBJECT
 public:
-    enum EventState {
+    enum State {
         Finish,
         Replay
     };
-    Q_ENUM(EventState);
+    Q_ENUM(State);
     
-    virtual EventState activate();
+    virtual State activate();
 
     qint64 interval() const;
     void setInterval(qint64 interval);
@@ -31,13 +31,30 @@ public:
     
     void attach(QObject *object);
     
+    bool isFinished() const;
+    
     friend class GameEventScheduler;
+public slots:
+    void finish();
 private:
     void setParent(GameEventScheduler *parent);
-    
+
     qint64 time_point_;
     qint64 interval_ = -1;
     GameEventScheduler *scheduler_ = nullptr;
+    bool is_finished = false;
+};
+
+class GameSignalEvent : public GameEvent
+{
+    Q_OBJECT
+public:
+    State activate() override;
+    GameSignalEvent(GameEvent::State type);
+signals:
+    void activated();
+private:
+    GameEvent::State type_;
 };
 
 struct GameEventContainer {
