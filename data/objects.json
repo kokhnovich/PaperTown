@@ -27,7 +27,8 @@
 		],
 		"caption": "Cinema",
 		"keys": {
-			"build-time": 60
+			"build-time": 60,
+			"repair-time": 25
 		}
 	},
 	
@@ -44,7 +45,8 @@
 		"caption": "Angle (north-east)",
 		"keys": {
 			"population": [75, 125],
-			"build-time": 30
+			"build-time": 30,
+			"repair-time": 10
 		}
 	},
 	
@@ -61,7 +63,8 @@
 		"caption": "Angle (north-west)",
 		"keys": {
 			"population": [75, 125],
-			"build-time": 30
+			"build-time": 30,
+			"repair-time": 10
 		}
 	},
 	
@@ -78,7 +81,8 @@
 		"caption": "Angle (south-east)",
 		"keys": {
 			"population": [75, 125],
-			"build-time": 30
+			"build-time": 30,
+			"repair-time": 10
 		}
 	},
 	
@@ -95,7 +99,8 @@
 		"caption": "Angle (south-west)",
 		"keys": {
 			"population": [75, 125],
-			"build-time": 30
+			"build-time": 30,
+			"repair-time": 10
 		}
 	},
 	
@@ -110,7 +115,9 @@
 		"caption": "Small house",
 		"keys": {
 			"population": [50, 75],
-			"build-time": 10
+			"build-time": 10,
+			"repair-time": 3,
+			"health-loss": 0.5
 		}
 	},
 	
@@ -130,7 +137,8 @@
 		],
 		"caption": "Tall house",
 		"keys": {
-			"build-time": 20
+			"build-time": 20,
+			"repair-time": 10
 		}
 	}
 }

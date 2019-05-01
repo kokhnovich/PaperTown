@@ -7,6 +7,12 @@
 #include <QPalette>
 #include "gamepropertyrenderer.h"
 
+const int DATA_KEY_PROP_FLAGS = 192;
+
+const int PROP_FLAG_WRECKED = 1;
+const int PROP_FLAG_TIMER = 2;
+const int PROP_FLAG_BORDER = 3;
+
 class GamePropertyRenderer_house : public GameAbstractPropertyRenderer
 {
     Q_OBJECT
@@ -53,10 +59,13 @@ public:
     
     GamePropertyRenderer_building(GameTextureRendererBase *renderer);
 protected:
+    void updateTimerWidget(GameObjectProperty *property, QWidget *widget);
+    
     QList<QGraphicsItem *> doDrawProperty(GameObjectProperty *property) override;
 private:
     QVector<QPixmap> images_;
     QVector<QPixmap> small_textures_;
+    QPixmap wrecked_icon_;
     QFont label_font_;
     
     int getTextureIndex(double stage) const;

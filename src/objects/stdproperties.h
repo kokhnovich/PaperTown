@@ -126,19 +126,21 @@ public:
     State state() const;
     qreal health() const;
     
-    /*
-     * The following routines work when the state is UnderConstruction or Repairing
-     */
     bool isBuildInProgress() const;
+    
+    /*
+     * The following routines work when the state is UnderConstruction or Repairing (i.e. isBuildInProgress() == true)
+     */
     qint64 totalBuildTime() const;
     qint64 remainingBuildTime() const;
     qint64 elapsedBuildTime() const;
     double buildProgress() const;
     
-    bool canStartRepairing();
-    bool startRepairing();
+    bool canStartRepairing() const;
     
     Q_INVOKABLE GameProperty_building();
+public slots:
+    bool startRepairing();
 protected slots:
     void buildFinished();
     void tryPrepare();

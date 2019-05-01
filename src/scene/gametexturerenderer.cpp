@@ -69,7 +69,7 @@ QList<QGraphicsItem *> GameTextureRenderer::drawObject(GameObject *object)
     for (QGraphicsItem *item : qAsConst(items)) {
         item->setData(DATA_KEY_GAMEOBJECT, QVariant::fromValue(object));
         item->setData(DATA_KEY_BASE_Z_VALUE, QVariant::fromValue(item->zValue()));
-        item->setZValue(item->zValue() + geometry()->zOrder(object->position(), info->priority));
+        item->setZValue(item->zValue() + geometry()->zOrderOffset(object->position()) + info->priority);
     }
 
     return items;
@@ -275,21 +275,38 @@ QGraphicsWidget *GameTextureRenderer::createSelectionControl(const GameObject *o
             border-color: #5E6596;
         }
         
-        QPushButton#delete-btn {
+        QPushButton[btn_style="red"] {
             border-color: #A58A87;
             background-color: rgb(248, 232, 228);
         }
         
-        QPushButton#delete-btn:pressed {
+        QPushButton[btn_style="red"]:pressed {
             background-color: #FF6F70;
         }
         
-        QPushButton#delete-btn:pressed:focus {
+        QPushButton[btn_style="red"]:pressed:focus {
             border-color: #872525;
         }
         
-        QPushButton#delete-btn:focus {
+        QPushButton[btn_style="red"]:focus {
             border-color: #C14848;
+        }
+        
+        QPushButton[btn_style="green"] {
+            border-color: #8AA587;
+            background-color: rgb(232, 248, 228);
+        }
+        
+        QPushButton[btn_style="green"]:pressed {
+            background-color: #6FFF70;
+        }
+        
+        QPushButton[btn_style="green"]:pressed:focus {
+            border-color: #258725;
+        }
+        
+        QPushButton[btn_style="green"]:focus {
+            border-color: #48C148;
         }
     )CSS"));
 
@@ -304,13 +321,14 @@ QGraphicsWidget *GameTextureRenderer::createSelectionControl(const GameObject *o
         }
     }
 
-    auto move_btn = new QPushButton("Move", parent_widget);
+    auto move_btn = new QPushButton(tr("Move"), parent_widget);
     move_btn->setObjectName(QStringLiteral("move-btn"));
     layout->addWidget(move_btn);
     connect(move_btn, &QPushButton::released, object, &GameObject::startMoving);
 
-    auto delete_btn = new QPushButton("Delete", parent_widget);
+    auto delete_btn = new QPushButton(tr("Delete"), parent_widget);
     delete_btn->setObjectName(QStringLiteral("delete-btn"));
+    delete_btn->setProperty("btn_style", QVariant("red"));
     layout->addWidget(delete_btn);
     connect(delete_btn, &QPushButton::clicked, object, &GameObject::removeSelf);
 

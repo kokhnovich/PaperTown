@@ -253,7 +253,7 @@ Util::Bool3 GameProperty_building::canMove() const
     return Util::False;
 }
 
-bool GameProperty_building::canStartRepairing()
+bool GameProperty_building::canStartRepairing() const
 {
     return !isBuildInProgress() && health() < REPAIR_THRESHOLD;
 }

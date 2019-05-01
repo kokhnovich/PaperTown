@@ -81,7 +81,12 @@ Coordinate GameSceneGeometry::scenePosToCoord(const QPointF& point) const
 
 qreal GameSceneGeometry::zOrder(const Coordinate& c, qreal priority) const
 {
-    return 4 * (c.x + 1) * fieldWidth() - 2 * c.y + priority;
+    return 4 * fieldWidth() + zOrderOffset(c) + priority;
+}
+
+qreal GameSceneGeometry::zOrderOffset(const Coordinate& c) const
+{
+    return 4 * c.x * fieldWidth() - 2 * c.y;
 }
 
 qreal GameSceneGeometry::borderZOrder(const Border &b) const
