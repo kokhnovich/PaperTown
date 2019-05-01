@@ -22,7 +22,7 @@ void GameTextureRenderer::setupScene()
     for (int i = 0; i < geometry()->fieldHeight(); ++i) {
         for (int j = 0; j < geometry()->fieldWidth(); ++j) {
             QBrush brush(QColor(255.0 / geometry()->fieldHeight() * i, 255.0 / geometry()->fieldWidth() * j, 0, 0));
-            QPen pen(QColor(0, 0, 0, 32));
+            QPen pen(QColor(224, 224, 224, 255));
             pen.setWidth(1.0);
             scene()->addPolygon(geometry()->coordinateToPoly({i, j}), pen, brush)->setZValue(-1e9);
         }

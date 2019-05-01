@@ -12,7 +12,7 @@ GamePropertyRenderer_house::GamePropertyRenderer_house(GameTextureRendererBase *
       image_(QStringLiteral(":/img/icon-population.png"))
 {
     label_font_.setWeight(QFont::Bold);
-    label_font_.setPixelSize(0.75 * image_.height());
+    label_font_.setPixelSize(static_cast<int>(0.75 * image_.height()));
     label_palette_.setColor(QPalette::WindowText, QColor(137, 48, 20));
 }
 
@@ -156,7 +156,7 @@ QWidget *GamePropertyRenderer_building::createControlWidget(GameObjectProperty *
     repair_btn->setObjectName(QStringLiteral("repair-btn"));
     layout->addWidget(repair_btn);
     repair_btn->setProperty("btn_style", "green");
-    connect(repair_btn, &QPushButton::pressed, property, &GameProperty_building::startRepairing);
+    connect(repair_btn, &QPushButton::clicked, property, &GameProperty_building::startRepairing);
     
     return widget;
 }
@@ -206,7 +206,7 @@ void GamePropertyRenderer_building::updateTimerWidget(GameObjectProperty *a_prop
         inner_widget->setProperty("__last_stage", QVariant::fromValue(next_stage));
     }
 
-    text_label->setText(QTime::fromMSecsSinceStartOfDay(property->remainingBuildTime()).toString("HH:mm:ss"));
+    text_label->setText(QTime::fromMSecsSinceStartOfDay(static_cast<int>(property->remainingBuildTime())).toString("HH:mm:ss"));
 }
 
 void GamePropertyRenderer_building::updateControlWidget(GameObjectProperty *a_property, QWidget *widget)
@@ -385,5 +385,5 @@ GamePropertyRenderer_building::GamePropertyRenderer_building(GameTextureRenderer
 {
     loadTextures();
     label_font_.setWeight(QFont::Bold);
-    label_font_.setPixelSize(0.75 * small_textures_[0].height());
+    label_font_.setPixelSize(static_cast<int>(0.75 * small_textures_[0].height()));
 }
