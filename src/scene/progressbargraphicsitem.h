@@ -15,6 +15,10 @@ public:
 private:
     QPixmap progress_bar_image_;
     qreal progress_;
+    
+    int filledWidth() const;
+    int imageWidth() const;
+    int imageHeight() const;
 };
 
 #endif // PROGRESSBARGRAPHICSITEM_H
