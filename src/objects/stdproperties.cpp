@@ -217,6 +217,30 @@ GameField *GameProperty_building::field() const
     return qobject_cast<GameField *>(gameObject()->field());
 }
 
+Util::Bool3 GameProperty_building::canSetPosition(const Coordinate &position) const
+{
+    if (!gameObject()->isPlaced()) {
+        return canGetBuilders() ? Util::Dont_Care : Util::False;
+    }
+    return Util::Dont_Care;
+}
+
+bool GameProperty_building::canGetBuilders() const
+{
+    return field()->resources()->canAcquire(GameResources::Builders, 1);
+}
+
+void GameProperty_building::getBuilders()
+{
+    bool res = field()->resources()->acquire(GameResources::Builders, 1);
+    Q_ASSERT(res);
+}
+
+void GameProperty_building::ungetBuilders()
+{
+    field()->resources()->add(GameResources::Builders, 1);
+}
+
 void GameProperty_building::buildFinished()
 {
     const auto cells = gameObject()->cells();
@@ -255,7 +279,7 @@ Util::Bool3 GameProperty_building::canMove() const
 
 bool GameProperty_building::canStartRepairing() const
 {
-    return !isBuildInProgress() && health() < REPAIR_THRESHOLD;
+    return !isBuildInProgress() && canGetBuilders() && health() < REPAIR_THRESHOLD;
 }
 
 Util::Bool3 GameProperty_building::conflictsWith(const GameObject *object) const
@@ -346,6 +370,9 @@ void GameProperty_building::setState(GameProperty_building::State new_state)
         cur_event_->finish();
         cur_event_ = nullptr;
     }
+    if (isBuildInProgress() && state_ != Unprepared) {
+        ungetBuilders();
+    }
     switch (new_state) {
     case Normal: {
         cur_event_ = new GameSignalEvent(GameEvent::Replay);
@@ -373,6 +400,9 @@ void GameProperty_building::setState(GameProperty_building::State new_state)
     }
     };
     state_ = new_state;
+    if (isBuildInProgress()) {
+        getBuilders();
+    }
     bool new_enabled = needsEnabled();
     if (was_enabled != new_enabled) {
         if (new_enabled) {
@@ -411,10 +441,17 @@ qint64 GameProperty_building::totalBuildTime() const
 
 void GameProperty_building::tryPrepare()
 {
-    if (state_ != Unprepared || field() == nullptr) {
+    if (state_ != Unprepared || field() == nullptr || !gameObject()->isPlaced()) {
         return;
     }
     setState(UnderConstruction);
+}
+
+GameProperty_building::~GameProperty_building()
+{
+    if (isBuildInProgress() && state_ != Unprepared) {
+        ungetBuilders();
+    }
 }
 
 GAME_PROPERTY_REGISTER("house", GameProperty_house)

@@ -149,12 +149,19 @@ protected slots:
 protected:
     Util::Bool3 canAutoEnable() const override;
     Util::Bool3 conflictsWith(const GameObject *object) const override;
+    Util::Bool3 canSetPosition(const Coordinate &position) const override;
     Util::Bool3 canMove() const override;
     
     void doInitialize() override;
     
     void setState(State new_state);
     bool needsEnabled() const;
+    
+    bool canGetBuilders() const;
+    void getBuilders();
+    void ungetBuilders();
+    
+    ~GameProperty_building() override;
 private:
     State state_ = Unprepared;
     qint64 total_build_time_ = 500;
