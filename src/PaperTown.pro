@@ -6,7 +6,9 @@
 
 QT       += core gui
 
-RESOURCES += img.qrc
+RESOURCES += \
+	../img/img.qrc \
+	../data/data.qrc
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     player_(nullptr),
     timer()
 {
-    textures_->loadFromFile(":/img/textures.json");
+    textures_->loadFromFile(":/data/textures.json");
     repository_->loadFromFile(":/data/objects.json");
     
     //auto human = field_->add("moving", "human", {field_->height() / 2, field_->width() / 2});
