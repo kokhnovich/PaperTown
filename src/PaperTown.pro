@@ -53,7 +53,8 @@ SOURCES += \
     scene/progressbargraphicsitem.cpp \
     scene/iconizedlabel.cpp \
     util/coordinates.cpp \
-    util/misc.cpp
+    util/misc.cpp \
+    core/gameresources.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -79,7 +80,8 @@ HEADERS += \
     scene/stdpropertyrenderers.h \
     scene/iconizedlabel.h \
     util/coordinates.h \
-    util/misc.h
+    util/misc.h \
+    core/gameresources.h
 
 FORMS += \
     mainwindow.ui
