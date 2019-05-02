@@ -7,7 +7,7 @@
 #include <QListWidgetItem>
 #include "core/eventscheduler.h"
 #include "scene/gamescene.h"
-#include "objects/stdproperties.h"
+#include "gameindicatorview.h"
 
 namespace Ui {
 class MainWindow;
@@ -31,8 +31,6 @@ private slots:
     void timerTimeout();
     void on_doubleSpinBox_valueChanged(double arg1);
 
-protected:
-    void keyPressEvent(QKeyEvent *event) override;
 private:
     void initObjects();
     
@@ -42,8 +40,8 @@ private:
     GameField *field_;
     GameTextureRepository *textures_;
     GameScene *scene;
-    GameProperty_human *player_;
-        
+    GameIndicatorRepository *indicators_;
+    
     QTimer timer;
     int event_count_ = 0;
     double old_scale_ = 0.5;

@@ -54,7 +54,9 @@ SOURCES += \
     scene/iconizedlabel.cpp \
     util/coordinates.cpp \
     util/misc.cpp \
-    core/gameresources.cpp
+    gameindicatorview.cpp \
+    core/gameindicators.cpp \
+    contrib/flowlayout/flowlayout.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -81,7 +83,9 @@ HEADERS += \
     scene/iconizedlabel.h \
     util/coordinates.h \
     util/misc.h \
-    core/gameresources.h
+    gameindicatorview.h \
+    core/gameindicators.h \
+    contrib/flowlayout/flowlayout.h
 
 FORMS += \
     mainwindow.ui

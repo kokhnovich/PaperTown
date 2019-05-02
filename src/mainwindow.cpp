@@ -12,9 +12,10 @@ MainWindow::MainWindow(QWidget *parent) :
     field_(new GameField(this, repository_, 80, 80)),
     textures_(new GameTextureRepository(this)),
     scene(new GameScene(this, repository_, field_, textures_)),
-    player_(nullptr),
+    indicators_(new GameIndicatorRepository(this)),
     timer()
 {
+    indicators_->loadFromFile(":/data/indicators.json");
     textures_->loadFromFile(":/data/textures.json");
     repository_->loadFromFile(":/data/objects.json");
     
@@ -23,6 +24,8 @@ MainWindow::MainWindow(QWidget *parent) :
     initObjects();
     
     ui->setupUi(this);
+    
+    ui->indicators->initialize(field_->indicators(), indicators_);
 
     ui->graphicsView->setScene(scene);
     ui->graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
@@ -42,33 +45,6 @@ MainWindow::MainWindow(QWidget *parent) :
     //this->grabKeyboard();
     
     connect(&timer, SIGNAL(timeout()), this, SLOT(timerTimeout()));
-}
-
-void MainWindow::keyPressEvent(QKeyEvent *event)
-{
-    QMainWindow::keyPressEvent(event);
-    if (player_ == nullptr) {
-        return;
-    }
-    if (event->key() == Qt::Key_Up) {
-        player_->setDirection(Util::Up);
-    }
-    if (event->key() == Qt::Key_Down) {
-        player_->setDirection(Util::Down);
-    }
-    if (event->key() == Qt::Key_Left) {
-        player_->setDirection(Util::Left);
-    }
-    if (event->key() == Qt::Key_Right) {
-        player_->setDirection(Util::Right);
-    }
-    if (event->key() == Qt::Key_Space) {
-        if (player_->isActive()) {
-            player_->stop();
-        } else {
-            player_->go();
-        }
-    }
 }
 
 void MainWindow::initObjects()

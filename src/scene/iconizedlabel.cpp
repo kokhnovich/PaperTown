@@ -9,6 +9,7 @@ const QPixmap *IconizedLabel::pixmap() const
 IconizedLabel::IconizedLabel()
 {
     layout_ = new QHBoxLayout(this);
+    layout_->setContentsMargins(0, 0, 0, 0);
 
     icon_label_ = new QLabel;
     layout_->addWidget(icon_label_);

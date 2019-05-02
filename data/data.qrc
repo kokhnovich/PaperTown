@@ -1,6 +1,7 @@
 <RCC>
   <qresource prefix="/data/">
     <file>objects.json</file>
-    <file>textures.json</file> 
+    <file>textures.json</file>
+    <file>indicators.json</file>
   </qresource>
 </RCC>

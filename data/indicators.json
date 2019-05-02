@@ -1,0 +1,14 @@
+{
+	"money": {
+		"icon": "bitcoin",
+		"format": "%.2f $",
+		"text": "Money",
+		"text-color": "black"
+	},
+	
+	"builders": {
+		"icon": "workers",
+		"format": "%.0f",
+		"text": "Amount of builders"
+	}
+} 

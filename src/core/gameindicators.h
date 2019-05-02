@@ -67,7 +67,7 @@ public:
     };
     Q_ENUM(Type);
     
-    struct CounterInfo {
+    struct Info {
         QString name;
         Type type;
         qreal value;
@@ -85,7 +85,7 @@ public:
     void addDynamic(GameDynamicIndicator *counter);
     
     QVector<QString> listNames() const;
-    QVector<CounterInfo> list() const;
+    QVector<Info> list() const;
     
     explicit GameIndicators(QObject *parent = nullptr);
 signals:

@@ -106,15 +106,15 @@ QVector<QString> GameIndicators::listNames() const
     QVector<QString> res;
     const auto counters = list();
     res.reserve(counters.size());
-    for (const CounterInfo &info : counters) {
+    for (const Info &info : counters) {
         res.append(info.name);
     }
     return res;
 }
 
-QVector<GameIndicators::CounterInfo> GameIndicators::list() const
+QVector<GameIndicators::Info> GameIndicators::list() const
 {
-    QVector<GameIndicators::CounterInfo> counters;
+    QVector<GameIndicators::Info> counters;
     for (int i = 1; i < GameResources::MaxType; ++i) {
         auto type = static_cast<GameResources::Type>(i);
         counters.append({GameResources::typeToName(type), Resource, resources_->get(type)});
