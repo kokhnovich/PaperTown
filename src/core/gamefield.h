@@ -25,6 +25,7 @@ public:
     int width() const;
     GameObjectFactory *factory() const;
     GameEventScheduler *scheduler() const;
+    GameIndicators *indicators() const override;
 signals:
     void added(GameObject *object);
     void removed(GameObject *object);
@@ -51,6 +52,7 @@ private:
     GameObject *selection_;
     
     GameEventScheduler *scheduler_;
+    GameIndicators *indicators_;
 };
 
 #endif // GAMEFIELD_H

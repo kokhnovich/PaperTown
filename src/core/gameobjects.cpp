@@ -173,6 +173,11 @@ void GameFieldBase::startObjectRemoval(GameObject *object)
     object->is_removing_ = true;
 }
 
+GameResources *GameFieldBase::resources() const
+{
+    return indicators()->resources();
+}
+
 GameFieldBase::GameFieldBase(QObject *parent) : QObject(parent)
 {}
 

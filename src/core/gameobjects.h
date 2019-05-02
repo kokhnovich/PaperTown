@@ -6,6 +6,7 @@
 #include <QHash>
 #include "../util/coordinates.h"
 #include "../util/misc.h"
+#include "gameindicators.h"
 
 class GameObject;
 class GameObjectProperty;
@@ -57,6 +58,8 @@ public:
     virtual bool canPlace(const GameObject *object, const Coordinate &pos) const = 0;
     virtual GameObject *add(GameObject *object) = 0;
     virtual void remove(GameObject *object) = 0;
+    virtual GameIndicators *indicators() const = 0;
+    GameResources *resources() const;
 protected:
     void attach(GameObject *object);
     void detach(GameObject *object);

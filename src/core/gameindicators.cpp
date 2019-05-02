@@ -1,5 +1,5 @@
 #include <QMetaEnum>
-#include "gameresources.h"
+#include "gameindicators.h"
 
 const qreal EPS = 1e-9;
 
@@ -9,26 +9,26 @@ void makePositive(double &value) {
     }
 }
 
-GameResources *GameCounters::resources() const
+GameResources *GameIndicators::resources() const
 {
     return resources_;
 }
 
-void GameCounters::addDynamicCounter(GameDynamicCounter *counter)
+void GameIndicators::addDynamic(GameDynamicIndicator *counter)
 {
     QString name = counter->name();
-    Q_ASSERT(!hasCounter(name));
+    Q_ASSERT(!contains(name));
     counter->setParent(this);
-    connect(counter, &GameDynamicCounter::updated, this, [ = ]() {
-        emit updated(DynamicCounter, name);
+    connect(counter, &GameDynamicIndicator::updated, this, [ = ]() {
+        emit updated(Dynamic, name);
     });
-    dynamic_counters_[name] = counter;
-    emit added(DynamicCounter, name);
+    dynamic_indicators_[name] = counter;
+    emit added(Dynamic, name);
 }
 
-void GameCounters::addToCounter(const QString &name, qreal delta)
+void GameIndicators::add(const QString &name, qreal delta)
 {
-    Type type = counterType(name);
+    Type type = getType(name);
     switch (type) {
     case Unassigned: {
         /*static_counters_[name] = delta;
@@ -40,13 +40,13 @@ void GameCounters::addToCounter(const QString &name, qreal delta)
         resources()->add(GameResources::nameToType(name), delta);
         break;
     }
-    case StaticCounter: {
-        static_counters_[name] += delta;
-        emit updated(StaticCounter, name);
+    case Static: {
+        static_indicators_[name] += delta;
+        emit updated(Static, name);
         break;
     }
-    case DynamicCounter: {
-        dynamic_counters_[name]->addToValue(delta);
+    case Dynamic: {
+        dynamic_indicators_[name]->addToValue(delta);
         break;
     }
     default: {
@@ -55,21 +55,21 @@ void GameCounters::addToCounter(const QString &name, qreal delta)
     };
 }
 
-GameCounters::Type GameCounters::counterType(const QString &name) const
+GameIndicators::Type GameIndicators::getType(const QString &name) const
 {
     if (GameResources::nameToType(name) != GameResources::Unknown) {
         return Resource;
     }
-    if (static_counters_.contains(name)) {
-        return StaticCounter;
+    if (static_indicators_.contains(name)) {
+        return Static;
     }
-    if (dynamic_counters_.contains(name)) {
-        return DynamicCounter;
+    if (dynamic_indicators_.contains(name)) {
+        return Dynamic;
     }
     return Unassigned;
 }
 
-GameCounters::GameCounters(QObject *parent)
+GameIndicators::GameIndicators(QObject *parent)
     : QObject(parent), resources_(new GameResources(this))
 {
     connect(resources_, &GameResources::updated, this, [ = ](GameResources::Type type) {
@@ -77,9 +77,9 @@ GameCounters::GameCounters(QObject *parent)
     });
 }
 
-qreal GameCounters::getCounter(const QString &name) const
+qreal GameIndicators::get(const QString &name) const
 {
-    Type type = counterType(name);
+    Type type = getType(name);
     if (type == Unassigned) {
         Q_ASSERT_X(false, "GameCounters::getCounter", "trying to get unassigned Counter");
         return 0.0;
@@ -87,24 +87,24 @@ qreal GameCounters::getCounter(const QString &name) const
     if (type == Resource) {
         return resources_->get(GameResources::nameToType(name));
     }
-    if (type == StaticCounter) {
-        return static_counters_[name];
+    if (type == Static) {
+        return static_indicators_[name];
     }
-    if (type == DynamicCounter) {
-        return dynamic_counters_[name]->value();
+    if (type == Dynamic) {
+        return dynamic_indicators_[name]->value();
     }
     Q_UNREACHABLE();
 }
 
-bool GameCounters::hasCounter(const QString &name) const
+bool GameIndicators::contains(const QString &name) const
 {
-    return counterType(name) != Unassigned;
+    return getType(name) != Unassigned;
 }
 
-QVector<QString> GameCounters::listCounterNames() const
+QVector<QString> GameIndicators::listNames() const
 {
     QVector<QString> res;
-    const auto counters = listCounters();
+    const auto counters = list();
     res.reserve(counters.size());
     for (const CounterInfo &info : counters) {
         res.append(info.name);
@@ -112,42 +112,42 @@ QVector<QString> GameCounters::listCounterNames() const
     return res;
 }
 
-QVector<GameCounters::CounterInfo> GameCounters::listCounters() const
+QVector<GameIndicators::CounterInfo> GameIndicators::list() const
 {
-    QVector<GameCounters::CounterInfo> counters;
+    QVector<GameIndicators::CounterInfo> counters;
     for (int i = 1; i < GameResources::MaxType; ++i) {
         auto type = static_cast<GameResources::Type>(i);
         counters.append({GameResources::typeToName(type), Resource, resources_->get(type)});
     }
-    for (auto iter = static_counters_.cbegin(); iter != static_counters_.cend(); ++iter) {
-        counters.append({iter.key(), StaticCounter, iter.value()});
+    for (auto iter = static_indicators_.cbegin(); iter != static_indicators_.cend(); ++iter) {
+        counters.append({iter.key(), Static, iter.value()});
     }
-    for (auto iter = dynamic_counters_.cbegin(); iter != dynamic_counters_.cend(); ++iter) {
-        counters.append({iter.key(), DynamicCounter, iter.value()->value()});
+    for (auto iter = dynamic_indicators_.cbegin(); iter != dynamic_indicators_.cend(); ++iter) {
+        counters.append({iter.key(), Dynamic, iter.value()->value()});
     }
     return counters;
 }
 
-void GameCounters::setCounter(const QString &name, qreal value)
+void GameIndicators::set(const QString &name, qreal value)
 {
-    Type type = counterType(name);
+    Type type = getType(name);
     switch (type) {
     case Unassigned: {
-        static_counters_[name] = value;
-        emit added(StaticCounter, name);
+        static_indicators_[name] = value;
+        emit added(Static, name);
         break;
     }
     case Resource: {
         resources()->set(GameResources::nameToType(name), value);
         break;
     }
-    case StaticCounter: {
-        static_counters_[name] = value;
-        emit updated(StaticCounter, name);
+    case Static: {
+        static_indicators_[name] = value;
+        emit updated(Static, name);
         break;
     }
-    case DynamicCounter: {
-        dynamic_counters_[name]->setValue(value);
+    case Dynamic: {
+        dynamic_indicators_[name]->setValue(value);
         break;
     }
     default: {
@@ -156,26 +156,26 @@ void GameCounters::setCounter(const QString &name, qreal value)
     };
 }
 
-void GameDynamicCounter::addToValue(qreal delta)
+void GameDynamicIndicator::addToValue(qreal delta)
 {
     setValue(value() + delta);
 }
 
-bool GameDynamicCounter::canSetValue() const
+bool GameDynamicIndicator::canSetValue() const
 {
     return false;
 }
 
-GameDynamicCounter::GameDynamicCounter(QString &name)
+GameDynamicIndicator::GameDynamicIndicator(QString &name)
     : name_(name)
 {}
 
-QString GameDynamicCounter::name() const
+QString GameDynamicIndicator::name() const
 {
     return name_;
 }
 
-void GameDynamicCounter::setValue(qreal)
+void GameDynamicIndicator::setValue(qreal)
 {
     Q_UNREACHABLE();
 }
@@ -223,7 +223,10 @@ void GameResources::enableInfiniteMode()
 
 GameResources::GameResources(QObject *parent)
     : QObject(parent)
-{}
+{
+    resources_[Money] = 10000.0;
+    resources_[Builders] = 3.0;
+}
 
 qreal GameResources::get(GameResources::Type type) const
 {

@@ -12,8 +12,14 @@ GameField::GameField(QObject *parent, GameObjectRepositoryBase *repository, int 
     static_list_(new GameList(this)),
     moving_list_(new GameList(this)),
     selection_(nullptr),
-    scheduler_(new GameEventScheduler(this))
+    scheduler_(new GameEventScheduler(this)),
+    indicators_(new GameIndicators(this))
 {}
+
+GameIndicators *GameField::indicators() const
+{
+    return indicators_;
+}
 
 GameEventScheduler *GameField::scheduler() const
 {
