@@ -37,6 +37,7 @@ public:
     virtual QWidget *createControlWidget(GameObjectProperty *property);
     virtual void updateControlWidget(GameObjectProperty *property, QWidget *widget);
     virtual void updatePropertyItem(QGraphicsItem *item, GameObjectProperty *property);
+    virtual Util::Bool3 canShowMainObject(GameObjectProperty *property);
 
     inline GameSceneGeometry *geometry() const { return renderer_->geometry(); }
     inline GameTextureRepository *textures() const { return renderer_->textures(); }
@@ -60,8 +61,11 @@ public:
     QWidget *createControlWidget(GameObjectProperty *property) override;
     void updateControlWidget(GameObjectProperty *property, QWidget *widget) override;
     void updatePropertyItem(QGraphicsItem *item, GameObjectProperty *property) override;
-
+    Util::Bool3 canShowMainObject(GameObjectProperty *property) override;
+    
     GamePropertyRenderer(GameTextureRendererBase *renderer, QObject *parent = nullptr);
+protected:
+    GameAbstractPropertyRenderer *acquireRenderer(GameObjectProperty *property);
 private:
     QString mangleWidgetName(GameObjectProperty *property);
     

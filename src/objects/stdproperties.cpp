@@ -37,7 +37,7 @@ HumanEvent::HumanEvent(GameProperty_human *property)
     this->attach(property_);
 }
 
-GameEvent::EventState HumanEvent::activate()
+GameEvent::State HumanEvent::activate()
 {
     if (!property_->isMoving()) {
         return GameEvent::Finish;
@@ -82,7 +82,7 @@ void GameProperty_human::updateDirection()
 
 void GameProperty_human::ensureEvent()
 {
-    if (field() == nullptr || !gameObject()->active() || !isActive()) {
+    if (field() == nullptr || !gameObject()->isPlaced() || !isActive()) {
         return;
     }
     if (event_ == nullptr) {
@@ -204,7 +204,7 @@ GameProperty_human::GameProperty_human()
 GameProperty_passable::GameProperty_passable()
 {}
 
-Util::Bool3 GameProperty_passable::conflitsWith(const GameObject *object) const
+Util::Bool3 GameProperty_passable::conflictsWith(const GameObject *object) const
 {
     if (object->type() == "moving") {
         return Util::False;
@@ -212,6 +212,212 @@ Util::Bool3 GameProperty_passable::conflitsWith(const GameObject *object) const
     return Util::Dont_Care;
 }
 
+GameField *GameProperty_building::field() const
+{
+    return qobject_cast<GameField *>(gameObject()->field());
+}
+
+void GameProperty_building::buildFinished()
+{
+    const auto cells = gameObject()->cells();
+    for (const Coordinate &cell : cells) {
+        const auto cell_objects = field()->getCell(cell);
+        for (GameObject *object : cell_objects) {
+            if (object->type() == "moving") {
+                Q_ASSERT(object != gameObject());
+                field()->remove(object);
+            }
+        }
+    }
+    setState(Normal);
+}
+
+double GameProperty_building::buildProgress() const
+{
+    if (state_ == Unprepared) {
+        return 0.0;
+    }
+    if (!isBuildInProgress()) {
+        return 1.0;
+    }
+    return 1.0 * elapsedBuildTime() / totalBuildTime();
+}
+
+Util::Bool3 GameProperty_building::canAutoEnable() const
+{
+    return Util::False;
+}
+
+Util::Bool3 GameProperty_building::canMove() const
+{
+    return Util::False;
+}
+
+bool GameProperty_building::canStartRepairing() const
+{
+    return !isBuildInProgress() && health() < REPAIR_THRESHOLD;
+}
+
+Util::Bool3 GameProperty_building::conflictsWith(const GameObject *object) const
+{
+    if (object->type() == "moving" && (state() == Unprepared || state() == UnderConstruction)) {
+        return Util::False;
+    }
+    return Util::Dont_Care;
+}
+
+void GameProperty_building::doInitialize()
+{
+    Q_ASSERT(gameObject()->type() == "static");
+    total_build_time_ = qMax(500, objectInfo()->keys["build-time"].toInt() * 1000);
+    if (objectInfo()->keys.contains("repair-time")) {
+        total_repair_time_ = qMax(500, objectInfo()->keys["repair-time"].toInt() * 1000);
+    } else {
+        total_repair_time_ = total_build_time_;
+    }
+    health_loss_ = objectInfo()->keys["health-loss"].toReal();
+    connect(gameObject(), &GameObject::placed, this, &GameProperty_building::tryPrepare);
+    connect(gameObject(), &GameObject::attached, this, &GameProperty_building::tryPrepare);
+}
+
+qint64 GameProperty_building::elapsedBuildTime() const
+{
+    return totalBuildTime() - remainingBuildTime();
+}
+
+GameProperty_building::GameProperty_building()
+    : GameObjectProperty()
+{}
+
+void GameProperty_building::handleLoop()
+{
+    if (state_ != Normal) {
+        return;
+    }
+    bool can_start_repairing = canStartRepairing();
+    health_ -= health_loss_;
+    if (health_ <= 1e-9) {
+        health_ = 0.0;
+        setState(Wrecked);
+    } else {
+        if (canStartRepairing() != can_start_repairing) {
+            emit updated();
+        }
+    }
+}
+
+qreal GameProperty_building::health() const
+{
+    return health_;
+}
+
+bool GameProperty_building::isBuildInProgress() const
+{
+    return state_ == Unprepared || state_ == UnderConstruction || state_ == Repairing;
+}
+
+bool GameProperty_building::needsEnabled() const
+{
+    return state_ == Normal;
+}
+
+qint64 GameProperty_building::remainingBuildTime() const
+{
+    Q_ASSERT(isBuildInProgress());
+    Q_CHECK_PTR(cur_event_);
+    return cur_event_->timeBeforeActivate();
+}
+
+void GameProperty_building::repairFinished()
+{
+    health_ = 1.0;
+    setState(Normal);
+}
+
+void GameProperty_building::setState(GameProperty_building::State new_state)
+{
+    if (state_ == new_state) {
+        return;
+    }
+    Q_ASSERT(new_state != Unprepared);
+    Q_ASSERT(field() != nullptr);
+    bool was_enabled = needsEnabled();
+    if (cur_event_ != nullptr) {
+        cur_event_->finish();
+        cur_event_ = nullptr;
+    }
+    switch (new_state) {
+    case Normal: {
+        cur_event_ = new GameSignalEvent(GameEvent::Replay);
+        cur_event_->attach(this);
+        connect(cur_event_, &GameSignalEvent::activated, this, &GameProperty_building::handleLoop);
+        field()->scheduler()->addEvent(cur_event_, 1000, 1000);
+        break;
+    }
+    case UnderConstruction: {
+        cur_event_ = new GameSignalEvent(GameEvent::Finish);
+        cur_event_->attach(this);
+        connect(cur_event_, &GameSignalEvent::activated, this, &GameProperty_building::buildFinished);
+        field()->scheduler()->addEvent(cur_event_, total_build_time_);
+        break;
+    }
+    case Repairing: {
+        cur_event_ = new GameSignalEvent(GameEvent::Finish);
+        cur_event_->attach(this);
+        connect(cur_event_, &GameSignalEvent::activated, this, &GameProperty_building::repairFinished);
+        field()->scheduler()->addEvent(cur_event_, total_repair_time_);
+        break;
+    }
+    default: {
+        // just ignore
+    }
+    };
+    state_ = new_state;
+    bool new_enabled = needsEnabled();
+    if (was_enabled != new_enabled) {
+        if (new_enabled) {
+            this->enableObject();
+        } else {
+            this->disableObject();
+        }
+    }
+    emit updated();
+}
+
+bool GameProperty_building::startRepairing()
+{
+    if (!canStartRepairing()) {
+        return false;
+    }
+    setState(Repairing);
+    return true;
+}
+
+GameProperty_building::State GameProperty_building::state() const
+{
+    return state_;
+}
+
+qint64 GameProperty_building::totalBuildTime() const
+{
+    if (state_ == UnderConstruction) {
+        return total_build_time_;
+    }
+    if (state_ == Repairing) {
+        return total_repair_time_;
+    }
+    Q_UNREACHABLE();
+}
+
+void GameProperty_building::tryPrepare()
+{
+    if (state_ != Unprepared || field() == nullptr) {
+        return;
+    }
+    setState(UnderConstruction);
+}
+
 GAME_PROPERTY_REGISTER("house", GameProperty_house)
 GAME_PROPERTY_REGISTER("human", GameProperty_human)
 GAME_PROPERTY_REGISTER("passable", GameProperty_passable)
+GAME_PROPERTY_REGISTER("building", GameProperty_building)

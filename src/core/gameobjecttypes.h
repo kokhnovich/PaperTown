@@ -20,7 +20,7 @@ class StaticObject : public GameObject
 public:
     StaticObject(const QString &name, GameObjectRepositoryBase *repository);
     QString type() const override;
-    bool conflitsWith(const GameObject *object) const override;
+    bool conflictsWith(const GameObject *object) const override;
 protected:
     bool internalCanMove() const override;
 };

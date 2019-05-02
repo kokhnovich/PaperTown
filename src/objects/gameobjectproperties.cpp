@@ -4,6 +4,7 @@
 
 bool GameObjectPropertyContainer::canSelect(bool last_value) const
 {
+    last_value = GameObjectProperty::canSelect(last_value);
     for (auto property : qAsConst(properties_)) {
         last_value = property->canSelect(last_value);
     }
@@ -12,6 +13,7 @@ bool GameObjectPropertyContainer::canSelect(bool last_value) const
 
 bool GameObjectPropertyContainer::canMove(bool last_value) const
 {
+    last_value = GameObjectProperty::canMove(last_value);
     for (auto property : qAsConst(properties_)) {
         last_value = property->canMove(last_value);
     }
@@ -20,18 +22,29 @@ bool GameObjectPropertyContainer::canMove(bool last_value) const
 
 bool GameObjectPropertyContainer::canSetPosition(bool last_value, const Coordinate &position) const
 {
+    last_value = GameObjectProperty::canSetPosition(last_value, position);
     for (auto property : qAsConst(properties_)) {
         last_value = property->canSetPosition(last_value, position);
     }
     return last_value;
 }
 
-bool GameObjectPropertyContainer::conflitsWith(bool last_value, const GameObject *object) const
+bool GameObjectPropertyContainer::conflictsWith(bool last_value, const GameObject *object) const
 {
+    last_value = GameObjectProperty::conflictsWith(last_value, object);
     for (auto property : qAsConst(properties_)) {
-        last_value = property->conflitsWith(last_value, object);
+        last_value = property->conflictsWith(last_value, object);
     }
     return last_value;
+}
+
+bool GameObjectPropertyContainer::canAutoEnable(bool last_value) const
+{
+    last_value = GameObjectProperty::canAutoEnable(last_value);
+    for (auto property : qAsConst(properties_)) {
+        last_value = property->canAutoEnable(last_value);
+    }
+    return last_value;    
 }
 
 GameObjectProperty *GameObjectPropertyContainer::castTo(const QMetaObject *meta)

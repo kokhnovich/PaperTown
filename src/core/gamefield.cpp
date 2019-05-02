@@ -32,7 +32,7 @@ GameObject *GameField::add(const QString& type, const QString& name, const Coord
         delete object;
         return nullptr;
     }
-    object->activate(pos);
+    object->place(pos);
     add(object);
     return object;
 }
@@ -79,7 +79,7 @@ GameObject *GameField::add(GameObject *object)
         selection_ = object;
     }
 
-    Q_ASSERT(!object->active() || canPlace(object, object->position()));
+    Q_ASSERT(!object->isPlaced() || canPlace(object, object->position()));
 
     if (object->type() == "ground") {
         ground_list_->add(object);

@@ -48,6 +48,8 @@ SOURCES += \
     scene/gamepropertyrenderer.cpp \
     scene/gameobjectrenderrepository.cpp \
     scene/stdpropertyrenderers.cpp \
+    scene/progressbargraphicsitem.cpp \
+    scene/iconizedlabel.cpp \
     util/coordinates.cpp \
     util/misc.cpp
 
@@ -71,7 +73,9 @@ HEADERS += \
     scene/gametexturerenderer.h \
     scene/gamepropertyrenderer.h \
     scene/gameobjectrenderrepository.h \
+    scene/progressbargraphicsitem.h \
     scene/stdpropertyrenderers.h \
+    scene/iconizedlabel.h \
     util/coordinates.h \
     util/misc.h
 

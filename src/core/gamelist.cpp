@@ -14,6 +14,7 @@ void GameList::remove(GameObject *object)
 
 void GameList::add(GameObject *object)
 {
+    Q_ASSERT(!data_.contains(object));
     data_.append(object);
 }
 

@@ -81,3 +81,40 @@ bool inBounds(int height, int width, const Coordinate &coord)
 {
     return 0 <= coord.x && coord.x < height && 0 <= coord.y && coord.y < width;
 }
+
+QVector<Border> calcBorders(const QVector<Coordinate> &points)
+{
+    const int MAX_SIZE = 64;
+    static bool has_point[MAX_SIZE+2][MAX_SIZE+2] = {};
+    
+    Rect bound = boundingRect(points);
+    Q_ASSERT(bound.bottom - bound.top + 1 <= MAX_SIZE);
+    Q_ASSERT(bound.right - bound.left + 1 <= MAX_SIZE);
+    
+    Coordinate offset = Coordinate(1, 1) - bound.topLeft();
+    QVector<Border> borders;
+    
+    for (Coordinate point : points) {
+        point += offset;
+        has_point[point.x][point.y] = true;
+    }
+    
+    for (Coordinate point : points) {
+        point += offset;
+        for (int dir_number = 0; dir_number < 4; ++dir_number) {
+            Util::Direction dir = static_cast<Util::Direction>(dir_number);
+            Coordinate neighbor_point = point.applyDirection(dir);
+            if (!has_point[neighbor_point.x][neighbor_point.y]) {
+                borders.append({point - offset, dir});
+            }
+        }
+    }
+    
+    for (Coordinate point : points) {
+        point += offset;
+        has_point[point.x][point.y] = false;
+    }
+
+    return borders;
+}
+

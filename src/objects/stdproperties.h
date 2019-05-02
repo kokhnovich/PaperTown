@@ -26,7 +26,7 @@ class HumanEvent : public GameEvent
 {
     Q_OBJECT
 public:
-    GameEvent::EventState activate() override;
+    GameEvent::State activate() override;
 protected:
     friend class GameProperty_human;
     
@@ -100,7 +100,70 @@ class GameProperty_passable : public GameObjectProperty
 public:
     Q_INVOKABLE GameProperty_passable();
 protected:
-    Util::Bool3 conflitsWith(const GameObject *object) const override;
+    Util::Bool3 conflictsWith(const GameObject *object) const override;
+};
+
+class GameProperty_building;
+
+/*
+ * Important note: all the times in this class are measured in milliseconds!
+ */
+class GameProperty_building : public GameObjectProperty
+{
+    Q_OBJECT
+public:
+    enum State {
+        Unprepared,
+        Normal,
+        UnderConstruction,
+        Wrecked,
+        Repairing
+    };
+    Q_ENUM(State);
+    
+    GameField *field() const;
+    
+    State state() const;
+    qreal health() const;
+    
+    bool isBuildInProgress() const;
+    
+    /*
+     * The following routines work when the state is UnderConstruction or Repairing (i.e. isBuildInProgress() == true)
+     */
+    qint64 totalBuildTime() const;
+    qint64 remainingBuildTime() const;
+    qint64 elapsedBuildTime() const;
+    double buildProgress() const;
+    
+    bool canStartRepairing() const;
+    
+    Q_INVOKABLE GameProperty_building();
+public slots:
+    bool startRepairing();
+protected slots:
+    void buildFinished();
+    void tryPrepare();
+    void repairFinished();
+    void handleLoop();
+protected:
+    Util::Bool3 canAutoEnable() const override;
+    Util::Bool3 conflictsWith(const GameObject *object) const override;
+    Util::Bool3 canMove() const override;
+    
+    void doInitialize() override;
+    
+    void setState(State new_state);
+    bool needsEnabled() const;
+private:
+    State state_ = Unprepared;
+    qint64 total_build_time_ = 500;
+    qint64 total_repair_time_ = 500;
+    GameSignalEvent *cur_event_ = nullptr;
+    qreal health_ = 1.0;
+    qreal health_loss_ = 0.0;
+    
+    const qreal REPAIR_THRESHOLD = 0.95;
 };
 
 #endif // STDPROPERTIES_H

@@ -84,19 +84,46 @@ Util::Bool3 GameObjectProperty::canSelect() const
     return Util::Dont_Care;
 }
 
-bool GameObjectProperty::canSetPosition(bool last_value, const Coordinate &) const
+bool GameObjectProperty::canSetPosition(bool last_value, const Coordinate &position) const
 {
-    return last_value;
+    return mergeBooleans(last_value, canSetPosition(position));
 }
 
-Util::Bool3 GameObjectProperty::conflitsWith(const GameObject *) const
+Util::Bool3 GameObjectProperty::canSetPosition(const Coordinate &) const
 {
     return Util::Dont_Care;
 }
 
-bool GameObjectProperty::conflitsWith(bool last_value, const GameObject* object) const
+bool GameObjectProperty::conflictsWith(bool last_value, const GameObject* object) const
 {
-    return mergeBooleans(last_value, conflitsWith(object));
+    return mergeBooleans(last_value, conflictsWith(object));
+}
+
+Util::Bool3 GameObjectProperty::conflictsWith(const GameObject *) const
+{
+    return Util::Dont_Care;
+}
+
+bool GameObjectProperty::canAutoEnable(bool last_value) const
+{
+    return mergeBooleans(last_value, canAutoEnable());
+}
+
+Util::Bool3 GameObjectProperty::canAutoEnable() const
+{
+    return Util::Dont_Care;
+}
+
+void GameObjectProperty::enableObject()
+{
+    Q_CHECK_PTR(game_object_);
+    game_object_->enable();
+}
+
+void GameObjectProperty::disableObject()
+{
+    Q_CHECK_PTR(game_object_);
+    game_object_->disable();
 }
 
 GameObjectProperty::GameObjectProperty()
@@ -163,6 +190,34 @@ const QVector<Coordinate> GameObject::cellsRelative() const
     return repository_->getInfo(type(), name())->cells;
 }
 
+bool GameObject::canAutoEnable() const
+{
+    bool res = true;
+    if (property_ != nullptr) {
+        res = property_->canAutoEnable(res);
+    }
+    return res;
+}
+
+void GameObject::disable()
+{
+    Q_ASSERT(is_enabled_);
+    is_enabled_ = false;
+    emit disabled();
+}
+
+void GameObject::enable()
+{
+    Q_ASSERT(!is_enabled_);
+    is_enabled_ = true;
+    emit enabled();
+}
+
+bool GameObject::isEnabled() const
+{
+    return is_enabled_;
+}
+
 bool GameObject::canSetPosition(const Coordinate &pos) const
 {
     bool res = true;
@@ -178,11 +233,12 @@ bool GameObject::canSetPosition(const Coordinate &pos) const
 GameObject::GameObject(const QString &name, GameObjectRepositoryBase *repository)
     : QObject(nullptr),
       name_(name),
-      active_(false),
-      activating_(false),
+      is_placed_(false),
+      is_placing_(false),
       is_selected_(false),
       is_moving_(false),
       is_removing_(false),
+      is_enabled_(false),
       position_(-65536, -65536),
       moving_position_(),
       field_(nullptr),
@@ -193,11 +249,11 @@ GameObject::GameObject(const QString &name, GameObjectRepositoryBase *repository
     startMoving();
 }
 
-bool GameObject::conflitsWith(const GameObject* object) const
+bool GameObject::conflictsWith(const GameObject* object) const
 {
     bool res = false;
     if (property_ != nullptr) {
-        res = property_->conflitsWith(res, object);
+        res = property_->conflictsWith(res, object);
     }
     return res;
 }
@@ -250,22 +306,22 @@ bool GameObject::applyMovingPosition()
         }
         return false;
     }
-    activating_ = true;
+    is_placing_ = true;
     if (is_selected_) {
         unselect();
     }
-    activating_ = false;
+    is_placing_ = false;
     setPosition(pos);
-    if (!active_) {
-        active_ = true;
+    if (!is_placed_) {
+        is_placed_ = true;
         emit placed(position_);
     }
     return true;
 }
 
-bool GameObject::activate(const Coordinate &pos)
+bool GameObject::place(const Coordinate &pos)
 {
-    Q_ASSERT(!active_);
+    Q_ASSERT(!is_placed_);
     Q_ASSERT(is_selected_ && is_moving_);
     setMovingPosition(pos);
     return applyMovingPosition();
@@ -294,7 +350,7 @@ bool GameObject::internalCanMove() const
 void GameObject::startMoving()
 {
     Q_ASSERT(is_selected_ && !is_moving_);
-    if (active() && !canMove()) {
+    if (isPlaced() && !canMove()) {
         return;
     }
     is_moving_ = true;
@@ -336,7 +392,7 @@ bool GameObject::internalCanSelect() const
 void GameObject::select()
 {
     Q_ASSERT(!is_selected_);
-    if (active() && !canSelect()) {
+    if (isPlaced() && !canSelect()) {
         return;
     }
     emit selecting();
@@ -371,7 +427,7 @@ void GameObject::unselect()
     }
     is_selected_ = false;
     emit unselected();
-    if (!active() && !activating_) {
+    if (!isPlaced() && !is_placing_) {
         decline();
     }
 }
@@ -388,7 +444,7 @@ QString GameObject::name() const
 
 Coordinate GameObject::position() const
 {
-    Q_ASSERT(active_);
+    Q_ASSERT(is_placed_);
     return position_;
 }
 
@@ -399,15 +455,15 @@ bool GameObject::setPosition(const Coordinate &pos)
     }
     Coordinate oldPosition = position_;
     position_ = pos;
-    if (active_) {
+    if (is_placed_) {
         emit moved(oldPosition, position_);
     }
     return true;
 }
 
-bool GameObject::active() const
+bool GameObject::isPlaced() const
 {
-    return active_;
+    return is_placed_;
 }
 
 int GameObject::x() const
@@ -445,7 +501,7 @@ bool objectsConflict(const GameObject *a, const GameObject *b)
     if (a == b) {
         return false;
     } else {
-        return a->conflitsWith(b) || b->conflitsWith(a);
+        return a->conflictsWith(b) || b->conflictsWith(a);
     }
 }
 

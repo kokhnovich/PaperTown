@@ -7,7 +7,7 @@ void GameFieldView::changeObjectSelectionState(GameObject *object, SelectionStat
 {
     renderer_->changeObjectSelectionState(object, objects_.values(object), last_state_, state);
 
-    if (state == SelectionState::Selected && object->active()) {
+    if (state == SelectionState::Selected && object->isPlaced()) {
         selection_control_ = renderer_->drawSelectionControl(object);
     } else if (selection_control_ != nullptr) {
         selection_control_->deleteLater();
@@ -61,6 +61,9 @@ void GameFieldView::addObject(GameObject *object)
     connect(object, &GameObject::placed, this, &GameFieldView::placeObject);
     connect(object, &GameObject::moved, this, &GameFieldView::moveObject);
     connect(object, &GameObject::updated, this, &GameFieldView::updateObject);
+    connect(object, &GameObject::enabled, this, &GameFieldView::updateObject);
+    connect(object, &GameObject::disabled, this, &GameFieldView::updateObject);
+    connect(object, &GameObject::updated, this, &GameFieldView::updateObject);
     connect(object, &GameObject::selected, this, &GameFieldView::selectObject);
     connect(object, &GameObject::unselected, this, &GameFieldView::unselectObject);
     connect(object, &GameObject::startedMoving, this, &GameFieldView::startMovingObject);
@@ -72,7 +75,7 @@ void GameFieldView::addObject(GameObject *object)
 
 void GameFieldView::putObject(GameObject *object)
 {
-    if (object->active()) {
+    if (object->isPlaced()) {
         auto items = renderer_->drawObject(object);
         for (QGraphicsItem *item : items) {
             objects_.insert(object, item);
@@ -137,6 +140,8 @@ void GameFieldView::removeObject(GameObject *object)
     disconnect(object, &GameObject::placed, this, &GameFieldView::placeObject);
     disconnect(object, &GameObject::moved, this, &GameFieldView::moveObject);
     disconnect(object, &GameObject::updated, this, &GameFieldView::updateObject);
+    disconnect(object, &GameObject::enabled, this, &GameFieldView::updateObject);
+    disconnect(object, &GameObject::disabled, this, &GameFieldView::updateObject);
     disconnect(object, &GameObject::selected, this, &GameFieldView::selectObject);
     disconnect(object, &GameObject::unselected, this, &GameFieldView::unselectObject);
     disconnect(object, &GameObject::startedMoving, this, &GameFieldView::startMovingObject);

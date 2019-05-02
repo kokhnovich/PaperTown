@@ -1,7 +1,7 @@
 #include <QDebug>
 #include "eventscheduler.h"
 
-GameEvent::EventState GameEvent::activate()
+GameEvent::State GameEvent::activate()
 {
     return GameEvent::Finish;
 }
@@ -16,12 +16,44 @@ void GameEvent::setInterval(qint64 interval)
     interval_ = interval;
 }
 
-void GameEvent::attach(QObject* object)
+void GameEvent::attach(QObject *object)
 {
     connect(object, &QObject::destroyed, this, [ = ]() {
         delete this;
     });
 }
+
+qint64 GameEvent::timeBeforeActivate() const
+{
+    Q_CHECK_PTR(scheduler_);
+    return scheduler_->timeBeforeActivate(this);
+}
+
+void GameEvent::setParent(GameEventScheduler *parent)
+{
+    QObject::setParent(parent);
+    scheduler_ = parent;
+}
+
+void GameEvent::finish()
+{
+    is_finished = true;
+}
+
+bool GameEvent::isFinished() const
+{
+    return is_finished;
+}
+
+GameEvent::State GameSignalEvent::activate()
+{
+    emit activated();
+    return type_;
+}
+
+GameSignalEvent::GameSignalEvent(GameEvent::State type)
+    : type_(type)
+{}
 
 bool operator<(const GameEventContainer &a, const GameEventContainer &b)
 {
@@ -76,6 +108,11 @@ void GameEventScheduler::start()
     active_ = true;
 }
 
+qint64 GameEventScheduler::timeBeforeActivate(const GameEvent *event) const
+{
+    return qMax(Q_INT64_C(0), event->time_point_ - realTimePoint());
+}
+
 void GameEventScheduler::update()
 {
     qint64 cur_time = realTimePoint();
@@ -90,8 +127,11 @@ void GameEventScheduler::update()
 
 void GameEventScheduler::activateEvent(GameEvent *event)
 {
-    auto state = event->activate();
-    emit eventActivated(event);
+    GameEvent::State state = GameEvent::Finish;
+    if (!event->isFinished()) {
+        state = event->activate();
+        emit eventActivated(event);
+    }
     if (event->interval() < 0) {
         state = GameEvent::Finish;
     }

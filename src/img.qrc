@@ -1,5 +1,10 @@
 <RCC>
   <qresource prefix="/">
+    <file>../img/icon-health.png</file>
+    <file>../img/progress-bars.png</file>
+    <file>../img/construction-horz.png</file>
+    <file>../img/construction-vert.png</file>
+    <file>../img/clock.png</file>
     <file>../img/tallhouse.l1.png</file>
     <file>../img/tallhouse.png</file>
     <file>../img/tallhouse.l2.png</file>
@@ -32,6 +37,7 @@
     <file>../img/angle-se.png</file>
     <file>../img/angle-sw.png</file>
     <file>../img/icon-population.png</file>
+    <file>../img/icon-repair.png</file>
     <file>../img/cinema.l1.png</file>
     <file>../img/cinema.l4.png</file>
     <file>../img/cinema.l3.png</file>

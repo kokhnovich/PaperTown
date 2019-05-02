@@ -41,6 +41,11 @@ QWidget *GameAbstractPropertyRenderer::createControlWidget(GameObjectProperty *)
 void GameAbstractPropertyRenderer::updateControlWidget(GameObjectProperty *, QWidget *)
 {}
 
+Util::Bool3 GameAbstractPropertyRenderer::canShowMainObject(GameObjectProperty *)
+{
+    return Util::Dont_Care;
+}
+
 GamePropertyRenderer::GamePropertyRenderer(GameTextureRendererBase *renderer, QObject *parent)
     : GameAbstractPropertyRenderer(renderer, parent)
 {}
@@ -48,12 +53,7 @@ GamePropertyRenderer::GamePropertyRenderer(GameTextureRendererBase *renderer, QO
 QWidget *GamePropertyRenderer::createControlWidget(GameObjectProperty *property)
 {
     if (!property->inherits("GameObjectPropertyContainer")) {
-        auto name = property->metaObject()->className();
-        if (!renderers_.contains(name)) {
-            qWarning() << "property type" << name << "has no renderer!";
-            return nullptr;
-        }
-        GameAbstractPropertyRenderer *renderer = renderers_.value(name);
+        GameAbstractPropertyRenderer *renderer = acquireRenderer(property);
         if (renderer == nullptr) {
             return nullptr;
         }
@@ -101,6 +101,34 @@ void GamePropertyRenderer::updateControlWidget(GameObjectProperty *property, QWi
     }
 }
 
+Util::Bool3 GamePropertyRenderer::canShowMainObject(GameObjectProperty* property)
+{
+    if (!property->inherits("GameObjectPropertyContainer")) {
+        GameAbstractPropertyRenderer *renderer = acquireRenderer(property);
+        if (renderer == nullptr) {
+            return Util::Dont_Care;
+        }
+        return renderer->canShowMainObject(property);
+    }
+    
+    Util::Bool3 res = Util::Dont_Care;
+    GameObjectPropertyContainer *container = qobject_cast<GameObjectPropertyContainer *>(property);
+    for (auto property: container->properties()) {
+        res = mergeBooleans(res, canShowMainObject(property));
+    }
+    return res;
+}
+
+GameAbstractPropertyRenderer *GamePropertyRenderer::acquireRenderer(GameObjectProperty *property)
+{
+    auto name = property->metaObject()->className();
+    if (!renderers_.contains(name)) {
+        qWarning() << "property type" << name << "has no renderer!";
+        return nullptr;
+    }
+    return renderers_.value(name);
+}
+
 QString GamePropertyRenderer::mangleWidgetName(GameObjectProperty* property)
 {
     return QStringLiteral("__GPR__prop-%1-%2")
@@ -111,12 +139,7 @@ QString GamePropertyRenderer::mangleWidgetName(GameObjectProperty* property)
 QList<QGraphicsItem *> GamePropertyRenderer::drawProperty(GameObjectProperty *property)
 {
     if (!property->inherits("GameObjectPropertyContainer")) {
-        auto name = property->metaObject()->className();
-        if (!renderers_.contains(name)) {
-            qWarning() << "property type" << name << "has no renderer!";
-            return {};
-        }
-        GameAbstractPropertyRenderer *renderer = renderers_.value(name);
+        GameAbstractPropertyRenderer *renderer = acquireRenderer(property);
         if (renderer == nullptr) {
             return {};
         }

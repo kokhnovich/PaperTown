@@ -17,6 +17,7 @@ public:
     };
 
     GameObjectRenderRepository(QObject *parent = nullptr);
+    qreal getTypePriority(const QString &type) const;
     void addRenderInfo(const QString &type, const QString &name, const RenderInfo &info);
     const RenderInfo *getRenderInfo(const QString &type, const QString &name) const;
     const RenderInfo *getRenderInfo(GameObject *object) const;

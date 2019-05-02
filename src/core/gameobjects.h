@@ -70,7 +70,8 @@ public:
     virtual bool canSelect(bool last_value) const;
     virtual bool canMove(bool last_value) const;
     virtual bool canSetPosition(bool last_value, const Coordinate &position) const;
-    virtual bool conflitsWith(bool last_value, const GameObject *object) const;
+    virtual bool conflictsWith(bool last_value, const GameObject *object) const;
+    virtual bool canAutoEnable(bool last_value) const;
     
     QString objectName() const;
     GameObject *gameObject() const;
@@ -86,9 +87,14 @@ public:
 protected:
     virtual Util::Bool3 canSelect() const;
     virtual Util::Bool3 canMove() const;
-    virtual Util::Bool3 conflitsWith(const GameObject *object) const;
+    virtual Util::Bool3 conflictsWith(const GameObject *object) const;
+    virtual Util::Bool3 canSetPosition(const Coordinate &position) const;
+    virtual Util::Bool3 canAutoEnable() const;
     
     virtual void doInitialize();
+    
+    void enableObject();
+    void disableObject();
 signals:
     void updated();
     void initializing();
@@ -124,10 +130,11 @@ public:
     int x() const;
     int y() const;
 
-    bool active() const;
+    bool isPlaced() const;
     bool isSelected() const;
     bool isMoving() const;
     bool isRemoving() const;
+    bool isEnabled() const;
 
     SelectionState getSelectionState() const;
     
@@ -145,16 +152,22 @@ public:
     bool canSetPosition(const Coordinate &pos) const;
     bool setPosition(const Coordinate &pos);
     
-    bool activate(const Coordinate &pos);
+    bool place(const Coordinate &pos);
     
-    virtual bool conflitsWith(const GameObject *object) const;
+    virtual bool conflictsWith(const GameObject *object) const;
     
     GameObjectInfo *objectInfo() const;
     
+    friend class GameObjectProperty;
     friend class GameFieldBase;
-protected:
-    virtual bool internalCanSelect() const;
-    virtual bool internalCanMove() const;
+public slots:
+    void removeSelf();
+
+    void select();
+    void unselect();
+
+    void startMoving();
+    void endMoving();
 signals:
     void placed(const Coordinate &position);
     void moved(const Coordinate &oldPosition, const Coordinate &newPosition);
@@ -167,25 +180,26 @@ signals:
     void endedMoving();
     void declined();
     void attached();
-public slots:
-    void removeSelf();
-
-    void select();
-    void unselect();
-
-    void startMoving();
-    void endMoving();
+    void enabled();
+    void disabled();
 protected:
-    void decline();
+    virtual bool internalCanSelect() const;
+    virtual bool internalCanMove() const;
+protected slots:
+    void enable();
+    void disable();
 private:
     void setField(GameFieldBase *field);
-
+    void decline();
+    bool canAutoEnable() const;
+    
     QString name_;
-    bool active_;
-    bool activating_;
+    bool is_placed_;
+    bool is_placing_;
     bool is_selected_;
     bool is_moving_;
     bool is_removing_;
+    bool is_enabled_;
     Coordinate position_;
     Coordinate moving_position_;
     GameFieldBase *field_;

@@ -81,7 +81,39 @@ Coordinate GameSceneGeometry::scenePosToCoord(const QPointF& point) const
 
 qreal GameSceneGeometry::zOrder(const Coordinate& c, qreal priority) const
 {
-    return (c.x + 1) * fieldWidth() - c.y + priority;
+    return 4 * fieldWidth() + zOrderOffset(c) + priority;
+}
+
+qreal GameSceneGeometry::zOrderOffset(const Coordinate& c) const
+{
+    return 4 * c.x * fieldWidth() - 2 * c.y;
+}
+
+qreal GameSceneGeometry::borderZOrder(const Border &b) const
+{
+    qreal res = zOrder(b.cell);
+    switch (b.side) {
+        case Util::Up: {
+            res -= 2 * fieldWidth();
+            break;
+        }
+        case Util::Down: {
+            res += 2 * fieldWidth();
+            break;
+        }
+        case Util::Left: {
+            res += 1;
+            break;
+        }
+        case Util::Right: {
+            res -= 1;
+            break;
+        }
+        default: {
+            Q_UNREACHABLE();
+        }
+    };
+    return res;
 }
 
 qreal GameSceneGeometry::selectionStateZDelta(SelectionState state) const
