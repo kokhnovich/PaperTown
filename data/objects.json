@@ -117,7 +117,9 @@
 			"population": [50, 75],
 			"build-time": 10,
 			"repair-time": 3,
-			"health-loss": 0.5
+			"health-loss": 0.5,
+			"cost": 500,
+			"repair-cost": 10
 		}
 	},
 	
@@ -139,7 +141,9 @@
 		"keys": {
 			"build-time": 20,
 			"repair-time": 10,
-			"health-loss": 0.01
+			"health-loss": 0.01,
+			"cost": 250,
+			"repair-cost": 100
 		}
 	}
 }

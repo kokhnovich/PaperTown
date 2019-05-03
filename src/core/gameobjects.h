@@ -120,7 +120,7 @@ class GameObject : public QObject
 public:
     Q_PROPERTY(Coordinate position READ position WRITE setPosition)
 
-    GameObject(const QString &name, GameObjectRepositoryBase *repository);
+    GameObject(const QString &name, GameObjectRepositoryBase *repository, GameIndicators *indicators);
     void initProperty(GameObjectProperty *property);
     
     QString name() const;
@@ -129,6 +129,8 @@ public:
     virtual const QVector<Coordinate> cellsRelative() const;
     const QVector<Coordinate> cells() const;
     GameObjectProperty *property() const;
+    
+    virtual qreal cost() const;
 
     int x() const;
     int y() const;
@@ -160,6 +162,9 @@ public:
     virtual bool conflictsWith(const GameObject *object) const;
     
     GameObjectInfo *objectInfo() const;
+    
+    GameIndicators *indicators() const;
+    GameResources *resources() const;
     
     friend class GameObjectProperty;
     friend class GameFieldBase;
@@ -208,6 +213,7 @@ private:
     GameFieldBase *field_;
     GameObjectProperty *property_;
     GameObjectRepositoryBase *repository_;
+    GameIndicators *indicators_;
 };
 
 bool objectsConflict(const GameObject *a, const GameObject *b);

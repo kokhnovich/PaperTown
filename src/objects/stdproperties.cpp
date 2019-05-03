@@ -227,18 +227,18 @@ Util::Bool3 GameProperty_building::canSetPosition(const Coordinate &) const
 
 bool GameProperty_building::canGetBuilders() const
 {
-    return field()->resources()->canAcquire(GameResources::Builders, 1);
+    return gameObject()->resources()->canAcquire(GameResources::Builders, 1);
 }
 
 void GameProperty_building::getBuilders()
 {
-    bool res = field()->resources()->acquire(GameResources::Builders, 1);
+    bool res = gameObject()->resources()->acquire(GameResources::Builders, 1);
     Q_ASSERT(res);
 }
 
 void GameProperty_building::ungetBuilders()
 {
-    field()->resources()->add(GameResources::Builders, 1);
+    gameObject()->resources()->add(GameResources::Builders, 1);
 }
 
 void GameProperty_building::buildFinished()
@@ -279,7 +279,10 @@ Util::Bool3 GameProperty_building::canMove() const
 
 bool GameProperty_building::canStartRepairing() const
 {
-    return !isBuildInProgress() && canGetBuilders() && health() < REPAIR_THRESHOLD;
+    return !isBuildInProgress()
+           && canGetBuilders()
+           && health() < REPAIR_THRESHOLD
+           && gameObject()->resources()->canAcquire(GameResources::Money, repairCost());
 }
 
 Util::Bool3 GameProperty_building::conflictsWith(const GameObject *object) const
@@ -288,6 +291,11 @@ Util::Bool3 GameProperty_building::conflictsWith(const GameObject *object) const
         return Util::False;
     }
     return Util::Dont_Care;
+}
+
+qreal GameProperty_building::repairCost() const
+{
+    return objectInfo()->keys["repair-cost"].toReal();
 }
 
 void GameProperty_building::doInitialize()
@@ -419,6 +427,7 @@ bool GameProperty_building::startRepairing()
     if (!canStartRepairing()) {
         return false;
     }
+    gameObject()->resources()->acquire(GameResources::Money, repairCost());
     setState(Repairing);
     return true;
 }
@@ -449,7 +458,7 @@ void GameProperty_building::tryPrepare()
 
 GameProperty_building::~GameProperty_building()
 {
-    if (isBuildInProgress() && state_ != Unprepared && field() != nullptr) {
+    if (isBuildInProgress() && state_ != Unprepared) {
         ungetBuilders();
     }
 }

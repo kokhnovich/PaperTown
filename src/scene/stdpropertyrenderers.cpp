@@ -399,7 +399,7 @@ void GamePropertyRenderer_building::updatePropertyItem(QGraphicsItem *item, Game
         }
         default: {
             // unknown item
-            //Q_UNREACHABLE();
+            Q_UNREACHABLE();
         }
     }
 }

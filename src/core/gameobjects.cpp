@@ -226,6 +226,9 @@ bool GameObject::isEnabled() const
 bool GameObject::canSetPosition(const Coordinate &pos) const
 {
     bool res = true;
+    if (!resources()->canAcquire(GameResources::Money, cost())) {
+        return false;
+    }
     if (field()) {
         res = field()->canPlace(this, pos);
     }
@@ -235,7 +238,7 @@ bool GameObject::canSetPosition(const Coordinate &pos) const
     return res;
 }
 
-GameObject::GameObject(const QString &name, GameObjectRepositoryBase *repository)
+GameObject::GameObject(const QString &name, GameObjectRepositoryBase *repository, GameIndicators *indicators)
     : QObject(nullptr),
       name_(name),
       is_placed_(false),
@@ -248,7 +251,8 @@ GameObject::GameObject(const QString &name, GameObjectRepositoryBase *repository
       moving_position_(),
       field_(nullptr),
       property_(nullptr),
-      repository_(repository)
+      repository_(repository),
+      indicators_(indicators)
 {
     select();
     startMoving();
@@ -273,7 +277,6 @@ void GameObject::initProperty(GameObjectProperty* property)
         property_->initialize(this);
     }
 }
-
 
 GameObjectInfo *GameObject::objectInfo() const
 {
@@ -460,6 +463,9 @@ bool GameObject::setPosition(const Coordinate &pos)
     }
     Coordinate oldPosition = position_;
     position_ = pos;
+    if (!is_placed_) {
+        resources()->acquire(GameResources::Money, cost());
+    }
     if (is_placed_) {
         emit moved(oldPosition, position_);
     }
@@ -490,8 +496,24 @@ void GameObject::setField(GameFieldBase *field)
 {
     Q_ASSERT(field_ == nullptr || field == nullptr);
     Q_ASSERT_X(field->repository() == repository_, "GameObject::setField", "field and object repository must be the same");
+    Q_ASSERT_X(field->indicators() == indicators_, "GameObject::setField", "field and object indicators must be the same");
     field_ = field;
     emit attached();
+}
+
+GameIndicators *GameObject::indicators() const
+{
+    return indicators_;
+}
+
+GameResources *GameObject::resources() const
+{
+    return indicators_->resources();
+}
+
+qreal GameObject::cost() const
+{
+    return objectInfo()->keys["cost"].toDouble();
 }
 
 GameObjectRepositoryBase *GameObject::repository() const

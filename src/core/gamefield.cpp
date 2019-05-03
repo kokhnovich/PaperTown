@@ -4,7 +4,8 @@
 GameField::GameField(QObject *parent, GameObjectRepositoryBase *repository, int height, int width) :
     GameFieldBase(parent),
     repository_(repository),
-    factory_(new GameObjectFactory(repository, this)),
+    indicators_(new GameIndicators(this)),
+    factory_(new GameObjectFactory(repository, indicators_, this)),
     ground_map_(new GameMap(this, height, width)),
     static_map_(new GameMap(this, height, width)),
     moving_map_(new GameMultimap(this, height, width)),
@@ -12,8 +13,7 @@ GameField::GameField(QObject *parent, GameObjectRepositoryBase *repository, int 
     static_list_(new GameList(this)),
     moving_list_(new GameList(this)),
     selection_(nullptr),
-    scheduler_(new GameEventScheduler(this)),
-    indicators_(new GameIndicators(this))
+    scheduler_(new GameEventScheduler(this))
 {}
 
 GameIndicators *GameField::indicators() const

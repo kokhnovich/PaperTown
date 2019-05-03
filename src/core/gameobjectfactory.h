@@ -8,10 +8,11 @@ class GameObjectFactory : public QObject
 {
     Q_OBJECT
 public:
-    GameObjectFactory(GameObjectRepositoryBase *repository, QObject *parent = nullptr);
+    GameObjectFactory(GameObjectRepositoryBase *repository, GameIndicators *indicators, QObject *parent = nullptr);
     GameObject *createObject(const QString &type, const QString &name);
 private:
     GameObjectRepositoryBase *repository_;
+    GameIndicators *indicators_;
 };
 
 #endif // GAMEOBJECTFACTORY_H

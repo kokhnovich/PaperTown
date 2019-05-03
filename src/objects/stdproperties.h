@@ -161,6 +161,8 @@ protected:
     void getBuilders();
     void ungetBuilders();
     
+    qreal repairCost() const;
+    
     ~GameProperty_building() override;
 private:
     State state_ = Unprepared;

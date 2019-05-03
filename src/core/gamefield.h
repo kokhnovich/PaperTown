@@ -39,6 +39,7 @@ protected slots:
     void objectUnselected();
 private:
     GameObjectRepositoryBase *repository_;
+    GameIndicators *indicators_;
     GameObjectFactory *factory_;
     
     GameMap *ground_map_;
@@ -52,7 +53,6 @@ private:
     GameObject *selection_;
     
     GameEventScheduler *scheduler_;
-    GameIndicators *indicators_;
 };
 
 #endif // GAMEFIELD_H
