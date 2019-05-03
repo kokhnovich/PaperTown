@@ -138,10 +138,9 @@ QWidget *GamePropertyRenderer_building::createControlWidget(GameObjectProperty *
     timer_layout->addWidget(text_label);
 
     QTimer *timer = new QTimer(widget);
-    timer->setInterval(100);
+    timer->setInterval(250);
     connect(timer, &QTimer::timeout, this, [ = ]() {
-        updateTimerWidget(property, widget);
-        updateHealthWidget(property, widget);
+        updateControlWidget(property, widget);
     });
     timer->start();
 
@@ -217,7 +216,6 @@ void GamePropertyRenderer_building::updateHealthWidget(GameProperty_building *pr
     health_display->setVisible(property->state() != GameProperty_building::UnderConstruction);
 }
 
-
 void GamePropertyRenderer_building::updateControlWidget(GameObjectProperty *a_property, QWidget *widget)
 {
     auto property = qobject_cast<GameProperty_building *>(a_property);
@@ -227,7 +225,9 @@ void GamePropertyRenderer_building::updateControlWidget(GameObjectProperty *a_pr
     
     auto repair_btn = widget->findChild<QPushButton *>(QStringLiteral("repair-btn"));
     Q_CHECK_PTR(repair_btn);
-    repair_btn->setVisible(property->canStartRepairing());
+    repair_btn->setVisible(property->state() == GameProperty_building::Normal ||
+                           property->state() == GameProperty_building::Wrecked);
+    repair_btn->setEnabled(property->canStartRepairing());
 }
 
 class BuildingTimerItem : public QGraphicsPixmapItem
@@ -242,7 +242,6 @@ public:
             updateTexture();
         });
         updateState();
-        updateTexture();
     
         QSize img_size = renderer_->images_[0].size();
         setOffset(-img_size.width() / 2, -img_size.height() / 2 - renderer_->geometry()->cellSize());
@@ -258,6 +257,7 @@ public:
             timer_->start();
         }
         setVisible(needs_active);
+        updateTexture();
     }
     
     int type() const override {
@@ -386,7 +386,6 @@ void GamePropertyRenderer_building::updatePropertyItem(QGraphicsItem *item, Game
         case PROP_FLAG_TIMER: {
             auto timer_item = qgraphicsitem_cast<BuildingTimerItem *>(item);
             Q_CHECK_PTR(timer_item);
-            timer_item->setVisible(property->isBuildInProgress());
             timer_item->updateState();
             break;
         }

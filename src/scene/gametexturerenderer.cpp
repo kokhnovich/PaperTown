@@ -298,6 +298,11 @@ QGraphicsWidget *GameTextureRenderer::createSelectionControl(const GameObject *o
             background-color: rgb(232, 248, 228);
         }
         
+        QPushButton:disabled {
+            border-color: #7A7A7A;
+            background-color: #E5E5E5;
+        }
+        
         QPushButton[btn_style="green"]:pressed {
             background-color: #6FFF70;
         }

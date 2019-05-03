@@ -217,7 +217,7 @@ GameField *GameProperty_building::field() const
     return qobject_cast<GameField *>(gameObject()->field());
 }
 
-Util::Bool3 GameProperty_building::canSetPosition(const Coordinate &position) const
+Util::Bool3 GameProperty_building::canSetPosition(const Coordinate &) const
 {
     if (!gameObject()->isPlaced()) {
         return canGetBuilders() ? Util::Dont_Care : Util::False;
@@ -449,7 +449,7 @@ void GameProperty_building::tryPrepare()
 
 GameProperty_building::~GameProperty_building()
 {
-    if (isBuildInProgress() && state_ != Unprepared) {
+    if (isBuildInProgress() && state_ != Unprepared && field() != nullptr) {
         ungetBuilders();
     }
 }
