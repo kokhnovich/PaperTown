@@ -175,12 +175,7 @@ GameObjectRepositoryBase *GameObjectProperty::repository() const
 
 void GameFieldBase::attach(GameObject *object)
 {
-    object->setField(this);
-}
-
-void GameFieldBase::detach(GameObject *object)
-{
-    object->setField(nullptr);
+    object->attach(this);
 }
 
 void GameFieldBase::startObjectRemoval(GameObject *object)
@@ -212,7 +207,7 @@ const QVector<Coordinate> GameObject::cells() const
 
 const QVector<Coordinate> GameObject::cellsRelative() const
 {
-    return repository_->getInfo(type(), name())->cells;
+    return repository()->getInfo(type(), name())->cells;
 }
 
 bool GameObject::canAutoEnable() const
@@ -265,7 +260,7 @@ bool GameObject::canSetPosition(const Coordinate &pos) const
 {
     bool res = true;
     if (field()) {
-        res = field()->canPlace(this, pos);
+        res = field()->canPutObject(this, pos);
     }
     if (property_) {
         res = property_->canSetPosition(res, pos);
@@ -273,7 +268,7 @@ bool GameObject::canSetPosition(const Coordinate &pos) const
     return res;
 }
 
-GameObject::GameObject(const QString &name, GameObjectRepositoryBase *repository, GameIndicators *indicators)
+GameObject::GameObject(const QString &name)
     : QObject(nullptr),
       name_(name),
       is_placed_(false),
@@ -282,12 +277,11 @@ GameObject::GameObject(const QString &name, GameObjectRepositoryBase *repository
       is_moving_(false),
       is_removing_(false),
       is_enabled_(false),
+      is_attached_(false),
       position_(-65536, -65536),
       moving_position_(),
       field_(nullptr),
-      property_(nullptr),
-      repository_(repository),
-      indicators_(indicators)
+      property_(nullptr)
 {
     select();
     startMoving();
@@ -302,9 +296,11 @@ bool GameObject::conflictsWith(const GameObject *object) const
     return res;
 }
 
-void GameObject::initProperty(GameObjectProperty *property)
+void GameObject::initialize(GameFieldBase *field, GameObjectProperty *property)
 {
     Q_ASSERT(property_ == nullptr);
+    Q_ASSERT(field_ == nullptr);
+    field_ = field;
     property_ = property;
     if (property_) {
         connect(property_, &GameObjectProperty::updated, this, &GameObject::updated);
@@ -315,7 +311,7 @@ void GameObject::initProperty(GameObjectProperty *property)
 
 GameObjectInfo *GameObject::objectInfo() const
 {
-    return repository_->getInfo(type(), name_);
+    return repository()->getInfo(type(), name_);
 }
 
 SelectionState GameObject::getSelectionState() const
@@ -328,7 +324,7 @@ SelectionState GameObject::getSelectionState() const
 
 void GameObject::removeSelf()
 {
-    if (field()) {
+    if (field() != nullptr) {
         field()->remove(this);
     }
 }
@@ -367,7 +363,7 @@ bool GameObject::place(const Coordinate &pos)
 {
     Q_ASSERT(!is_placed_);
     Q_ASSERT(is_selected_ && is_moving_);
-    if (!canPlace() || !canSetPosition(moving_position_)) {
+    if (!canPlace() || !canSetPosition(pos)) {
         return false;
     }
     setMovingPosition(pos);
@@ -543,23 +539,23 @@ GameFieldBase *GameObject::field() const
     return field_;
 }
 
-void GameObject::setField(GameFieldBase *field)
+void GameObject::attach(GameFieldBase *field)
 {
-    Q_ASSERT(field_ == nullptr || field == nullptr);
-    Q_ASSERT_X(field->repository() == repository_, "GameObject::setField", "field and object repository must be the same");
-    Q_ASSERT_X(field->indicators() == indicators_, "GameObject::setField", "field and object indicators must be the same");
-    field_ = field;
+    Q_CHECK_PTR(field_);
+    Q_ASSERT_X(field == field_, "GameObject::attach", "Attached field and parent field mismatch");
+    Q_ASSERT(!is_attached_);
+    is_attached_ = true;
     emit attached();
 }
 
 GameIndicators *GameObject::indicators() const
 {
-    return indicators_;
+    return field_->indicators();
 }
 
 GameResources *GameObject::resources() const
 {
-    return indicators_->resources();
+    return field_->resources();
 }
 
 qreal GameObject::cost() const
@@ -569,7 +565,7 @@ qreal GameObject::cost() const
 
 GameObjectRepositoryBase *GameObject::repository() const
 {
-    return repository_;
+    return field_->repository();
 }
 
 bool objectsConflict(const GameObject *a, const GameObject *b)

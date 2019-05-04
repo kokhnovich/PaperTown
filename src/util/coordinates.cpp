@@ -82,6 +82,12 @@ bool inBounds(int height, int width, const Coordinate &coord)
     return 0 <= coord.x && coord.x < height && 0 <= coord.y && coord.y < width;
 }
 
+QDebug operator<<(QDebug d, const Coordinate& c)
+{
+    d.nospace() << "Coordinate(" << c.x << ", " << c.y << ")";
+    return d.maybeSpace();
+}
+
 QVector<Border> calcBorders(const QVector<Coordinate> &points)
 {
     const int MAX_SIZE = 64;

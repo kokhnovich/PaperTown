@@ -1,7 +1,7 @@
 #include "gameobjecttypes.h"
 
-GroundObject::GroundObject(const QString &name, GameObjectRepositoryBase *repository, GameIndicators *indicators)
-    : GameObject(name, repository, indicators)
+GroundObject::GroundObject(const QString &name)
+    : GameObject(name)
 {}
 
 QString GroundObject::type() const
@@ -14,8 +14,8 @@ bool GroundObject::internalCanMove() const
     return false;
 }
 
-MovingObject::MovingObject(const QString &name, GameObjectRepositoryBase *repository, GameIndicators *indicators)
-    : GameObject(name, repository, indicators)
+MovingObject::MovingObject(const QString &name)
+    : GameObject(name)
 {}
 
 QString MovingObject::type() const
@@ -28,8 +28,8 @@ bool StaticObject::internalCanMove() const
     return true;
 }
 
-StaticObject::StaticObject(const QString &name, GameObjectRepositoryBase *repository, GameIndicators *indicators)
-    : GameObject(name, repository, indicators)
+StaticObject::StaticObject(const QString &name)
+    : GameObject(name)
 {}
 
 QString StaticObject::type() const

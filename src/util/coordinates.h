@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QVector>
+#include <QtDebug>
 #include "misc.h"
 
 struct Coordinate {
@@ -36,6 +37,8 @@ Coordinate operator+(Coordinate a, const Coordinate &b);
 Coordinate operator-(Coordinate a, const Coordinate &b);
 Coordinate &operator+=(Coordinate &a, const Coordinate &b);
 Coordinate &operator-=(Coordinate &a, const Coordinate &b);
+
+QDebug operator<<(QDebug d, const Coordinate &c);
 
 bool inBounds(int height, int width, const Coordinate &coord);
 

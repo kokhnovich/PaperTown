@@ -16,7 +16,7 @@ public:
     GameObject *add(const QString &type, const QString &name);
     GameObject *add(const QString &type, const QString &name, const Coordinate &pos);
     void remove(GameObject *object) override;
-    bool canPlace(const GameObject *object, const Coordinate &pos) const override;
+    bool canPutObject(const GameObject *object, const Coordinate &pos) const override;
     GameList *getByType(const QString &type) const;
     QVector<GameObject *> getCell(const Coordinate &pos) const;
     GameObjectRepositoryBase *repository() const override;

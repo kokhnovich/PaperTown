@@ -5,7 +5,7 @@ GameField::GameField(QObject *parent, GameObjectRepositoryBase *repository, int 
     GameFieldBase(parent),
     repository_(repository),
     indicators_(new GameIndicators(this)),
-    factory_(new GameObjectFactory(repository, indicators_, this)),
+    factory_(new GameObjectFactory(this, this)),
     ground_map_(new GameMap(this, height, width)),
     static_map_(new GameMap(this, height, width)),
     moving_map_(new GameMultimap(this, height, width)),
@@ -34,11 +34,11 @@ GameObject *GameField::add(const QString &type, const QString &name)
 GameObject *GameField::add(const QString& type, const QString& name, const Coordinate& pos)
 {
     GameObject *object = factory_->createObject(type, name);
-    if (!canPlace(object, pos)) {
+    bool res = object->place(pos);
+    if (!res) {
         delete object;
         return nullptr;
     }
-    object->place(pos);
     add(object);
     return object;
 }
@@ -85,7 +85,7 @@ GameObject *GameField::add(GameObject *object)
         selection_ = object;
     }
 
-    Q_ASSERT(!object->isPlaced() || canPlace(object, object->position()));
+    Q_ASSERT(!object->isPlaced() || canPutObject(object, object->position()));
 
     if (object->type() == "ground") {
         ground_list_->add(object);
@@ -133,10 +133,9 @@ void GameField::remove(GameObject *object)
     delete object;
 }
 
-bool GameField::canPlace(const GameObject *object, const Coordinate &pos) const
+bool GameField::canPutObject(const GameObject *object, const Coordinate &pos) const
 {
     bool res = false;
-    
     if (object->type() == "ground") {
         res = ground_map_->canPlace(object, pos);
     } else if (object->type() == "static") {

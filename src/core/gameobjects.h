@@ -57,14 +57,13 @@ class GameFieldBase : public QObject
 public:
     explicit GameFieldBase(QObject *parent);
     virtual GameObjectRepositoryBase *repository() const = 0;
-    virtual bool canPlace(const GameObject *object, const Coordinate &pos) const = 0;
+    virtual bool canPutObject(const GameObject *object, const Coordinate &pos) const = 0;
     virtual GameObject *add(GameObject *object) = 0;
     virtual void remove(GameObject *object) = 0;
     virtual GameIndicators *indicators() const = 0;
     GameResources *resources() const;
 protected:
     void attach(GameObject *object);
-    void detach(GameObject *object);
     void startObjectRemoval(GameObject *object);
     void finishObjectRemoval(GameObject *object);
 };
@@ -125,9 +124,9 @@ class GameObject : public QObject
 public:
     Q_PROPERTY(Coordinate position READ position WRITE setPosition)
 
-    GameObject(const QString &name, GameObjectRepositoryBase *repository, GameIndicators *indicators);
+    GameObject(const QString &name);
     
-    void initProperty(GameObjectProperty *property);
+    void initialize(GameFieldBase *field, GameObjectProperty *property);
     
     QString name() const;
     virtual QString type() const = 0;
@@ -207,7 +206,7 @@ protected slots:
     void enable();
     void disable();
 private:
-    void setField(GameFieldBase *field);
+    void attach(GameFieldBase *field);
     void decline();
     bool canAutoEnable() const;
     
@@ -218,12 +217,11 @@ private:
     bool is_moving_;
     bool is_removing_;
     bool is_enabled_;
+    bool is_attached_;
     Coordinate position_;
     Coordinate moving_position_;
     GameFieldBase *field_;
     GameObjectProperty *property_;
-    GameObjectRepositoryBase *repository_;
-    GameIndicators *indicators_;
 };
 
 bool objectsConflict(const GameObject *a, const GameObject *b);
