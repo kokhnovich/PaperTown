@@ -126,6 +126,8 @@ void GameField::remove(GameObject *object)
     if (object->isSelected()) {
         object->unselect();
     }
+    
+    finishObjectRemoval(object);
 
     emit removed(object);
     delete object;

@@ -1,6 +1,11 @@
 #include <QtDebug>
 #include "gameobjects.h"
 
+qreal GameObjectInfo::cost() const
+{
+    return keys["cost"].toReal();
+}
+
 GameObjectRepositoryBase::GameObjectRepositoryBase(QObject *parent) : QObject(parent)
 {}
 
@@ -173,6 +178,11 @@ void GameFieldBase::startObjectRemoval(GameObject *object)
     object->is_removing_ = true;
 }
 
+void GameFieldBase::finishObjectRemoval(GameObject* object)
+{
+    object->emitRemoved();
+}
+
 GameResources *GameFieldBase::resources() const
 {
     return indicators()->resources();
@@ -221,6 +231,24 @@ void GameObject::enable()
 bool GameObject::isEnabled() const
 {
     return is_enabled_;
+}
+
+qreal GameObject::removalCost() const
+{
+    bool ok = false;
+    qreal value = objectInfo()->keys["remove-cost"].toReal(&ok);
+    if (ok) {
+        return value;
+    }
+    return 0.75 * cost();
+}
+
+void GameObject::emitRemoved()
+{
+    if (isPlaced()) {
+        resources()->add(GameResources::Money, removalCost());
+    }
+    emit removed();
 }
 
 bool GameObject::canSetPosition(const Coordinate &pos) const
@@ -513,7 +541,7 @@ GameResources *GameObject::resources() const
 
 qreal GameObject::cost() const
 {
-    return objectInfo()->keys["cost"].toDouble();
+    return objectInfo()->cost();
 }
 
 GameObjectRepositoryBase *GameObject::repository() const

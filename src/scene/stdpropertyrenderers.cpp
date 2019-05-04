@@ -155,7 +155,7 @@ QWidget *GamePropertyRenderer_building::createControlWidget(GameObjectProperty *
     health_widget->setFont(health_font);
     health_widget->setText("?? %");
     
-    auto repair_btn = new QPushButton(tr("Repair"));
+    auto repair_btn = new QPushButton(tr("Repair\n(-%1 $)").arg(property->repairCost(), 0, 'f', 2));
     repair_btn->setObjectName(QStringLiteral("repair-btn"));
     layout->addWidget(repair_btn);
     repair_btn->setProperty("btn_style", "green");

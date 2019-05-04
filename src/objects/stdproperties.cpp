@@ -310,6 +310,7 @@ void GameProperty_building::doInitialize()
     health_loss_ = objectInfo()->keys["health-loss"].toReal();
     connect(gameObject(), &GameObject::placed, this, &GameProperty_building::tryPrepare);
     connect(gameObject(), &GameObject::attached, this, &GameProperty_building::tryPrepare);
+    connect(gameObject(), &GameObject::removed, this, &GameProperty_building::handleRemoval);
 }
 
 qint64 GameProperty_building::elapsedBuildTime() const
@@ -456,7 +457,7 @@ void GameProperty_building::tryPrepare()
     setState(UnderConstruction);
 }
 
-GameProperty_building::~GameProperty_building()
+void GameProperty_building::handleRemoval()
 {
     if (isBuildInProgress() && state_ != Unprepared) {
         ungetBuilders();

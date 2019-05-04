@@ -332,7 +332,7 @@ QGraphicsWidget *GameTextureRenderer::createSelectionControl(const GameObject *o
     layout->addWidget(move_btn);
     connect(move_btn, &QPushButton::released, object, &GameObject::startMoving);
 
-    auto delete_btn = new QPushButton(tr("Delete"), parent_widget);
+    auto delete_btn = new QPushButton(tr("Delete\n(+%1 $)").arg(object->removalCost(), 0, 'f', 2), parent_widget);
     delete_btn->setObjectName(QStringLiteral("delete-btn"));
     delete_btn->setProperty("btn_style", QVariant("red"));
     layout->addWidget(delete_btn);

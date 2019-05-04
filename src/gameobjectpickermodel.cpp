@@ -15,9 +15,10 @@ QVariant GameObjectPickerModel::data(const QModelIndex &index, int role) const
 {
     auto key = indexToObjectKey(index);
     auto value = repository_->getRenderInfo(key.type, key.name);
+    auto info = repository_->getInfo(key.type, key.name);
     switch (role) {
     case Qt::DisplayRole: {
-        return QVariant(value->caption);
+        return QVariant(QStringLiteral("%1\n(-%2 $)").arg(value->caption).arg(info->cost(), 0, 'f', 2));
     }
     case Qt::DecorationRole: {
         return QVariant(QIcon(textures_->getTexture(key.name)->pixmap));

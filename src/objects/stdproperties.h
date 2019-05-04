@@ -138,6 +138,8 @@ public:
     
     bool canStartRepairing() const;
     
+    qreal repairCost() const;
+    
     Q_INVOKABLE GameProperty_building();
 public slots:
     bool startRepairing();
@@ -146,6 +148,7 @@ protected slots:
     void tryPrepare();
     void repairFinished();
     void handleLoop();
+    void handleRemoval();
 protected:
     Util::Bool3 canAutoEnable() const override;
     Util::Bool3 conflictsWith(const GameObject *object) const override;
@@ -160,10 +163,6 @@ protected:
     bool canGetBuilders() const;
     void getBuilders();
     void ungetBuilders();
-    
-    qreal repairCost() const;
-    
-    ~GameProperty_building() override;
 private:
     State state_ = Unprepared;
     qint64 total_build_time_ = 500;

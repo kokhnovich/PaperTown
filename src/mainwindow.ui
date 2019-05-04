@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset theme="user-home-symbolic">
-    <normaloff>.</normaloff>.</iconset>
+    <normaloff>../../../../../../home/gepardo/.designer/backup</normaloff>../../../../../../home/gepardo/.designer/backup</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">

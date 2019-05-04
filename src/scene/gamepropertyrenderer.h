@@ -51,7 +51,7 @@ private:
     GameTextureRendererBase *renderer_;
 };
 
-class GamePropertyRenderer: public GameAbstractPropertyRenderer
+class GamePropertyRenderer : public GameAbstractPropertyRenderer
 {
     Q_OBJECT
 public:

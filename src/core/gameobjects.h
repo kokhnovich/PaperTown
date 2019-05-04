@@ -31,6 +31,8 @@ struct GameObjectKey {
 struct GameObjectInfo {
     QVector<Coordinate> cells;
     QVariantMap keys;
+    
+    qreal cost() const;
 };
 
 class GameObjectRepositoryBase : public QObject
@@ -64,6 +66,7 @@ protected:
     void attach(GameObject *object);
     void detach(GameObject *object);
     void startObjectRemoval(GameObject *object);
+    void finishObjectRemoval(GameObject *object);
 };
 
 class GameObjectProperty : public QObject
@@ -121,6 +124,7 @@ public:
     Q_PROPERTY(Coordinate position READ position WRITE setPosition)
 
     GameObject(const QString &name, GameObjectRepositoryBase *repository, GameIndicators *indicators);
+    
     void initProperty(GameObjectProperty *property);
     
     QString name() const;
@@ -131,6 +135,7 @@ public:
     GameObjectProperty *property() const;
     
     virtual qreal cost() const;
+    virtual qreal removalCost() const;
 
     int x() const;
     int y() const;
@@ -190,9 +195,11 @@ signals:
     void attached();
     void enabled();
     void disabled();
+    void removed();
 protected:
     virtual bool internalCanSelect() const;
     virtual bool internalCanMove() const;
+    void emitRemoved();
 protected slots:
     void enable();
     void disable();
