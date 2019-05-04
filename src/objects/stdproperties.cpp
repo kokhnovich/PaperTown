@@ -221,7 +221,7 @@ GameField *GameProperty_building::field() const
 Util::Bool3 GameProperty_building::canPlace() const
 {
     return canGetBuilders() ? Util::Dont_Care : Util::False;
-    }
+}
 
 bool GameProperty_building::canGetBuilders() const
 {
@@ -266,7 +266,7 @@ double GameProperty_building::buildProgress() const
 
 Util::Bool3 GameProperty_building::canAutoEnable() const
 {
-    return Util::False;
+    return gameObject()->resources()->isInfiniteMode() ? Util::Dont_Care : Util::False;
 }
 
 Util::Bool3 GameProperty_building::canMove() const
@@ -284,8 +284,10 @@ bool GameProperty_building::canStartRepairing() const
 
 Util::Bool3 GameProperty_building::conflictsWith(const GameObject *object) const
 {
-    if (object->type() == "moving" && (state() == Unprepared || state() == UnderConstruction)) {
-        return Util::False;
+    if (object->type() == "moving") {
+        if (state() == UnderConstruction || (state() == Unprepared && !gameObject()->resources()->isInfiniteMode())) {
+            return Util::False;
+        }
     }
     return Util::Dont_Care;
 }
@@ -452,7 +454,7 @@ void GameProperty_building::tryPrepare()
     if (state_ != Unprepared || !gameObject()->isPlaced()) {
         return;
     }
-    setState(UnderConstruction);
+    setState(gameObject()->resources()->isInfiniteMode() ? Normal : UnderConstruction);
 }
 
 void GameProperty_building::handleRemoval()
