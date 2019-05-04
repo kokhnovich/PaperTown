@@ -12,7 +12,10 @@
 		"properties": ["passable"],
 		"type": "static",
 		"cells": [[0, 0], [0, 1], [1, 0], [1, 1]],
-		"caption": "Tree (variant 2)"
+		"caption": "Tree (variant 2)",
+		"keys": {
+			"cost": 6000.0
+		}
 	},
 	
 	"cinema": {

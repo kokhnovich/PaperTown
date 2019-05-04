@@ -180,17 +180,14 @@ void GameDynamicIndicator::setValue(qreal)
     Q_UNREACHABLE();
 }
 
-bool GameResources::acquire(GameResources::Type type, qreal amount)
+void GameResources::acquire(GameResources::Type type, qreal amount)
 {
-    if (!canAcquire(type, amount)) {
-        return false;
-    }
+    Q_ASSERT(canAcquire(type, amount));
     if (!infinite_mode_) {
         resources_[type] -= amount;
         makePositive(resources_[type]);
         emit updated(type);
     }
-    return true;
 }
 
 void GameResources::add(GameResources::Type type, qreal delta)

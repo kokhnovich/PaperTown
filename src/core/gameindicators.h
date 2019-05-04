@@ -24,7 +24,7 @@ public:
     explicit GameResources(QObject *parent = nullptr);
     
     bool canAcquire(Type type, qreal amount) const;
-    bool acquire(Type type, qreal amount);
+    void acquire(Type type, qreal amount);
     void set(Type type, qreal value);
     void add(Type type, qreal delta);
     qreal get(Type type) const;

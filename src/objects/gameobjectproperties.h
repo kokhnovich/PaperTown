@@ -13,6 +13,7 @@ public:
     bool canSetPosition(bool last_value, const Coordinate &position) const override;
     bool conflictsWith(bool last_value, const GameObject *object) const override;
     bool canAutoEnable(bool last_value) const override;
+    bool canPlace(bool last_value) const override;
 
     void addProperty(GameObjectProperty *property);
 

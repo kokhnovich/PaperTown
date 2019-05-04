@@ -217,13 +217,10 @@ GameField *GameProperty_building::field() const
     return qobject_cast<GameField *>(gameObject()->field());
 }
 
-Util::Bool3 GameProperty_building::canSetPosition(const Coordinate &) const
+Util::Bool3 GameProperty_building::canPlace() const
 {
-    if (!gameObject()->isPlaced()) {
-        return canGetBuilders() ? Util::Dont_Care : Util::False;
+    return canGetBuilders() ? Util::Dont_Care : Util::False;
     }
-    return Util::Dont_Care;
-}
 
 bool GameProperty_building::canGetBuilders() const
 {
@@ -232,8 +229,7 @@ bool GameProperty_building::canGetBuilders() const
 
 void GameProperty_building::getBuilders()
 {
-    bool res = gameObject()->resources()->acquire(GameResources::Builders, 1);
-    Q_ASSERT(res);
+    gameObject()->resources()->acquire(GameResources::Builders, 1);
 }
 
 void GameProperty_building::ungetBuilders()

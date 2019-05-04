@@ -78,6 +78,7 @@ public:
     virtual bool canSetPosition(bool last_value, const Coordinate &position) const;
     virtual bool conflictsWith(bool last_value, const GameObject *object) const;
     virtual bool canAutoEnable(bool last_value) const;
+    virtual bool canPlace(bool last_value) const;
     
     QString objectName() const;
     GameObject *gameObject() const;
@@ -96,6 +97,7 @@ protected:
     virtual Util::Bool3 conflictsWith(const GameObject *object) const;
     virtual Util::Bool3 canSetPosition(const Coordinate &position) const;
     virtual Util::Bool3 canAutoEnable() const;
+    virtual Util::Bool3 canPlace() const;
     
     virtual void doInitialize();
     
@@ -150,7 +152,8 @@ public:
     
     virtual bool canSelect() const;
     virtual bool canMove() const;
-
+    virtual bool canPlace() const;
+    
     Coordinate movingPosition() const;
     void setMovingPosition(const Coordinate &c);
     bool canApplyMovingPosition() const;

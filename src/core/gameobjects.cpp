@@ -119,6 +119,16 @@ Util::Bool3 GameObjectProperty::canAutoEnable() const
     return Util::Dont_Care;
 }
 
+bool GameObjectProperty::canPlace(bool last_value) const
+{
+    return mergeBooleans(last_value, canPlace());
+}
+
+Util::Bool3 GameObjectProperty::canPlace() const
+{
+    return Util::Dont_Care;
+}
+
 void GameObjectProperty::enableObject()
 {
     Q_CHECK_PTR(game_object_);
@@ -254,9 +264,6 @@ void GameObject::emitRemoved()
 bool GameObject::canSetPosition(const Coordinate &pos) const
 {
     bool res = true;
-    if (!resources()->canAcquire(GameResources::Money, cost())) {
-        return false;
-    }
     if (field()) {
         res = field()->canPlace(this, pos);
     }
@@ -336,7 +343,7 @@ bool GameObject::applyMovingPosition()
 {
     Q_ASSERT(is_moving_);
     Coordinate pos = moving_position_;
-    if (!canSetPosition(pos)) {
+    if (!canApplyMovingPosition()) {
         if (is_selected_) {
             unselect();
         }
@@ -350,6 +357,7 @@ bool GameObject::applyMovingPosition()
     setPosition(pos);
     if (!is_placed_) {
         is_placed_ = true;
+        resources()->acquire(GameResources::Money, cost());
         emit placed(position_);
     }
     return true;
@@ -359,6 +367,9 @@ bool GameObject::place(const Coordinate &pos)
 {
     Q_ASSERT(!is_placed_);
     Q_ASSERT(is_selected_ && is_moving_);
+    if (!canPlace() || !canSetPosition(moving_position_)) {
+        return false;
+    }
     setMovingPosition(pos);
     return applyMovingPosition();
 }
@@ -366,6 +377,9 @@ bool GameObject::place(const Coordinate &pos)
 bool GameObject::canApplyMovingPosition() const
 {
     Q_ASSERT(is_moving_);
+    if (!is_placed_ && !canPlace()) {
+        return false;
+    }
     return canSetPosition(moving_position_);
 }
 
@@ -374,6 +388,18 @@ bool GameObject::canMove() const
     bool res = internalCanMove();
     if (property_ != nullptr) {
         res = property_->canMove(res);
+    }
+    return res;
+}
+
+bool GameObject::canPlace() const
+{
+    if  (!resources()->canAcquire(GameResources::Money, cost())) {
+        return false;
+    }
+    bool res = true;
+    if (property() != nullptr) {
+        res = property()->canPlace(res);
     }
     return res;
 }
@@ -491,9 +517,6 @@ bool GameObject::setPosition(const Coordinate &pos)
     }
     Coordinate oldPosition = position_;
     position_ = pos;
-    if (!is_placed_) {
-        resources()->acquire(GameResources::Money, cost());
-    }
     if (is_placed_) {
         emit moved(oldPosition, position_);
     }

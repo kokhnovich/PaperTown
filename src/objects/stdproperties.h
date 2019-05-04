@@ -152,7 +152,7 @@ protected slots:
 protected:
     Util::Bool3 canAutoEnable() const override;
     Util::Bool3 conflictsWith(const GameObject *object) const override;
-    Util::Bool3 canSetPosition(const Coordinate &position) const override;
+    Util::Bool3 canPlace() const override;
     Util::Bool3 canMove() const override;
     
     void doInitialize() override;

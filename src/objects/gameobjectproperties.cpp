@@ -29,6 +29,15 @@ bool GameObjectPropertyContainer::canSetPosition(bool last_value, const Coordina
     return last_value;
 }
 
+bool GameObjectPropertyContainer::canPlace(bool last_value) const
+{
+    last_value = GameObjectProperty::canPlace(last_value);
+    for (auto property : qAsConst(properties_)) {
+        last_value = property->canPlace(last_value);
+    }
+    return last_value;    
+}
+
 bool GameObjectPropertyContainer::conflictsWith(bool last_value, const GameObject *object) const
 {
     last_value = GameObjectProperty::conflictsWith(last_value, object);
