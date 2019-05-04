@@ -99,7 +99,7 @@ Util::Bool3 GameObjectProperty::canSetPosition(const Coordinate &) const
     return Util::Dont_Care;
 }
 
-bool GameObjectProperty::conflictsWith(bool last_value, const GameObject* object) const
+bool GameObjectProperty::conflictsWith(bool last_value, const GameObject *object) const
 {
     return mergeBooleans(last_value, conflictsWith(object));
 }
@@ -188,7 +188,7 @@ void GameFieldBase::startObjectRemoval(GameObject *object)
     object->is_removing_ = true;
 }
 
-void GameFieldBase::finishObjectRemoval(GameObject* object)
+void GameFieldBase::finishObjectRemoval(GameObject *object)
 {
     object->emitRemoved();
 }
@@ -293,7 +293,7 @@ GameObject::GameObject(const QString &name, GameObjectRepositoryBase *repository
     startMoving();
 }
 
-bool GameObject::conflictsWith(const GameObject* object) const
+bool GameObject::conflictsWith(const GameObject *object) const
 {
     bool res = false;
     if (property_ != nullptr) {
@@ -302,7 +302,7 @@ bool GameObject::conflictsWith(const GameObject* object) const
     return res;
 }
 
-void GameObject::initProperty(GameObjectProperty* property)
+void GameObject::initProperty(GameObjectProperty *property)
 {
     Q_ASSERT(property_ == nullptr);
     property_ = property;
@@ -394,7 +394,7 @@ bool GameObject::canMove() const
 
 bool GameObject::canPlace() const
 {
-    if  (!resources()->canAcquire(GameResources::Money, cost())) {
+    if (!resources()->canAcquire(GameResources::Money, cost())) {
         return false;
     }
     bool res = true;
