@@ -82,7 +82,8 @@ void GameProperty_human::updateDirection()
 
 void GameProperty_human::ensureEvent()
 {
-    if (field() == nullptr || !gameObject()->isPlaced() || !isActive()) {
+    Q_CHECK_PTR(field());
+    if (!gameObject()->isPlaced() || !isActive()) {
         return;
     }
     if (event_ == nullptr) {
@@ -139,7 +140,7 @@ void GameProperty_human::doInitialize()
 {
     GameObjectProperty::doInitialize();
     setDirection(Util::Direction(rnd() % 4));
-    connect(gameObject(), &GameObject::attached, this, &GameProperty_human::ensureEvent);
+    ensureEvent();
     connect(gameObject(), &GameObject::placed, this, &GameProperty_human::ensureEvent);
     go();
 }
@@ -304,8 +305,8 @@ void GameProperty_building::doInitialize()
         total_repair_time_ = total_build_time_;
     }
     health_loss_ = objectInfo()->keys["health-loss"].toReal();
+    tryPrepare();
     connect(gameObject(), &GameObject::placed, this, &GameProperty_building::tryPrepare);
-    connect(gameObject(), &GameObject::attached, this, &GameProperty_building::tryPrepare);
     connect(gameObject(), &GameObject::removed, this, &GameProperty_building::handleRemoval);
 }
 
@@ -447,7 +448,8 @@ qint64 GameProperty_building::totalBuildTime() const
 
 void GameProperty_building::tryPrepare()
 {
-    if (state_ != Unprepared || field() == nullptr || !gameObject()->isPlaced()) {
+    Q_CHECK_PTR(field());
+    if (state_ != Unprepared || !gameObject()->isPlaced()) {
         return;
     }
     setState(UnderConstruction);

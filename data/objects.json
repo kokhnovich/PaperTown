@@ -4,7 +4,10 @@
 		"properties": ["passable"],
 		"type": "static",
 		"cells": [[0, 0], [0, 1], [1, 0], [1, 1]],
-		"caption": "Tree (variant 1)"
+		"caption": "Tree (variant 1)",
+		"keys": {
+			"cost": 100
+		}
 	},
 	
 	"tree2": {
@@ -14,7 +17,7 @@
 		"cells": [[0, 0], [0, 1], [1, 0], [1, 1]],
 		"caption": "Tree (variant 2)",
 		"keys": {
-			"cost": 6000.0
+			"cost": 100
 		}
 	},
 	
