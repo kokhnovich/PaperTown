@@ -72,6 +72,13 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
+            <widget class="QPushButton" name="menuBtn">
+             <property name="text">
+              <string>Main menu</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QListView" name="listView">
              <property name="minimumSize">
               <size>

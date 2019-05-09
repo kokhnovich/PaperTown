@@ -53,7 +53,8 @@ SOURCES += \
     scene/progressbargraphicsitem.cpp \
     scene/iconizedlabel.cpp \
     util/coordinates.cpp \
-    util/misc.cpp
+    util/misc.cpp \
+    mainmenu.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -79,10 +80,12 @@ HEADERS += \
     scene/stdpropertyrenderers.h \
     scene/iconizedlabel.h \
     util/coordinates.h \
-    util/misc.h
+    util/misc.h \
+    mainmenu.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    mainmenu.ui
 
 SUBDIRS += \
     PaperTown.pros
