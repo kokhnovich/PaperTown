@@ -31,9 +31,9 @@ void GameIndicators::add(const QString &name, qreal delta)
     Type type = getType(name);
     switch (type) {
     case Unassigned: {
-        /*static_counters_[name] = delta;
-        emit added(StaticCounter, name);*/
-        Q_ASSERT_X(false, "GameCounters::addToCounter", "trying to add to an unassigned Counter");
+        static_indicators_[name] = delta;
+        emit added(Static, name);
+        //Q_ASSERT_X(false, "GameCounters::add", "trying to add to an unassigned Indicator");
         break;
     }
     case Resource: {

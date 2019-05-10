@@ -18,6 +18,7 @@ protected:
     void doInitialize() override;
 private:
     int population_;
+    bool active_;
 };
 
 class GameProperty_human;

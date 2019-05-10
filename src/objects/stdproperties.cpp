@@ -19,10 +19,26 @@ void GameProperty_house::doInitialize()
     } else {
         population_ = population_data.toInt();
     }
+    
+    auto activate = [ = ]() {
+        if (active_ || !gameObject()->isEnabled() || !gameObject()->isPlaced()) {
+            return;
+        }
+        active_ = true;
+        gameObject()->indicators()->add("population", population_);
+    };
+    
+    connect(gameObject(), &GameObject::placed, this, activate);
+    connect(gameObject(), &GameObject::enabled, this, activate);
+    connect(gameObject(), &GameObject::removed, this, [ = ]() {
+        if (active_) {
+            gameObject()->indicators()->add("population", -population_);
+        }
+    });
 }
 
 GameProperty_house::GameProperty_house()
-    : GameObjectProperty()
+    : GameObjectProperty(), active_(false)
 {}
 
 int GameProperty_house::population()

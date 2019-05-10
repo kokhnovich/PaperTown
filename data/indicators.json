@@ -10,5 +10,11 @@
 		"icon": "workers",
 		"format": "%.0f",
 		"text": "Amount of builders"
+	},
+	
+	"population": {
+		"icon": "population",
+		"format": "%.0f",
+		"text": "Population"
 	}
-} 
+}
