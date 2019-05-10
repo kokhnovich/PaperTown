@@ -1,23 +1,25 @@
 {
 	"tree1": {
 		"textures": ["tree1"],
-		"properties": ["passable"],
+		"properties": ["passable", "ecological"],
 		"type": "static",
 		"cells": [[0, 0], [0, 1], [1, 0], [1, 1]],
 		"caption": "Tree (variant 1)",
 		"keys": {
-			"cost": 100
+			"cost": 100,
+			"tree-points": 1
 		}
 	},
 	
 	"tree2": {
 		"textures": ["tree2"],
-		"properties": ["passable"],
+		"properties": ["passable", "ecological"],
 		"type": "static",
 		"cells": [[0, 0], [0, 1], [1, 0], [1, 1]],
 		"caption": "Tree (variant 2)",
 		"keys": {
-			"cost": 100
+			"cost": 100,
+			"tree-points": 1
 		}
 	},
 	
@@ -155,7 +157,7 @@
 	
 	"choco-factory": {
 		"textures": ["choco-factory.l*"],
-		"properties": ["building"],
+		"properties": ["building", "ecological"],
 		"type": "static",
 		"cells": [
 			[0, 0], [0, 1], [0, 2], [0, 3],
@@ -166,13 +168,14 @@
 		"caption": "Chocolate factory",
 		"keys": {
 			"build-time": 5,
-			"repair-time": 25
+			"repair-time": 25,
+			"plant-points": 3
 		}
 	},
 
 	"lemonade-factory": {
 		"textures": ["lemonade-factory.l*"],
-		"properties": ["building"],
+		"properties": ["building", "ecological"],
 		"type": "static",
 		"cells": [
 			                  [0, 0], [0, 1], [0, 2], [0, 3],
@@ -185,7 +188,8 @@
 		"caption": "Lemonade factory",
 		"keys": {
 			"build-time": 5,
-			"repair-time": 25
+			"repair-time": 25,
+			"plant-points": 5
 		}
 	}
 }

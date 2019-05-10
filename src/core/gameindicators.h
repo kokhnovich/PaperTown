@@ -83,6 +83,7 @@ public:
     void add(const QString &name, qreal delta);
     
     void addDynamic(GameDynamicIndicator *indicator);
+    GameDynamicIndicator *getDynamic(const QString &name) const;
     
     QVector<QString> listNames() const;
     QVector<Info> list() const;

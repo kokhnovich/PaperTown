@@ -9,9 +9,67 @@ const int HUMAN_ANIMATION_STEP = 80;
 // FIXME : use better random generator!
 std::mt19937 rnd(QDateTime::currentMSecsSinceEpoch());
 
-void GameProperty_house::doInitialize()
+void GameBuildingAddonProperty::doInitialize()
 {
     GameObjectProperty::doInitialize();
+    
+    auto activate = [ = ]() {
+        if (active_ || !gameObject()->isEnabled() || !gameObject()->isPlaced()) {
+            return;
+        }
+        active_ = true;
+        emit activated();
+    };
+    
+    activate();
+    connect(gameObject(), &GameObject::placed, this, activate);
+    connect(gameObject(), &GameObject::enabled, this, activate);
+    connect(gameObject(), &GameObject::removed, this, [ = ]() {
+        if (active_) {
+            emit deactivated();
+        }
+    });
+}
+
+GameBuildingAddonProperty::GameBuildingAddonProperty()
+    : active_(false)
+{}
+
+void GameProperty_ecological::doInitialize()
+{
+    GameBuildingAddonProperty::doInitialize();
+    tree_points_ = objectInfo()->keys["tree-points"].toReal();
+    plant_points_ = objectInfo()->keys["plant-points"].toReal();
+    addStdIndicators(gameObject()->field());
+    auto indicator = qobject_cast<GameEcologyIndicator *>(gameObject()->indicators()->getDynamic("ecology"));
+    Q_CHECK_PTR(indicator);
+    connect(this, &GameProperty_ecological::activated, this, [ = ]() {
+        indicator->addTreePoints(tree_points_);
+        indicator->addPlantPoints(plant_points_);
+    });
+    connect(this, &GameProperty_ecological::deactivated, this, [ = ]() {
+        indicator->addTreePoints(-tree_points_);
+        indicator->addPlantPoints(-plant_points_);
+    });
+}
+
+GameProperty_ecological::GameProperty_ecological()
+    : tree_points_(0), plant_points_(0)
+{}
+
+qreal GameProperty_ecological::treePoints() const
+{
+    return tree_points_;
+}
+
+qreal GameProperty_ecological::plantPoints() const
+{
+    return plant_points_;
+}
+
+void GameProperty_house::doInitialize()
+{
+    GameBuildingAddonProperty::doInitialize();
     QVariant population_data = objectInfo()->keys["population"];
     if (population_data.type() == QVariant::List) {
         int min_population = population_data.toList()[0].toInt();
@@ -21,27 +79,16 @@ void GameProperty_house::doInitialize()
         population_ = population_data.toInt();
     }
     
-    auto activate = [ = ]() {
-        if (active_ || !gameObject()->isEnabled() || !gameObject()->isPlaced()) {
-            return;
-        }
-        addStdIndicators(gameObject()->field());
-        gameObject()->indicators()->set("production", 1.0);
-        active_ = true;
+    connect(this, &GameBuildingAddonProperty::activated, this, [ = ]() {
         gameObject()->indicators()->add("population", population_);
-    };
-    
-    connect(gameObject(), &GameObject::placed, this, activate);
-    connect(gameObject(), &GameObject::enabled, this, activate);
-    connect(gameObject(), &GameObject::removed, this, [ = ]() {
-        if (active_) {
-            gameObject()->indicators()->add("population", -population_);
-        }
+    });
+    connect(this, &GameBuildingAddonProperty::deactivated, this, [ = ]() {
+        gameObject()->indicators()->add("population", -population_);
     });
 }
 
 GameProperty_house::GameProperty_house()
-    : GameObjectProperty(), active_(false)
+    : GameBuildingAddonProperty()
 {}
 
 int GameProperty_house::population()
@@ -285,7 +332,7 @@ double GameProperty_building::buildProgress() const
 
 Util::Bool3 GameProperty_building::canAutoEnable() const
 {
-    return gameObject()->resources()->isInfiniteMode() ? Util::Dont_Care : Util::False;
+    return Util::False;
 }
 
 Util::Bool3 GameProperty_building::canMove() const
@@ -318,6 +365,7 @@ qreal GameProperty_building::repairCost() const
 
 void GameProperty_building::doInitialize()
 {
+    GameObjectProperty::doInitialize();
     Q_ASSERT(gameObject()->type() == "static");
     total_build_time_ = qMax(500, objectInfo()->keys["build-time"].toInt() * 1000);
     if (objectInfo()->keys.contains("repair-time")) {
@@ -487,3 +535,4 @@ GAME_PROPERTY_REGISTER("house", GameProperty_house)
 GAME_PROPERTY_REGISTER("human", GameProperty_human)
 GAME_PROPERTY_REGISTER("passable", GameProperty_passable)
 GAME_PROPERTY_REGISTER("building", GameProperty_building)
+GAME_PROPERTY_REGISTER("ecological", GameProperty_ecological)

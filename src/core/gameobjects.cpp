@@ -306,6 +306,9 @@ void GameObject::initialize(GameFieldBase *field, GameObjectProperty *property)
         connect(property_, &GameObjectProperty::updated, this, &GameObject::updated);
         property_->setParent(this);
         property_->initialize(this);
+        if (canAutoEnable() && !isEnabled()) {
+            enable();
+        }
     }
 }
 

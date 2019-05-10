@@ -86,7 +86,9 @@ void GameIndicatorView::addIndicator(const QString &name)
 void GameIndicatorView::updateIndicator(const QString &name)
 {
     auto label = widgets_[name];
+    Q_CHECK_PTR(label);
     auto info = indicator_info_->getInfo(name);
+    Q_CHECK_PTR(info);
     qreal value = indicators_->get(name);
     label->setText(QString::asprintf(info->format.toUtf8().data(), value));
     if (info->is_graded_color) {
@@ -108,12 +110,12 @@ void GameIndicatorView::initialize(GameIndicators *indicators, GameIndicatorRepo
         addIndicator(iter);
     }
 
-    auto update = [ = ](GameIndicators::Type, const QString & name) {
+    connect(indicators_, &GameIndicators::added, this, [ = ](GameIndicators::Type, const QString & name) {
+        addIndicator(name);
+    });
+    connect(indicators_, &GameIndicators::updated, this, [ = ](GameIndicators::Type, const QString & name) {
         updateIndicator(name);
-    };
-
-    connect(indicators_, &GameIndicators::added, this, update);
-    connect(indicators_, &GameIndicators::updated, this, update);
+    });
 }
 
 void GameIndicatorView::paintEvent(QPaintEvent *event)

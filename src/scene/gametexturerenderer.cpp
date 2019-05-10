@@ -380,4 +380,5 @@ GameTextureRenderer::GameTextureRenderer(QObject *parent, GameSceneGeometry *geo
     prop_render_->addRenderer(QStringLiteral("GameProperty_human"), new GamePropertyRenderer_human(this));
     prop_render_->addRenderer(QStringLiteral("GameProperty_passable"), nullptr);
     prop_render_->addRenderer(QStringLiteral("GameProperty_building"), new GamePropertyRenderer_building(this));
+    prop_render_->addRenderer(QStringLiteral("GameProperty_ecological"), nullptr);
 }

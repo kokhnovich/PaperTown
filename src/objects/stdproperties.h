@@ -7,7 +7,20 @@
 #include "../core/gamefield.h"
 #include "../core/eventscheduler.h"
 
-class GameProperty_house : public GameObjectProperty
+class GameBuildingAddonProperty : public GameObjectProperty
+{
+    Q_OBJECT
+protected:
+    void doInitialize() override;
+    Q_INVOKABLE GameBuildingAddonProperty();
+signals:
+    void activated();
+    void deactivated();
+private:
+    bool active_;
+};
+
+class GameProperty_house : public GameBuildingAddonProperty
 {
     Q_OBJECT
 public:
@@ -18,7 +31,21 @@ protected:
     void doInitialize() override;
 private:
     int population_;
-    bool active_;
+};
+
+class GameProperty_ecological : public GameBuildingAddonProperty
+{
+    Q_OBJECT
+public:
+    qreal treePoints() const;
+    qreal plantPoints() const;
+    
+    Q_INVOKABLE GameProperty_ecological();
+protected:
+    void doInitialize() override;
+private:
+    qreal tree_points_;
+    qreal plant_points_;
 };
 
 class GameProperty_human;

@@ -3,7 +3,8 @@
 
 const qreal EPS = 1e-9;
 
-void makePositive(double &value) {
+void makePositive(double &value)
+{
     if (value < 0.0) {
         value = 0.0;
     }
@@ -24,6 +25,12 @@ void GameIndicators::addDynamic(GameDynamicIndicator *indicator)
     });
     dynamic_indicators_[name] = indicator;
     emit added(Dynamic, name);
+}
+
+GameDynamicIndicator *GameIndicators::getDynamic(const QString &name) const
+{
+    Q_ASSERT(dynamic_indicators_.contains(name));
+    return dynamic_indicators_[name];
 }
 
 void GameIndicators::add(const QString &name, qreal delta)
