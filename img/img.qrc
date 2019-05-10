@@ -51,17 +51,17 @@
         <file>tree2.png</file>
         <file>cell-dark.png</file>
         <file>cell.png</file>
-        <file>choco-fabric.png</file>
-        <file>choco-fabric.l1.png</file>
-        <file>choco-fabric.l2.png</file>
-        <file>choco-fabric.l3.png</file>
-        <file>choco-fabric.l4.png</file>
-        <file>limonade-factory.png</file>
-        <file>limonade-factory.l1.png</file>
-        <file>limonade-factory.l2.png</file>
-        <file>limonade-factory.l3.png</file>
-        <file>limonade-factory.l4.png</file>
-        <file>limonade-factory.l5.png</file>
-        <file>limonade-factory.l6.png</file>
+        <file>choco-factory.png</file>
+        <file>choco-factory.l1.png</file>
+        <file>choco-factory.l2.png</file>
+        <file>choco-factory.l3.png</file>
+        <file>choco-factory.l4.png</file>
+        <file>lemonade-factory.png</file>
+        <file>lemonade-factory.l1.png</file>
+        <file>lemonade-factory.l2.png</file>
+        <file>lemonade-factory.l3.png</file>
+        <file>lemonade-factory.l4.png</file>
+        <file>lemonade-factory.l5.png</file>
+        <file>lemonade-factory.l6.png</file>
     </qresource>
 </RCC>
