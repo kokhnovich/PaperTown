@@ -85,14 +85,16 @@
 		"offset": [0, 0],
 		"z-offset": [0, 0]
     },
-    "choco-fabric": {
-        "offset": [0, -475],
-        "z-offset": [0, 0],
-        "layers": 4
-    },
+	
+    "choco-factory": {
+		"offset": [0, -475],
+		"z-offset": [0, 0],
+		"layers": 4
+	},
+	
     "lemonade-factory": {
-        "offset": [0, -425],
-        "z-offset": [0, 0],
-        "layers": 6
+		"offset": [0, -425],
+		"z-offset": [0, 0],
+		"layers": 6
     }
 }

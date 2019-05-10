@@ -171,7 +171,7 @@
     },
 
     "choco-fabric": {
-        "textures": ["choco-fabric.l*"],
+        "textures": ["choco-factory.l*"],
         "properties": ["building"],
         "type": "static",
         "cells": [
@@ -180,7 +180,7 @@
             [2, 0], [2, 1], [2, 2], [2, 3],
             [3, 0], [3, 1], [3, 2], [3, 3]
         ],
-        "caption": "Chocolade fabric",
+        "caption": "Chocolate factory",
         "keys": {
             "build-time": 60,
             "repair-time": 25
