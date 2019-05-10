@@ -1,4 +1,5 @@
 #include "../objects/stdproperties.h"
+#include "../objects/stdindicators.h"
 #include <QDateTime>
 #include <random>
 
@@ -24,6 +25,8 @@ void GameProperty_house::doInitialize()
         if (active_ || !gameObject()->isEnabled() || !gameObject()->isPlaced()) {
             return;
         }
+        addStdIndicators(gameObject()->field());
+        gameObject()->indicators()->set("production", 1.0);
         active_ = true;
         gameObject()->indicators()->add("population", population_);
     };

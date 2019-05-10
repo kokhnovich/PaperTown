@@ -48,7 +48,7 @@ public:
     virtual void addToValue(qreal delta);
     virtual qreal value() const = 0;
     virtual QString name() const;
-    GameDynamicIndicator(QString &name);
+    GameDynamicIndicator(const QString &name);
 signals:
     void updated();
 private:
@@ -82,7 +82,7 @@ public:
     void set(const QString &name, qreal value);
     void add(const QString &name, qreal delta);
     
-    void addDynamic(GameDynamicIndicator *counter);
+    void addDynamic(GameDynamicIndicator *indicator);
     
     QVector<QString> listNames() const;
     QVector<Info> list() const;

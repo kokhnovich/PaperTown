@@ -14,15 +14,15 @@ GameResources *GameIndicators::resources() const
     return resources_;
 }
 
-void GameIndicators::addDynamic(GameDynamicIndicator *counter)
+void GameIndicators::addDynamic(GameDynamicIndicator *indicator)
 {
-    QString name = counter->name();
+    QString name = indicator->name();
     Q_ASSERT(!contains(name));
-    counter->setParent(this);
-    connect(counter, &GameDynamicIndicator::updated, this, [ = ]() {
+    indicator->setParent(this);
+    connect(indicator, &GameDynamicIndicator::updated, this, [ = ]() {
         emit updated(Dynamic, name);
     });
-    dynamic_indicators_[name] = counter;
+    dynamic_indicators_[name] = indicator;
     emit added(Dynamic, name);
 }
 
@@ -33,7 +33,7 @@ void GameIndicators::add(const QString &name, qreal delta)
     case Unassigned: {
         static_indicators_[name] = delta;
         emit added(Static, name);
-        //Q_ASSERT_X(false, "GameCounters::add", "trying to add to an unassigned Indicator");
+        //Q_ASSERT_X(false, "GameIndicators::add", "trying to add to an unassigned Indicator");
         break;
     }
     case Resource: {
@@ -81,7 +81,7 @@ qreal GameIndicators::get(const QString &name) const
 {
     Type type = getType(name);
     if (type == Unassigned) {
-        Q_ASSERT_X(false, "GameCounters::getCounter", "trying to get unassigned Counter");
+        Q_ASSERT_X(false, "GameGameIndicators::get", "trying to get unassigned Indicator");
         return 0.0;
     }
     if (type == Resource) {
@@ -104,9 +104,9 @@ bool GameIndicators::contains(const QString &name) const
 QVector<QString> GameIndicators::listNames() const
 {
     QVector<QString> res;
-    const auto counters = list();
-    res.reserve(counters.size());
-    for (const Info &info : counters) {
+    const auto indicators = list();
+    res.reserve(indicators.size());
+    for (const Info &info : indicators) {
         res.append(info.name);
     }
     return res;
@@ -114,18 +114,18 @@ QVector<QString> GameIndicators::listNames() const
 
 QVector<GameIndicators::Info> GameIndicators::list() const
 {
-    QVector<GameIndicators::Info> counters;
+    QVector<GameIndicators::Info> indicators;
     for (int i = 1; i < GameResources::MaxType; ++i) {
         auto type = static_cast<GameResources::Type>(i);
-        counters.append({GameResources::typeToName(type), Resource, resources_->get(type)});
+        indicators.append({GameResources::typeToName(type), Resource, resources_->get(type)});
     }
     for (auto iter = static_indicators_.cbegin(); iter != static_indicators_.cend(); ++iter) {
-        counters.append({iter.key(), Static, iter.value()});
+        indicators.append({iter.key(), Static, iter.value()});
     }
     for (auto iter = dynamic_indicators_.cbegin(); iter != dynamic_indicators_.cend(); ++iter) {
-        counters.append({iter.key(), Dynamic, iter.value()->value()});
+        indicators.append({iter.key(), Dynamic, iter.value()->value()});
     }
-    return counters;
+    return indicators;
 }
 
 void GameIndicators::set(const QString &name, qreal value)
@@ -166,7 +166,7 @@ bool GameDynamicIndicator::canSetValue() const
     return false;
 }
 
-GameDynamicIndicator::GameDynamicIndicator(QString &name)
+GameDynamicIndicator::GameDynamicIndicator(const QString &name)
     : name_(name)
 {}
 

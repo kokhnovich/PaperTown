@@ -55,6 +55,7 @@ void GameIndicatorRepository::loadFromJson(const QJsonDocument &document)
         info.stylesheet = inner_object["stylesheet"].toString();
         info.text_color = QColor(inner_object["text-color"].toString(QStringLiteral("black")));
         info.text = inner_object["text"].toString();
+        info.is_graded_color = inner_object["graded-color"].toBool(false);
         addInfo(it.key(), info);
     }
 }
@@ -86,7 +87,13 @@ void GameIndicatorView::updateIndicator(const QString &name)
 {
     auto label = widgets_[name];
     auto info = indicator_info_->getInfo(name);
-    label->setText(QString::asprintf(info->format.toUtf8().data(), indicators_->get(name)));
+    qreal value = indicators_->get(name);
+    label->setText(QString::asprintf(info->format.toUtf8().data(), value));
+    if (info->is_graded_color) {
+        QPalette palette = label->palette();
+        palette.setColor(QPalette::WindowText, QColor::fromHsvF(value / 100.0 * 0.33, 0.9, 0.5));
+        label->setPalette(palette);
+    }
 }
 
 void GameIndicatorView::initialize(GameIndicators *indicators, GameIndicatorRepository *info)
@@ -131,9 +138,9 @@ GameIndicatorView::GameIndicatorView(QWidget *parent)
     QPalette palette;
     palette.setBrush(QPalette::Background, brush);
     setPalette(palette);
-    
+
     setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
-    
+
     setContentsMargins(2, 2, 2, 2);
     setLayout(new FlowLayout(-1, ICON_SIZE * 2 / 5, 0));
     setSizePolicy(sizePolicy().horizontalPolicy(), QSizePolicy::Minimum);

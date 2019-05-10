@@ -18,6 +18,7 @@ public:
         QPixmap icon;
         QString format;
         QString text;
+        bool is_graded_color;
     };
     
     void addInfo(const QString &name, const Info &info);

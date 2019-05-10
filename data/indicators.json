@@ -1,7 +1,7 @@
 {
 	"money": {
 		"icon": "bitcoin",
-		"format": "%.2f $",
+		"format": "%.2f$",
 		"text": "Money",
 		"text-color": "black"
 	},
@@ -16,5 +16,18 @@
 		"icon": "population",
 		"format": "%.0f",
 		"text": "Population"
+	},
+	
+	"ecology": {
+		"icon": "ecology",
+		"format": "%.0f%%",
+		"text": "Ecology level",
+		"graded-color": true
+	},
+	
+	"production": {
+		"icon": "factory",
+		"format": "%.2f$/min",
+		"text": "Income from factories"
 	}
 }

@@ -56,7 +56,8 @@ SOURCES += \
     util/misc.cpp \
     gameindicatorview.cpp \
     core/gameindicators.cpp \
-    contrib/flowlayout/flowlayout.cpp
+    contrib/flowlayout/flowlayout.cpp \
+    objects/stdindicators.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -85,7 +86,8 @@ HEADERS += \
     util/misc.h \
     gameindicatorview.h \
     core/gameindicators.h \
-    contrib/flowlayout/flowlayout.h
+    contrib/flowlayout/flowlayout.h \
+    objects/stdindicators.h
 
 FORMS += \
     mainwindow.ui
