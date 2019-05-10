@@ -77,12 +77,18 @@ void MainWindow::newEvent()
 void MainWindow::on_startBtn_clicked()
 {
     field_->scheduler()->start();
+    ui->listView->setEnabled(true);
+    ui->graphicsView->setEnabled(true);
+    ui->doubleSpinBox->setEnabled(true);
     update();
 }
 
 void MainWindow::on_pauseBtn_clicked()
 {
     field_->scheduler()->pause();
+    ui->listView->setEnabled(false);
+    ui->graphicsView->setEnabled(false);
+    ui->doubleSpinBox->setEnabled(false);
     update();
 }
 

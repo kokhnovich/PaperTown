@@ -151,5 +151,22 @@
 			"cost": 250,
 			"repair-cost": 100
 		}
-	}
+    },
+
+    "choco-fabric": {
+        "textures": ["choco-fabric.l*"],
+        "properties": ["building"],
+        "type": "static",
+        "cells": [
+            [0, 0], [0, 1], [0, 2], [0, 3],
+            [1, 0], [1, 1], [1, 2], [1, 3],
+            [2, 0], [2, 1], [2, 2], [2, 3],
+            [3, 0], [3, 1], [3, 2], [3, 3]
+        ],
+        "caption": "Chocolade fabric",
+        "keys": {
+            "build-time": 60,
+            "repair-time": 25
+        }
+    }
 }

@@ -84,5 +84,10 @@
 	"construction-vert": {
 		"offset": [0, 0],
 		"z-offset": [0, 0]
-	}
+    },
+    "choco-fabric": {
+        "offset": [0, -475],
+        "z-offset": [0, 0],
+        "layers": 4
+    }
 }

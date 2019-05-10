@@ -57,7 +57,8 @@ SOURCES += \
     gameindicatorview.cpp \
     core/gameindicators.cpp \
     contrib/flowlayout/flowlayout.cpp \
-    objects/stdindicators.cpp
+    objects/stdindicators.cpp \
+    mainmenu.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -87,10 +88,12 @@ HEADERS += \
     gameindicatorview.h \
     core/gameindicators.h \
     contrib/flowlayout/flowlayout.h \
-    objects/stdindicators.h
+    objects/stdindicators.h \
+    mainmenu.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    mainmenu.ui
 
 SUBDIRS += \
     PaperTown.pros
