@@ -52,7 +52,8 @@ qreal GameEcologyIndicator::treePoints() const
 
 qreal GameEcologyIndicator::value() const
 {
-    qreal res = (tree_points_ - plant_points_) / qMax(50.0, qAbs(plant_points_) + qAbs(tree_points_));
+    qreal res = (tree_points_ - plant_points_) / qMax(30.0, qAbs(plant_points_) + qAbs(tree_points_));
+    res *= 3.0 - res;
     res = qBound(-1.0, res, 1.0);
     return (0.5 + res / 2) * 100.0;
 }
