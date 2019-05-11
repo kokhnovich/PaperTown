@@ -36,21 +36,21 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <widget class="QPushButton" name="pushButton_3">
+          <widget class="QPushButton" name="StartBtn">
            <property name="text">
-            <string>Start new game</string>
+            <string>Play game</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_5">
+          <widget class="QPushButton" name="AboutBtn">
            <property name="text">
             <string>About us</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_6">
+          <widget class="QPushButton" name="ExitBtn">
            <property name="text">
             <string>Exit</string>
            </property>

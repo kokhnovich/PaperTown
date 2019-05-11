@@ -111,3 +111,17 @@ void MainWindow::on_doubleSpinBox_valueChanged(double arg1)
     ui->graphicsView->scale(scale/old_scale_, scale/old_scale_);
     old_scale_ = scale;
 }
+
+void MainWindow::on_menuBtn_clicked()
+{
+    this->setPause();
+    this->close();
+}
+
+void MainWindow::setPause() {
+    on_pauseBtn_clicked();
+}
+
+void MainWindow::unsetPause() {
+    on_startBtn_clicked();
+}
