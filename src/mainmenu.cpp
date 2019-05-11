@@ -18,12 +18,12 @@ MainMenu::~MainMenu()
 
 void MainMenu::on_ExitBtn_clicked()
 {
-    //mainWindow->close();
+    mainWindow->close();
     this->close();
 }
 
 void MainMenu::on_StartBtn_clicked()
 {
     mainWindow->show();
-    mainWindow->setEnabled(true);
+    mainWindow->unsetPause();
 }
