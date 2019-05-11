@@ -36,11 +36,11 @@
         <file>angle-nw.png</file>
         <file>angle-se.png</file>
         <file>angle-sw.png</file>
-    <file>icon-bitcoin.png</file>
-    <file>icon-workers.png</file>
+        <file>icon-bitcoin.png</file>
+        <file>icon-workers.png</file>
         <file>icon-population.png</file>
-    <file>icon-ecology.png</file>
-    <file>icon-factory.png</file>
+        <file>icon-ecology.png</file>
+        <file>icon-factory.png</file>
         <file>icon-repair.png</file>
         <file>cinema.l1.png</file>
         <file>cinema.l4.png</file>
@@ -63,5 +63,16 @@
         <file>lemonade-factory.l4.png</file>
         <file>lemonade-factory.l5.png</file>
         <file>lemonade-factory.l6.png</file>
+        <file>university.l1.png</file>
+        <file>university.l2.png</file>
+        <file>university.l3.png</file>
+        <file>university.l4.png</file>
+        <file>university.l5.png</file>
+        <file>university.l6.png</file>
+        <file>university.l7.png</file>
+        <file>university.l8.png</file>
+        <file>university.l9.png</file>
+        <file>university.l10.png</file>
+        <file>university.png</file>
     </qresource>
 </RCC>
