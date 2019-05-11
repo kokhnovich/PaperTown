@@ -12,3 +12,8 @@ MainMenu::~MainMenu()
 {
     delete ui;
 }
+
+void MainMenu::on_ExitBtn_clicked()
+{
+    this->close();
+}
