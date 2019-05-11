@@ -23,6 +23,8 @@ public:
 
     void newEvent();
     void update();
+    void setPause();
+    void unsetPause();
 private slots:
     void on_startBtn_clicked();
 
@@ -31,11 +33,12 @@ private slots:
     void timerTimeout();
     void on_doubleSpinBox_valueChanged(double arg1);
 
+    void on_menuBtn_clicked();
+
 private:
     void initObjects();
     
     Ui::MainWindow *ui;
-    
     GameObjectRenderRepository *repository_;
     GameField *field_;
     GameTextureRepository *textures_;
