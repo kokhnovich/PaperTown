@@ -63,5 +63,12 @@
         <file>lemonade-factory.l4.png</file>
         <file>lemonade-factory.l5.png</file>
         <file>lemonade-factory.l6.png</file>
+		<file>large-house.png</file>
+		<file>large-house.l1.png</file>
+		<file>large-house.l2.png</file>
+		<file>large-house.l3.png</file>
+		<file>large-house.l4.png</file>
+		<file>large-house.l5.png</file>
+		<file>large-house.l6.png</file>
     </qresource>
 </RCC>
