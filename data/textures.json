@@ -96,5 +96,11 @@
 		"offset": [0, -425],
 		"z-offset": [0, 0],
 		"layers": 6
+    },
+
+    "large-house": {
+        "offset": [0, -275],
+        "z-offset": [0, 0],
+        "layers": 6
     }
 }
