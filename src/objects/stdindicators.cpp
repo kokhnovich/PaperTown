@@ -72,4 +72,5 @@ void addStdIndicators(GameFieldBase *a_field)
     field->setProperty("_INTERNAL_stdIndicators_isSet_", QVariant::fromValue(true));    
     field->indicators()->addDynamic(new GameProductionIndicator(field));
     field->indicators()->addDynamic(new GameEcologyIndicator);
+    field->indicators()->set(QStringLiteral("population"), 0);
 }

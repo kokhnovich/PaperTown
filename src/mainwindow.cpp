@@ -4,6 +4,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "gameobjectpickermodel.h"
+#include "objects/stdindicators.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -22,6 +23,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //auto human = field_->add("moving", "human", {field_->height() / 2, field_->width() / 2});
     //player_ = gameProperty_cast<GameProperty_human>(human->property());
     initObjects();
+    
+    addStdIndicators(field_);
     
     ui->setupUi(this);
     
@@ -49,8 +52,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::initObjects()
 {
-    field_->resources()->enableInfiniteMode();
-    /*const char *objects[5] = {"tree1", "tree2", "cinema", "angle-ne", "angle-nw"};
+    /*field_->resources()->enableInfiniteMode();
+    const char *objects[5] = {"tree1", "tree2", "cinema", "angle-ne", "angle-nw"};
     for (int i = 0; i < field_->height(); ++i) {
         for (int j = 0; j < field_->width(); ++j) {
             if (qrand() % 25 == 0) {

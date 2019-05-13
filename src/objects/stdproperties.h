@@ -191,6 +191,8 @@ protected:
     bool canGetBuilders() const;
     void getBuilders();
     void ungetBuilders();
+    
+    void updateProduction();
 private:
     State state_ = Unprepared;
     qint64 total_build_time_ = 500;
@@ -198,6 +200,8 @@ private:
     GameSignalEvent *cur_event_ = nullptr;
     qreal health_ = 1.0;
     qreal health_loss_ = 0.0;
+    qreal production_ = 0.0;
+    qreal old_production_ = 0.0;
     
     const qreal REPAIR_THRESHOLD = 0.95;
 };

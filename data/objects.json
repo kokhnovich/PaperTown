@@ -169,7 +169,9 @@
 		"keys": {
 			"build-time": 5,
 			"repair-time": 25,
-			"plant-points": 3
+			"plant-points": 3,
+			"production": 100.0,
+			"health-loss": 0.1
 		}
 	},
 
@@ -189,7 +191,8 @@
 		"keys": {
 			"build-time": 5,
 			"repair-time": 25,
-			"plant-points": 5
+			"plant-points": 5,
+			"health-loss": 0.1
 		}
 	}
 }
