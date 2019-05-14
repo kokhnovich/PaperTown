@@ -59,9 +59,7 @@ void GameFieldView::endMovingObject()
 void GameFieldView::addObject(GameObject *object)
 {
     connect(object, &GameObject::placed, this, &GameFieldView::placeObject);
-    connect(object, &GameObject::placed, this, &GameFieldView::playMusicBuilding);
-
-
+    connect(object, &GameObject::soundEvent, this, &GameFieldView::playMusic);
     connect(object, &GameObject::moved, this, &GameFieldView::moveObject);
     connect(object, &GameObject::updated, this, &GameFieldView::updateObject);
     connect(object, &GameObject::enabled, this, &GameFieldView::updateObject);
@@ -142,6 +140,7 @@ void GameFieldView::unputObject(GameObject *object)
 void GameFieldView::removeObject(GameObject *object)
 {
     disconnect(object, &GameObject::placed, this, &GameFieldView::placeObject);
+    disconnect(object, &GameObject::soundEvent, this, &GameFieldView::playMusic);
     disconnect(object, &GameObject::moved, this, &GameFieldView::moveObject);
     disconnect(object, &GameObject::updated, this, &GameFieldView::updateObject);
     disconnect(object, &GameObject::enabled, this, &GameFieldView::updateObject);
@@ -151,7 +150,6 @@ void GameFieldView::removeObject(GameObject *object)
     disconnect(object, &GameObject::startedMoving, this, &GameFieldView::startMovingObject);
     disconnect(object, &GameObject::endedMoving, this, &GameFieldView::endMovingObject);
     disconnect(object, &GameObject::movingPositionChanged, this, &GameFieldView::movingPositionChanged);
-
     unputObject(object);
 }
 
@@ -161,10 +159,8 @@ void GameFieldView::playMusic(Util::Sound sound) {
         //player->setMedia(QUrl::fromLocalFile(":/:/:/music/song.mp3"));
     } else if (sound == Util::Sound::Removing) {
         media_player_.setMedia(QUrl::fromLocalFile("/home/user/qt-projects/PaperTown/sounds/removing.wav"));
-    } // else if (sound == Util::Sound::)
-}
-
-void GameFieldView::playMusicBuilding() {
-    media_player_.setMedia(QUrl::fromLocalFile("/home/user/qt-projects/PaperTown/sounds/building.wav"));
+    }
+    // else if (sound == Util::Sound::)
     media_player_.play();
 }
+

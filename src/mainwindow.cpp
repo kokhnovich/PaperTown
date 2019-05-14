@@ -23,8 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     auto player = new QMediaPlayer;
     //QString msc(":/music/song.mp3");
-    player->setMedia(QUrl::fromLocalFile(QFileInfo("song.mp3").absoluteFilePath()));
-   //player->setMedia(QFileInfo(":/music/song.mp3").canonicalPath());
+    //player->setMedia(QUrl::fromLocalFile(QFileInfo("song.mp3").absoluteFilePath()));
     player->setVolume(150);
     player->play();
 

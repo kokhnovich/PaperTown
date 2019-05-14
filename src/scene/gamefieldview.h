@@ -17,7 +17,6 @@ public:
     GameFieldView(QObject *parent, GameTextureRenderer *renderer);
 public slots:
     void playMusic(Util::Sound sound);
-    void playMusicBuilding();
     void addObject(GameObject *object);
     void removeObject(GameObject *object);
 protected:
