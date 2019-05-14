@@ -254,7 +254,7 @@ void GameObject::emitRemoved()
         resources()->add(GameResources::Money, removalCost());
     }
     emit removed();
-    emit soundEvent(Util::Sound::Removing);
+    emit soundEvent(Util::Sound::Wrecked);
 }
 
 bool GameObject::canSetPosition(const Coordinate &pos) const

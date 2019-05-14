@@ -159,7 +159,7 @@ void GameFieldView::playMusic(Util::Sound sound) {
         //player->setMedia(QUrl::fromLocalFile(":/:/:/music/song.mp3"));
     } else if (sound == Util::Sound::Removing) {
         media_player_.setMedia(QUrl::fromLocalFile("/home/user/qt-projects/PaperTown/sounds/removing.wav"));
-    }
+    } else if (sound == Util::Sound::Wrecked)
     // else if (sound == Util::Sound::)
     media_player_.play();
 }

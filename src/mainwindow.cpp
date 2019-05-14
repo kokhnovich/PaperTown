@@ -53,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::initObjects()
 {
-    field_->resources()->enableInfiniteMode();
+    // field_->resources()->enableInfiniteMode();
     /*const char *objects[5] = {"tree1", "tree2", "cinema", "angle-ne", "angle-nw"};
     for (int i = 0; i < field_->height(); ++i) {
         for (int j = 0; j < field_->width(); ++j) {
