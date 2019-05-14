@@ -22,10 +22,6 @@ MainWindow::MainWindow(QWidget *parent) :
     file.open(QIODevice::ReadOnly);
 
     auto player = new QMediaPlayer;
-    //QString msc(":/music/song.mp3");
-    //player->setMedia(QUrl::fromLocalFile(QFileInfo("song.mp3").absoluteFilePath()));
-    player->setVolume(150);
-    player->play();
 
 
     indicators_->loadFromFile(":/data/indicators.json");
