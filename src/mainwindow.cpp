@@ -18,11 +18,6 @@ MainWindow::MainWindow(QWidget *parent) :
     timer()
 {
 
-    QFile file(":/music/song.mp3");
-    file.open(QIODevice::ReadOnly);
-
-    auto player = new QMediaPlayer;
-
 
     indicators_->loadFromFile(":/data/indicators.json");
     textures_->loadFromFile(":/data/textures.json");
@@ -133,4 +128,9 @@ void MainWindow::setPause() {
 
 void MainWindow::unsetPause() {
     on_startBtn_clicked();
+}
+
+void MainWindow::on_doubleSpinBox_2_valueChanged(double arg1)
+{
+
 }

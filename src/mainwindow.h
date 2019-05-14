@@ -35,6 +35,8 @@ private slots:
 
     void on_menuBtn_clicked();
 
+    void on_doubleSpinBox_2_valueChanged(double arg1);
+
 private:
     void initObjects();
     
