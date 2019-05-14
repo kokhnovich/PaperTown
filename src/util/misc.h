@@ -3,10 +3,16 @@
 
 #include <QtCore>
 
+
 namespace Util
 {
     Q_NAMESPACE
     
+    enum Sound {
+        Building,
+        Removing
+    };
+
     enum Bool3 {
         True,
         False,

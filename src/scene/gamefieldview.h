@@ -8,6 +8,7 @@
 #include "../core/gameobjects.h"
 #include "gametexturerenderer.h"
 #include "gameobjectrenderrepository.h"
+#include "../util/misc.h"
 
 class GameFieldView : public QObject
 {
@@ -15,6 +16,8 @@ class GameFieldView : public QObject
 public:
     GameFieldView(QObject *parent, GameTextureRenderer *renderer);
 public slots:
+    void playMusic(Util::Sound sound);
+    void playMusicBuilding();
     void addObject(GameObject *object);
     void removeObject(GameObject *object);
 protected:
