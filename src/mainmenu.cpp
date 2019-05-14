@@ -1,3 +1,5 @@
+#include <QFileDialog>
+#include <iostream>
 #include "mainmenu.h"
 #include "ui_mainmenu.h"
 #include "mainwindow.h"
@@ -26,4 +28,12 @@ void MainMenu::on_StartBtn_clicked()
 {
     mainWindow->show();
     mainWindow->unsetPause();
+}
+
+void MainMenu::on_chooseMusicBtn_clicked()
+{
+    // TODO user can select music file
+    QFileDialog dialog(this);
+    dialog.setFileMode(QFileDialog::AnyFile);
+    //std::cout << fileName << std::endl;
 }

@@ -23,6 +23,8 @@ private slots:
 
     void on_StartBtn_clicked();
 
+    void on_chooseMusicBtn_clicked();
+
 private:
     Ui::MainMenu *ui;
     MainWindow *mainWindow;

@@ -18,11 +18,14 @@ MainWindow::MainWindow(QWidget *parent) :
     timer()
 {
 
+    QFile file(":/music/song.mp3");
+    file.open(QIODevice::ReadOnly);
+
     auto player = new QMediaPlayer;
-    //QFile file = new QFile(":/song.mp3");
-    player->setMedia(QUrl::fromLocalFile("/home/user/qt-projects/PaperTown/song.mp3"));
-    //player->setMedia(file);
-    player->setVolume(50);
+    //QString msc(":/music/song.mp3");
+    player->setMedia(QUrl::fromLocalFile(QFileInfo("song.mp3").absoluteFilePath()));
+   //player->setMedia(QFileInfo(":/music/song.mp3").canonicalPath());
+    player->setVolume(150);
     player->play();
 
 
