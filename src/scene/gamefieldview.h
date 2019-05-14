@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
+#include <QMediaPlayer>
 #include "../core/gameobjects.h"
 #include "gametexturerenderer.h"
 #include "gameobjectrenderrepository.h"
@@ -46,6 +47,7 @@ private:
     QGraphicsItem *moving_item_;
     QGraphicsWidget *selection_control_;
     SelectionState last_state_;
+    QMediaPlayer media_player_;
 };
 
 #endif // GAMEOBJECTRENDERER_H

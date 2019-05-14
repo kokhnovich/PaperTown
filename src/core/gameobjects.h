@@ -198,6 +198,7 @@ signals:
     void enabled();
     void disabled();
     void removed();
+    void sountEvent();
 protected:
     virtual bool internalCanSelect() const;
     virtual bool internalCanMove() const;

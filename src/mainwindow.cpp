@@ -1,3 +1,5 @@
+#include <QMediaPlayer>
+
 #include <QGraphicsView>
 #include <QHBoxLayout>
 #include <QtDebug>
@@ -15,6 +17,15 @@ MainWindow::MainWindow(QWidget *parent) :
     indicators_(new GameIndicatorRepository(this)),
     timer()
 {
+
+    auto player = new QMediaPlayer;
+    //QFile file = new QFile(":/song.mp3");
+    player->setMedia(QUrl::fromLocalFile("/home/user/qt-projects/PaperTown/song.mp3"));
+    //player->setMedia(file);
+    player->setVolume(50);
+    player->play();
+
+
     indicators_->loadFromFile(":/data/indicators.json");
     textures_->loadFromFile(":/data/textures.json");
     repository_->loadFromFile(":/data/objects.json");

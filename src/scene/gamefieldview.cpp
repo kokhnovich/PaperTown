@@ -116,7 +116,8 @@ GameFieldView::GameFieldView(QObject *parent, GameTextureRenderer *renderer)
       objects_(),
       moving_item_(nullptr),
       selection_control_(nullptr),
-      last_state_(SelectionState::None)
+      last_state_(SelectionState::None),
+      media_player_()
 {
     renderer_->setupScene();
 }
