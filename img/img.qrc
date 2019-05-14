@@ -63,5 +63,13 @@
         <file>lemonade-factory.l4.png</file>
         <file>lemonade-factory.l5.png</file>
         <file>lemonade-factory.l6.png</file>
-    </qresource>
+		<file>skyscraperer.png</file>
+		<file>skyscraper.l1.png</file>
+		<file>skyscraper.l2.png</file>
+		<file>skyscraper.l3.png</file>
+		<file>skyscraper.l4.png</file>
+		<file>skyscraper.l5.png</file>
+		<file>skyscraper.l6.png</file>
+		<file>skyscraper.png</file>
+   </qresource>
 </RCC>
