@@ -191,7 +191,7 @@
 		"keys": {
 			"build-time": 5,
 			"repair-time": 25,
-			"plant-points": 5,
+            "plant-points": 5,
 			"health-loss": 0.1
 		}
     },
@@ -218,7 +218,31 @@
             "production": 2000,
             "build-time": 120,
             "repair-time": 40,
-            "plant-points": 5,
+            "plant-points": 10,
+            "health-loss": 0.01
+        }
+    },
+
+    "office": {
+        "textures": ["office.l*"],
+        "properties": [ "house", "building", "ecological"],
+        "type": "static",
+        "cells": [
+            [0, 0], [0, 1], [0, 2], [0, 3], [0, 4],
+            [1, 0], [1, 1], [1, 2], [1, 3], [1, 4],
+            [2, 0], [2, 1], [2, 2], [2, 3], [2, 4],
+            [3, 0], [3, 1], [3, 2], [3, 3], [3, 4],
+            [4, 0], [4, 1], [4, 2], [4, 3], [4, 4]
+        ],
+        "caption": "Office",
+        "keys": {
+            "population": [500, 1000],
+            "cost": 50000,
+            "repair-cost": 3000,
+            "production": 10000,
+            "build-time": 0,
+            "repair-time": 40,
+            "plant-points": 12,
             "health-loss": 0.01
         }
     }
