@@ -463,6 +463,7 @@ void GameProperty_building::setState(GameProperty_building::State new_state)
         break;
     }
     case UnderConstruction: {
+        this->gameObject()->playSound(Util::Sound::Starting_Building);
         cur_event_ = new GameSignalEvent(GameEvent::Finish);
         cur_event_->attach(this);
         connect(cur_event_, &GameSignalEvent::activated, this, &GameProperty_building::buildFinished);

@@ -171,6 +171,9 @@ void GameFieldView::playMusic(const Util::Sound& sound) {
     case Util::Sound::Removing:
         path_to_sound = "qrc:/sounds/removing.wav";
         break;
+    case Util::Sound::Starting_Building:
+        path_to_sound = "qrc:/sounds/start_building.wav";
+        break;
     default:
         break;
     }

@@ -359,7 +359,7 @@ bool GameObject::applyMovingPosition()
         is_placed_ = true;
         resources()->acquire(GameResources::Money, cost());
         emit placed(position_);
-        emit soundEvent(Util::Sound::Building);
+        //emit soundEvent(Util::Sound::Building);
     }
     return true;
 }

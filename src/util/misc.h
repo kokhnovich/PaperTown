@@ -12,7 +12,8 @@ namespace Util
         Building,
         Removing,
         Wrecking,
-        Repairing
+        Repairing,
+        Starting_Building
     };
 
     enum Bool3 {
