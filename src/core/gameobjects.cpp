@@ -254,7 +254,7 @@ void GameObject::emitRemoved()
         resources()->add(GameResources::Money, removalCost());
     }
     emit removed();
-    emit soundEvent(Util::Sound::Wrecked);
+    emit soundEvent(Util::Sound::Removing);
 }
 
 bool GameObject::canSetPosition(const Coordinate &pos) const
@@ -584,3 +584,7 @@ bool objectsConflict(const GameObject *a, const GameObject *b)
     }
 }
 
+void GameObject::playSound(const Util::Sound &sound)
+{
+    emit soundEvent(sound);
+}

@@ -165,7 +165,7 @@ void GameFieldView::playMusic(Util::Sound sound) {
     } else if (sound == Util::Sound::Removing) {
         media_player_.setMedia(QUrl::fromLocalFile(QUrl(QDir::currentPath()).resolved(QUrl("sounds/removing.wav")).toString()));
     } else if (sound == Util::Sound::Wrecked) {
-        media_player_.setMedia(QUrl::fromLocalFile(QUrl(QDir::currentPath()).resolved(QUrl("sounds/wrecked.wav")).toString()));
+        media_player_.setMedia(QUrl::fromLocalFile(QUrl(QDir::currentPath()).resolved(QUrl("sounds/wrecked.ogg")).toString()));
     }
     media_player_.play();
 }

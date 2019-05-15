@@ -175,6 +175,8 @@ public:
     
     friend class GameObjectProperty;
     friend class GameFieldBase;
+
+    void playSound(const Util::Sound& sound);
 public slots:
     void removeSelf();
 

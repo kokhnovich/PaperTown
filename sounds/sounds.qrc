@@ -3,6 +3,7 @@
     <file>building.wav</file>
     <file>removing.wav</file>
     <file>wrecked.wav</file>
+    <file>wrecked.ogg</file>
     <file>cover.mp3</file>
   </qresource>
 </RCC>

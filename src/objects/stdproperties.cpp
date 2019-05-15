@@ -398,6 +398,7 @@ void GameProperty_building::handleLoop()
     if (health_ <= 1e-9) {
         health_ = 0.0;
         setState(Wrecked);
+        this->gameObject()->playSound(Util::Sound::Wrecked);
     } else {
         if (canStartRepairing() != can_start_repairing) {
             emit updated();
@@ -431,6 +432,7 @@ void GameProperty_building::repairFinished()
 {
     health_ = 1.0;
     setState(Normal);
+    this->gameObject()->playSound(Util::Sound::Building);
 }
 
 void GameProperty_building::setState(GameProperty_building::State new_state)
