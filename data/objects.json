@@ -196,9 +196,10 @@
 		}
     },
 
+
     "skyscraper": {
         "textures": ["skyscraper.l*"],
-        "properties": ["building"],
+        "properties": ["building", "house"],
         "type": "static",
         "cells": [
                             [-2, 2], [-2, 3], [-2, 4],
@@ -211,10 +212,14 @@
         ],
         "caption": "Skyscraper",
         "keys": {
-            "build-time": 5,
-            "repair-time": 25,
+            "population": [1500, 2000],
+            "cost": 30000,
+            "repair-cost": 1000,
+            "production": 2000,
+            "build-time": 10,
+            "repair-time": 40,
             "plant-points": 5,
-            "health-loss": 0.1
+            "health-loss": 0.01
         }
     }
 }
