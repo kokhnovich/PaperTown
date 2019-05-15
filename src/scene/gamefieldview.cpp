@@ -154,7 +154,7 @@ void GameFieldView::removeObject(GameObject *object)
     unputObject(object);
 }
 
-void GameFieldView::playMusic(Util::Sound sound) {
+void GameFieldView::playMusic(const Util::Sound& sound) {
 
     //qDebug() << "play from" << QUrl::fromLocalFile("sounds/cover.mp3").toString();
     //QUrl url_to_song_ = QUrl(QDir::currentPath()).resolved(QUrl("sounds/cover.mp3"))
