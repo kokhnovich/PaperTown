@@ -119,7 +119,8 @@ GameFieldView::GameFieldView(QObject *parent, GameTextureRenderer *renderer)
       moving_item_(nullptr),
       selection_control_(nullptr),
       last_state_(SelectionState::None),
-      media_player_()
+      media_player_(),
+      media_player_volume_(50)
 {
     renderer_->setupScene();
 }
@@ -156,16 +157,29 @@ void GameFieldView::removeObject(GameObject *object)
 
 void GameFieldView::playMusic(const Util::Sound& sound) {
 
-    //qDebug() << "play from" << QUrl::fromLocalFile("sounds/cover.mp3").toString();
-    //QUrl url_to_song_ = QUrl(QDir::currentPath()).resolved(QUrl("sounds/cover.mp3"))
-    //qDebug() << QUrl(QDir::currentPath()).resolved(QUrl("sounds/cover.mp3")).toString();
-
-    if (sound == Util::Sound::Building) {
-        media_player_.setMedia(QUrl::fromLocalFile(QUrl(QDir::currentPath()).resolved(QUrl("sounds/building.wav")).toString()));
-    } else if (sound == Util::Sound::Removing) {
-        media_player_.setMedia(QUrl::fromLocalFile(QUrl(QDir::currentPath()).resolved(QUrl("sounds/removing.wav")).toString()));
-    } else if (sound == Util::Sound::Wrecked) {
-        media_player_.setMedia(QUrl::fromLocalFile(QUrl(QDir::currentPath()).resolved(QUrl("sounds/wrecked.ogg")).toString()));
+    QString path_to_sound;
+    switch (sound) {
+    case Util::Sound::Building:
+        path_to_sound = "qrc:/sounds/building.wav";
+        break;
+    case Util::Sound::Repairing:
+        path_to_sound = "qrc:/sounds/repairing.wav";
+        break;
+    case Util::Sound::Wrecking:
+        path_to_sound = "qrc:/sounds/wrecking.ogg";
+        break;
+    case Util::Sound::Removing:
+        path_to_sound = "qrc:/sounds/removing.wav";
+        break;
+    default:
+        break;
     }
+    media_player_.setVolume(media);
+    media_player_.setMedia(QUrl(path_to_sound));
+    //media_player_.setMedia(QUrl::fromLocalFile(QUrl(QDir::currentPath()).resolved(QUrl(path_to_sound)).toString()));
     media_player_.play();
+}
+
+void GameFieldView::changeVolume(double new_val) {
+    media_player_volume_ = new_val;
 }

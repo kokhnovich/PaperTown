@@ -11,7 +11,8 @@ namespace Util
     enum Sound {
         Building,
         Removing,
-        Wrecked
+        Wrecking,
+        Repairing
     };
 
     enum Bool3 {

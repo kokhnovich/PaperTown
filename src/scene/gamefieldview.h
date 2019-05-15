@@ -19,6 +19,7 @@ public slots:
     void playMusic(const Util::Sound& sound);
     void addObject(GameObject *object);
     void removeObject(GameObject *object);
+    void changeVolume(double new_val);
 protected:
     void putObject(GameObject *object);
     void unputObject(GameObject *object);
@@ -50,6 +51,7 @@ private:
     QGraphicsWidget *selection_control_;
     SelectionState last_state_;
     QMediaPlayer media_player_;
+    double media_player_volume_;
 };
 
 #endif // GAMEOBJECTRENDERER_H

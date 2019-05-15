@@ -25,6 +25,7 @@ public:
     void update();
     void setPause();
     void unsetPause();
+
 private slots:
     void on_startBtn_clicked();
 

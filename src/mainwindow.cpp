@@ -135,7 +135,7 @@ void MainWindow::unsetPause() {
     on_startBtn_clicked();
 }
 
-void MainWindow::on_doubleSpinBox_2_valueChanged(double arg1)
+void MainWindow::on_doubleSpinBox_2_valueChanged(double new_val)
 {
-
+    emit volumeChanged(new_val);
 }
