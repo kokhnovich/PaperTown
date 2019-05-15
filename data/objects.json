@@ -199,7 +199,7 @@
 
     "skyscraper": {
         "textures": ["skyscraper.l*"],
-        "properties": ["building", "house"],
+        "properties": [ "house","building"],
         "type": "static",
         "cells": [
                             [-2, 2], [-2, 3], [-2, 4],
@@ -216,7 +216,7 @@
             "cost": 30000,
             "repair-cost": 1000,
             "production": 2000,
-            "build-time": 10,
+            "build-time": 120,
             "repair-time": 40,
             "plant-points": 5,
             "health-loss": 0.01
