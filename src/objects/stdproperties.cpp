@@ -368,6 +368,7 @@ void GameProperty_building::doInitialize()
 {
     GameObjectProperty::doInitialize();
     Q_ASSERT(gameObject()->type() == "static");
+    addStdIndicators(gameObject()->field());
     total_build_time_ = qMax(500, objectInfo()->keys["build-time"].toInt() * 1000);
     if (objectInfo()->keys.contains("repair-time")) {
         total_repair_time_ = qMax(500, objectInfo()->keys["repair-time"].toInt() * 1000);
@@ -375,6 +376,7 @@ void GameProperty_building::doInitialize()
         total_repair_time_ = total_build_time_;
     }
     health_loss_ = objectInfo()->keys["health-loss"].toReal();
+    production_ = objectInfo()->keys["production"].toReal();
     tryPrepare();
     connect(gameObject(), &GameObject::placed, this, &GameProperty_building::tryPrepare);
     connect(gameObject(), &GameObject::removed, this, &GameProperty_building::handleRemoval);
@@ -405,6 +407,7 @@ void GameProperty_building::handleLoop()
             emit updated();
         }
     }
+    updateProduction();
 }
 
 qreal GameProperty_building::health() const
@@ -489,7 +492,18 @@ void GameProperty_building::setState(GameProperty_building::State new_state)
             this->disableObject();
         }
     }
+    updateProduction();
     emit updated();
+}
+
+void GameProperty_building::updateProduction()
+{
+    qreal new_production = (state_ == Normal) ? production_ * health_ : 0.0;
+    qreal production_delta = new_production - old_production_;
+    if (!qFuzzyIsNull(production_delta)) {
+        gameObject()->indicators()->add(QStringLiteral("production"), production_delta);
+    }
+    old_production_ = new_production;
 }
 
 bool GameProperty_building::startRepairing()
