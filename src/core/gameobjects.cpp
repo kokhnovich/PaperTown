@@ -252,9 +252,9 @@ void GameObject::emitRemoved()
 {
     if (isPlaced()) {
         resources()->add(GameResources::Money, removalCost());
+        emit soundEvent(Util::Sound::Removing);
     }
     emit removed();
-    emit soundEvent(Util::Sound::Removing);
 }
 
 bool GameObject::canSetPosition(const Coordinate &pos) const

@@ -317,6 +317,7 @@ void GameProperty_building::buildFinished()
         }
     }
     setState(Normal);
+    this->gameObject()->playSound(Util::Sound::Building);
 }
 
 double GameProperty_building::buildProgress() const
