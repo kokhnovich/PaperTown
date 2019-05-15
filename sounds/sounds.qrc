@@ -2,7 +2,13 @@
   <qresource prefix="/sounds/">
     <file>building.wav</file>
     <file>removing.wav</file>
+<<<<<<< HEAD
+    <file>wrecking.ogg</file>
+    <file>repairing</file>
+    <file>moving</file>
+=======
     <file>moving.wav</file>
     <file>wrecked.ogg</file>
+>>>>>>> f9e2d1424680481922b140b33436d82bf4909460
   </qresource>
 </RCC>
