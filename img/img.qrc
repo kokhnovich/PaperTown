@@ -71,5 +71,11 @@
 		<file>skyscraper.l5.png</file>
 		<file>skyscraper.l6.png</file>
 		<file>skyscraper.l7.png</file>
+		<file>office.png</file>
+		<file>office.l1.png</file>
+		<file>office.l2.png</file>
+		<file>office.l3.png</file>
+		<file>office.l4.png</file>
+		<file>office.l5.png</file>
    </qresource>
 </RCC>
