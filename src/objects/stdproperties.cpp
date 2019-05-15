@@ -317,6 +317,7 @@ void GameProperty_building::buildFinished()
         }
     }
     setState(Normal);
+    this->gameObject()->playSound(Util::Sound::Building);
 }
 
 double GameProperty_building::buildProgress() const
@@ -400,6 +401,7 @@ void GameProperty_building::handleLoop()
     if (health_ <= 1e-9) {
         health_ = 0.0;
         setState(Wrecked);
+        this->gameObject()->playSound(Util::Sound::Wrecking);
     } else {
         if (canStartRepairing() != can_start_repairing) {
             emit updated();
@@ -434,6 +436,7 @@ void GameProperty_building::repairFinished()
 {
     health_ = 1.0;
     setState(Normal);
+    this->gameObject()->playSound(Util::Sound::Building);
 }
 
 void GameProperty_building::setState(GameProperty_building::State new_state)
@@ -460,6 +463,7 @@ void GameProperty_building::setState(GameProperty_building::State new_state)
         break;
     }
     case UnderConstruction: {
+        this->gameObject()->playSound(Util::Sound::Starting_Building);
         cur_event_ = new GameSignalEvent(GameEvent::Finish);
         cur_event_->attach(this);
         connect(cur_event_, &GameSignalEvent::activated, this, &GameProperty_building::buildFinished);
@@ -510,6 +514,7 @@ bool GameProperty_building::startRepairing()
     }
     gameObject()->resources()->acquire(GameResources::Money, repairCost());
     setState(Repairing);
+    this->gameObject()->playSound(Util::Sound::Repairing);
     return true;
 }
 

@@ -99,3 +99,7 @@ void GameView::mousePressEvent(QMouseEvent* event)
     triggerMouseMoved();
 }
 
+void GameScene::changeVolume(double value) {
+    view_->changeVolume(value);
+}
+

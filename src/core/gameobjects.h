@@ -175,6 +175,8 @@ public:
     
     friend class GameObjectProperty;
     friend class GameFieldBase;
+
+    void playSound(const Util::Sound& sound);
 public slots:
     void removeSelf();
 
@@ -198,6 +200,7 @@ signals:
     void enabled();
     void disabled();
     void removed();
+    void soundEvent(const Util::Sound& sound);
 protected:
     virtual bool internalCanSelect() const;
     virtual bool internalCanMove() const;

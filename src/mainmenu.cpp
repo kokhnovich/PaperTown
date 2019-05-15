@@ -1,3 +1,5 @@
+#include <QFileDialog>
+#include <iostream>
 #include "mainmenu.h"
 #include "ui_mainmenu.h"
 #include "mainwindow.h"

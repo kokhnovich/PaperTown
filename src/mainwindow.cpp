@@ -1,3 +1,5 @@
+#include <QMediaPlayer>
+
 #include <QGraphicsView>
 #include <QHBoxLayout>
 #include <QtDebug>
@@ -16,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent) :
     indicators_(new GameIndicatorRepository(this)),
     timer()
 {
+
+
     indicators_->loadFromFile(":/data/indicators.json");
     textures_->loadFromFile(":/data/textures.json");
     repository_->loadFromFile(":/data/objects.json");
@@ -52,8 +56,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::initObjects()
 {
+
     /*field_->resources()->enableInfiniteMode();
     const char *objects[5] = {"tree1", "tree2", "cinema", "angle-ne", "angle-nw"};
+
     for (int i = 0; i < field_->height(); ++i) {
         for (int j = 0; j < field_->width(); ++j) {
             if (qrand() % 25 == 0) {
@@ -127,4 +133,9 @@ void MainWindow::setPause() {
 
 void MainWindow::unsetPause() {
     on_startBtn_clicked();
+}
+
+void MainWindow::on_doubleSpinBox_2_valueChanged(double new_val)
+{
+    scene->changeVolume(new_val);
 }

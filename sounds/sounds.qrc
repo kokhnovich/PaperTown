@@ -1,0 +1,9 @@
+<RCC>
+  <qresource prefix="/sounds/">
+    <file>building.wav</file>
+    <file>start_building.wav</file>
+    <file>removing.wav</file>
+    <file>wrecking.ogg</file>
+    <file>repairing.wav</file>
+  </qresource>
+</RCC>

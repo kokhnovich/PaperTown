@@ -252,6 +252,7 @@ void GameObject::emitRemoved()
 {
     if (isPlaced()) {
         resources()->add(GameResources::Money, removalCost());
+        emit soundEvent(Util::Sound::Removing);
     }
     emit removed();
 }
@@ -358,6 +359,7 @@ bool GameObject::applyMovingPosition()
         is_placed_ = true;
         resources()->acquire(GameResources::Money, cost());
         emit placed(position_);
+        //emit soundEvent(Util::Sound::Building);
     }
     return true;
 }
@@ -582,3 +584,7 @@ bool objectsConflict(const GameObject *a, const GameObject *b)
     }
 }
 
+void GameObject::playSound(const Util::Sound &sound)
+{
+    emit soundEvent(sound);
+}

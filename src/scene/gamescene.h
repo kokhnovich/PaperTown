@@ -18,6 +18,7 @@ class GameScene : public QGraphicsScene
 public:
     GameScene(QObject *parent, GameObjectRenderRepository *repository,
               GameField *field, GameTextureRepository *textures);
+    void changeVolume(double value);
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;

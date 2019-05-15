@@ -3,10 +3,19 @@
 
 #include <QtCore>
 
+
 namespace Util
 {
     Q_NAMESPACE
     
+    enum Sound {
+        Building,
+        Removing,
+        Wrecking,
+        Repairing,
+        Starting_Building
+    };
+
     enum Bool3 {
         True,
         False,

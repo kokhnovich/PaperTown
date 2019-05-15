@@ -1,4 +1,5 @@
 #include <QtDebug>
+#include <QSound>
 #include <QGraphicsWidget>
 #include "gamefieldview.h"
 #include "gamescenegeometry.h"
@@ -59,6 +60,7 @@ void GameFieldView::endMovingObject()
 void GameFieldView::addObject(GameObject *object)
 {
     connect(object, &GameObject::placed, this, &GameFieldView::placeObject);
+    connect(object, &GameObject::soundEvent, this, &GameFieldView::playMusic);
     connect(object, &GameObject::moved, this, &GameFieldView::moveObject);
     connect(object, &GameObject::updated, this, &GameFieldView::updateObject);
     connect(object, &GameObject::enabled, this, &GameFieldView::updateObject);
@@ -116,7 +118,9 @@ GameFieldView::GameFieldView(QObject *parent, GameTextureRenderer *renderer)
       objects_(),
       moving_item_(nullptr),
       selection_control_(nullptr),
-      last_state_(SelectionState::None)
+      last_state_(SelectionState::None),
+      media_player_(),
+      media_player_volume_(50)
 {
     renderer_->setupScene();
 }
@@ -138,6 +142,7 @@ void GameFieldView::unputObject(GameObject *object)
 void GameFieldView::removeObject(GameObject *object)
 {
     disconnect(object, &GameObject::placed, this, &GameFieldView::placeObject);
+    disconnect(object, &GameObject::soundEvent, this, &GameFieldView::playMusic);
     disconnect(object, &GameObject::moved, this, &GameFieldView::moveObject);
     disconnect(object, &GameObject::updated, this, &GameFieldView::updateObject);
     disconnect(object, &GameObject::enabled, this, &GameFieldView::updateObject);
@@ -147,6 +152,36 @@ void GameFieldView::removeObject(GameObject *object)
     disconnect(object, &GameObject::startedMoving, this, &GameFieldView::startMovingObject);
     disconnect(object, &GameObject::endedMoving, this, &GameFieldView::endMovingObject);
     disconnect(object, &GameObject::movingPositionChanged, this, &GameFieldView::movingPositionChanged);
-
     unputObject(object);
+}
+
+void GameFieldView::playMusic(const Util::Sound& sound) {
+
+    QString path_to_sound;
+    switch (sound) {
+    case Util::Sound::Building:
+        path_to_sound = "qrc:/sounds/building.wav";
+        break;
+    case Util::Sound::Repairing:
+        path_to_sound = "qrc:/sounds/repairing.wav";
+        break;
+    case Util::Sound::Wrecking:
+        path_to_sound = "qrc:/sounds/wrecking.ogg";
+        break;
+    case Util::Sound::Removing:
+        path_to_sound = "qrc:/sounds/removing.wav";
+        break;
+    case Util::Sound::Starting_Building:
+        path_to_sound = "qrc:/sounds/start_building.wav";
+        break;
+    default:
+        break;
+    }
+    media_player_.setVolume(media_player_volume_);
+    media_player_.setMedia(QUrl(path_to_sound));
+    media_player_.play();
+}
+
+void GameFieldView::changeVolume(double new_val) {
+    media_player_volume_ = new_val;
 }
