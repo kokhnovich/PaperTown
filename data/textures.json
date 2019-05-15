@@ -108,5 +108,11 @@
         "offset": [0, -800],
         "z-offset": [0, 0],
         "layers": 5
+    },
+
+    "htp": {
+        "offset": [0, -525],
+        "z-offset": [0, 0],
+        "layers": 10
     }
 }
