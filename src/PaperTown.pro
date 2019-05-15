@@ -8,7 +8,8 @@ QT       += core gui multimedia
 
 RESOURCES += \
 	../img/img.qrc \
-	../data/data.qrc
+        ../data/data.qrc \
+        ../sounds/sounds.qrc
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

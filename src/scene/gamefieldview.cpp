@@ -1,4 +1,5 @@
 #include <QtDebug>
+#include <QSound>
 #include <QGraphicsWidget>
 #include "gamefieldview.h"
 #include "gamescenegeometry.h"
@@ -154,13 +155,17 @@ void GameFieldView::removeObject(GameObject *object)
 }
 
 void GameFieldView::playMusic(Util::Sound sound) {
+
+    //qDebug() << "play from" << QUrl::fromLocalFile("sounds/cover.mp3").toString();
+    //QUrl url_to_song_ = QUrl(QDir::currentPath()).resolved(QUrl("sounds/cover.mp3"))
+    //qDebug() << QUrl(QDir::currentPath()).resolved(QUrl("sounds/cover.mp3")).toString();
+
     if (sound == Util::Sound::Building) {
-        media_player_.setMedia(QUrl::fromLocalFile("/home/user/qt-projects/PaperTown/sounds/building.wav"));
-        //player->setMedia(QUrl::fromLocalFile(":/:/:/music/song.mp3"));
+        media_player_.setMedia(QUrl::fromLocalFile(QUrl(QDir::currentPath()).resolved(QUrl("sounds/building.wav")).toString()));
     } else if (sound == Util::Sound::Removing) {
-        media_player_.setMedia(QUrl::fromLocalFile("/home/user/qt-projects/PaperTown/sounds/removing.wav"));
-    } else if (sound == Util::Sound::Wrecked)
-    // else if (sound == Util::Sound::)
+        media_player_.setMedia(QUrl::fromLocalFile(QUrl(QDir::currentPath()).resolved(QUrl("sounds/removing.wav")).toString()));
+    } else if (sound == Util::Sound::Wrecked) {
+        media_player_.setMedia(QUrl::fromLocalFile(QUrl(QDir::currentPath()).resolved(QUrl("sounds/wrecked.wav")).toString()));
+    }
     media_player_.play();
 }
-
