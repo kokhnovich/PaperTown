@@ -137,5 +137,5 @@ void MainWindow::unsetPause() {
 
 void MainWindow::on_doubleSpinBox_2_valueChanged(double new_val)
 {
-    emit volumeChanged(new_val);
+    scene->changeVolume(new_val);
 }

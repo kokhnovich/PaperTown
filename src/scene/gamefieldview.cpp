@@ -174,9 +174,8 @@ void GameFieldView::playMusic(const Util::Sound& sound) {
     default:
         break;
     }
-    media_player_.setVolume(media);
+    media_player_.setVolume(media_player_volume_);
     media_player_.setMedia(QUrl(path_to_sound));
-    //media_player_.setMedia(QUrl::fromLocalFile(QUrl(QDir::currentPath()).resolved(QUrl(path_to_sound)).toString()));
     media_player_.play();
 }
 
