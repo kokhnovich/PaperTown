@@ -102,5 +102,11 @@
         "offset": [0, -1000],
         "z-offset": [0, 0],
         "layers": 7
+    },
+
+    "office": {
+        "offset": [0, -800],
+        "z-offset": [0, 0],
+        "layers": 5
     }
 }
