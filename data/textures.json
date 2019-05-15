@@ -96,5 +96,11 @@
 		"offset": [0, -425],
 		"z-offset": [0, 0],
 		"layers": 6
+    },
+
+    "skyscraper": {
+        "offset": [0, -1000],
+        "z-offset": [0, 0],
+        "layers": 7
     }
 }
