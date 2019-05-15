@@ -25,7 +25,7 @@
 	
 	"cinema": {
 		"textures": ["cinema.l*"],
-		"properties": ["building"],
+        "properties": ["building"],
 		"type": "static",
 		"cells": [
 			[0, 0], [0, 1], [0, 2], [0, 3],
@@ -35,8 +35,10 @@
 		],
 		"caption": "Cinema",
 		"keys": {
-			"build-time": 60,
-			"repair-time": 25
+            "cost": 500,
+            "production": 500,
+            "build-time": 20,
+            "repair-time": 10
 		}
 	},
 	
@@ -52,7 +54,9 @@
 		],
 		"caption": "Angle (north-east)",
 		"keys": {
-			"population": [75, 125],
+            "cost": 300,
+            "health-loss": 0.01,
+            "population": [75, 125],
 			"build-time": 30,
 			"repair-time": 10
 		}
@@ -70,6 +74,8 @@
 		],
 		"caption": "Angle (north-west)",
 		"keys": {
+            "cost": 300,
+            "health-loss": 0.01,
 			"population": [75, 125],
 			"build-time": 30,
 			"repair-time": 10
@@ -88,13 +94,16 @@
 		],
 		"caption": "Angle (south-east)",
 		"keys": {
-			"population": [75, 125],
+            "cost": 300,
+            "health-loss": 0.01,
+            "population": [75, 125],
 			"build-time": 30,
 			"repair-time": 10
 		}
 	},
 	
 	"angle-sw": {
+        "cost": 300,
 		"textures": ["angle-sw.l*"],
 		"properties": ["house", "building"],
 		"type": "static",
@@ -106,8 +115,10 @@
 		],
 		"caption": "Angle (south-west)",
 		"keys": {
-			"population": [75, 125],
-			"build-time": 30,
+            "cost": 300,
+            "population": [75, 125],
+            "health-loss": 0.01,
+            "build-time": 30,
 			"repair-time": 10
 		}
 	},
@@ -140,13 +151,14 @@
 
 	"tallhouse": {
 		"textures": ["tallhouse.l1", "tallhouse.l2"],
-		"properties": ["building"],
+        "properties": ["house","building"],
 		"type": "static",
 		"cells": [
 			[0, 0], [0, 1], [1, 0], [1, 1]
 		],
 		"caption": "Tall house",
 		"keys": {
+            "population": [150, 200],
 			"build-time": 20,
 			"repair-time": 10,
 			"health-loss": 0.01,
@@ -167,11 +179,13 @@
 		],
 		"caption": "Chocolate factory",
 		"keys": {
+            "cost": 100,
 			"build-time": 5,
 			"repair-time": 25,
+            "repair-cost": 20,
 			"plant-points": 3,
-			"production": 100.0,
-			"health-loss": 0.1
+            "production": 200.0,
+            "health-loss": 0.01
 		}
 	},
 
@@ -189,10 +203,13 @@
 		],
 		"caption": "Lemonade factory",
 		"keys": {
-			"build-time": 5,
+            "cost": 1000,
+            "production": 500,
+            "repair-cost": 100,
+            "build-time": 5,
 			"repair-time": 25,
             "plant-points": 5,
-			"health-loss": 0.1
+            "health-loss": 0.01
 		}
     },
 
