@@ -311,7 +311,7 @@
             ],
             "caption": "University",
             "keys": {
-                "cost": 4000,
+                "cost": 40000,
                 "build-time":60,
                 "population": [800, 1200],
                 "production": 8000,
