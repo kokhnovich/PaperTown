@@ -114,5 +114,11 @@
         "offset": [0, -525],
         "z-offset": [0, 0],
         "layers": 10
-    }
+    },
+
+    "university": {
+            "offset": [0, -425],
+            "z-offset": [0, 0],
+            "layers": 10
+        }
 }
