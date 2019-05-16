@@ -89,6 +89,7 @@ void MainWindow::on_startBtn_clicked()
     ui->listView->setEnabled(true);
     ui->graphicsView->setEnabled(true);
     ui->doubleSpinBox->setEnabled(true);
+    ui->doubleSpinBox_2->setEnabled(true);
     update();
 }
 
@@ -98,6 +99,7 @@ void MainWindow::on_pauseBtn_clicked()
     ui->listView->setEnabled(false);
     ui->graphicsView->setEnabled(false);
     ui->doubleSpinBox->setEnabled(false);
+    ui->doubleSpinBox_2->setEnabled(false);
     update();
 }
 
@@ -109,7 +111,7 @@ void MainWindow::timerTimeout()
 
 void MainWindow::update()
 {
-    ui->label->setText(QString::asprintf("events caught: %d, active : %s", event_count_, field_->scheduler()->active() ? "true" : "false"));
+    //ui->label->setText(QString::asprintf("events caught: %d, active : %s", event_count_, field_->scheduler()->active() ? "true" : "false"));
     ui->startBtn->setEnabled(!field_->scheduler()->active());
     ui->pauseBtn->setEnabled(field_->scheduler()->active());
 }

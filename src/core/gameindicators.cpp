@@ -228,7 +228,7 @@ void GameResources::enableInfiniteMode()
 GameResources::GameResources(QObject *parent)
     : QObject(parent)
 {
-    resources_[Money] = 10000.0;
+    resources_[Money] = 100000.0;
     resources_[Builders] = 3.0;
 }
 
